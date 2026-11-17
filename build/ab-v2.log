@@ -1,0 +1,48 @@
+7d53ec67ed65495b8526e9060beb53a0  /media/developer/apps/usr/palm/applications/com.viiees.browser/lib/libWPEWebKit-2.0.so.1
+micro #0: load_ms=44 micro_total_ms=279 rss_kb=85440 webprocs=1 crashes=0
+load-wiki #0: load_ms=3085 rss_kb=197236 webprocs=1 crashes=0
+wheel-wiki #0: load_ms=3189 rss_kb=217104 webprocs=1 crashes=0 screen_fps=36.8
+raf-wiki #0: load_ms=3322 raf_fps=8.0 rss_kb=207924 webprocs=1 crashes=0
+speedometer #0: load_ms=78 probe_s=109 score=0.73 rss_kb=534540 webprocs=1 crashes=0 peak_rss_kb=577948
+cold-youtube #0: load_ms=10098 rss_kb=470720 webprocs=2 crashes=0
+wheel-youtube #0: load_ms=10171 rss_kb=485600 webprocs=2 crashes=0 screen_fps=3.9
+1d870b2d1ac152d1bf54d2923517dcf6  /media/developer/apps/usr/palm/applications/com.viiees.browser/lib/libWPEWebKit-2.0.so.1
+micro #0: load_ms=39 micro_total_ms=233 rss_kb=83076 webprocs=1 crashes=0
+load-wiki #0: load_ms=3203 rss_kb=191572 webprocs=1 crashes=0
+wheel-wiki #0: load_ms=3275 rss_kb=218000 webprocs=1 crashes=0 screen_fps=32.8
+raf-wiki #0: load_ms=3129 raf_fps=7.6 rss_kb=208904 webprocs=1 crashes=0
+speedometer #0: load_ms=59 probe_s=104 score=0.741 rss_kb=526920 webprocs=1 crashes=0 peak_rss_kb=526920
+cold-youtube #0: load_ms=10010 rss_kb=480976 webprocs=2 crashes=0
+wheel-youtube #0: load_ms=10055 rss_kb=469748 webprocs=2 crashes=0 screen_fps=4.3
+7d53ec67ed65495b8526e9060beb53a0  /media/developer/apps/usr/palm/applications/com.viiees.browser/lib/libWPEWebKit-2.0.so.1
+micro #0: load_ms=41 micro_total_ms=280 rss_kb=83324 webprocs=1 crashes=0
+load-wiki #0: load_ms=3071 rss_kb=197316 webprocs=1 crashes=0
+wheel-wiki #0: load_ms=3100 rss_kb=216444 webprocs=1 crashes=0 screen_fps=33.4
+raf-wiki #0: load_ms=3133 raf_fps=7.8 rss_kb=210132 webprocs=1 crashes=0
+speedometer #0: load_ms=64 probe_s=109 score=0.726 rss_kb=459340 webprocs=1 crashes=0 peak_rss_kb=532152
+cold-youtube #0: load_ms=10405 rss_kb=479536 webprocs=2 crashes=0
+wheel-youtube #0: load_ms=10191 rss_kb=479816 webprocs=2 crashes=0 screen_fps=3.8
+1d870b2d1ac152d1bf54d2923517dcf6  /media/developer/apps/usr/palm/applications/com.viiees.browser/lib/libWPEWebKit-2.0.so.1
+micro #0: load_ms=42 micro_total_ms=222 rss_kb=84172 webprocs=1 crashes=0
+load-wiki #0: load_ms=3645 rss_kb=192760 webprocs=1 crashes=0
+wheel-wiki #0: load_ms=3035 rss_kb=211828 webprocs=1 crashes=0 screen_fps=29.6
+raf-wiki #0: load_ms=3099 raf_fps=10.1 rss_kb=205540 webprocs=1 crashes=0
+speedometer #0: load_ms=76 probe_s=105 score=0.755 rss_kb=511448 webprocs=1 crashes=0 peak_rss_kb=532944
+cold-youtube #0: load_ms=10498 rss_kb=462324 webprocs=2 crashes=0
+wheel-youtube #0: load_ms=10271 rss_kb=485888 webprocs=2 crashes=0 screen_fps=4.1
+7d53ec67ed65495b8526e9060beb53a0  /media/developer/apps/usr/palm/applications/com.viiees.browser/lib/libWPEWebKit-2.0.so.1
+micro #0: load_ms=42 micro_total_ms=270 rss_kb=84412 webprocs=1 crashes=0
+load-wiki #0: load_ms=3039 rss_kb=196444 webprocs=1 crashes=0
+wheel-wiki #0: load_ms=3330 rss_kb=212436 webprocs=1 crashes=0 screen_fps=29.2
+raf-wiki #0: load_ms=3181 raf_fps=10.1 rss_kb=210572 webprocs=1 crashes=0
+speedometer #0: load_ms=82 probe_s=108 score=0.721 rss_kb=467860 webprocs=1 crashes=0 peak_rss_kb=529924
+cold-youtube #0: load_ms=10203 rss_kb=487016 webprocs=2 crashes=0
+wheel-youtube #0: load_ms=10074 rss_kb=475912 webprocs=2 crashes=0 screen_fps=4.3
+1d870b2d1ac152d1bf54d2923517dcf6  /media/developer/apps/usr/palm/applications/com.viiees.browser/lib/libWPEWebKit-2.0.so.1
+micro #0: load_ms=46 micro_total_ms=224 rss_kb=84116 webprocs=1 crashes=0
+load-wiki #0: load_ms=3280 rss_kb=191724 webprocs=1 crashes=0
+wheel-wiki #0: load_ms=3247 rss_kb=211932 webprocs=1 crashes=0 screen_fps=31.2
+raf-wiki #0: load_ms=3265 raf_fps=7.9 rss_kb=205608 webprocs=1 crashes=0
+speedometer #0: load_ms=81 probe_s=102 score=0.744 rss_kb=475048 webprocs=1 crashes=0 peak_rss_kb=509980
+cold-youtube #0: load_ms=10189 rss_kb=468640 webprocs=2 crashes=0
+wheel-youtube #0: load_ms=10499 rss_kb=478604 webprocs=2 crashes=0 screen_fps=5.0

@@ -1,0 +1,205 @@
+From 7a94cdcc2e39bf73650422edefc15392689de418 Mon Sep 17 00:00:00 2001
+From: deten <6029514+deten@users.noreply.github.com>
+Date: Tue, 27 Oct 2026 15:49:45 -0700
+Subject: [PATCH 04/12] gles: add glGetMultisamplefv and
+ glGetTexLevelParameter{i,f}v
+
+Skia validates the GL interface of a GLES 3.1 context and refuses it when
+glGetMultisamplefv or glGetTexLevelParameteriv are missing. Forward the
+three GLES 3.1 queries to the proxy, which resolves them with
+eglGetProcAddress, so it still links against a GLES 3.0 libGLESv2.
+---
+ include/gles_bridge_protocol.h |  5 +++
+ proxy/protocol/gles3_2.c       | 56 ++++++++++++++++++++++++++++++++++
+ proxy/protocol/gles3_2.h       |  3 ++
+ proxy/proxy.c                  |  3 ++
+ stub/gles3_2_stub.c            | 54 ++++++++++++++++++++++++++++++++
+ stub/libGLESv3_2.map           |  5 +++
+ 6 files changed, 126 insertions(+)
+
+diff --git a/include/gles_bridge_protocol.h b/include/gles_bridge_protocol.h
+index 5e74595..f1f5b98 100644
+--- a/include/gles_bridge_protocol.h
++++ b/include/gles_bridge_protocol.h
+@@ -478,6 +478,11 @@ typedef enum
+ 
+   /* bridge-internal: highest index read from the bound element buffer, for
+    * draws that combine an element buffer with client-side vertex arrays */
++  /* GLES 3.1 queries */
++  OP_glGetMultisamplefv,
++  OP_glGetTexLevelParameteriv,
++  OP_glGetTexLevelParameterfv,
++
+   OP_bridgeIndexRange,
+ 
+   OP_Sync,
+diff --git a/proxy/protocol/gles3_2.c b/proxy/protocol/gles3_2.c
+index 462d89f..e48a877 100644
+--- a/proxy/protocol/gles3_2.c
++++ b/proxy/protocol/gles3_2.c
+@@ -3860,3 +3860,59 @@ void h_glInvalidateSubFramebuffer(BridgeCtrl *C, uint8_t *D)
+                                (const GLenum *)dp(C->data_offset), x, y, width,
+                                height);
+ }
++
++/* ───────── GLES 3.1 queries ─────────
++ * Resolved at run time: the 3.1 entry points are not in every libGLESv2. */
++#include <EGL/egl.h>
++
++void h_glGetMultisamplefv(BridgeCtrl *C, uint8_t *D)
++{
++  (void)D;
++  AR(r);
++  GLenum pname = ar_u32(&r);
++  GLuint index = ar_u32(&r);
++  static PFNGLGETMULTISAMPLEFVPROC fn;
++  if (!fn)
++    fn = (PFNGLGETMULTISAMPLEFVPROC)eglGetProcAddress("glGetMultisamplefv");
++  GLfloat v[2] = {0.5f, 0.5f};
++  if (fn)
++    fn(pname, index, v);
++  memcpy(C->result_buf, v, sizeof(v));
++  C->result_buf_len = sizeof(v);
++}
++
++void h_glGetTexLevelParameteriv(BridgeCtrl *C, uint8_t *D)
++{
++  (void)D;
++  AR(r);
++  GLenum target = ar_u32(&r);
++  GLint level = ar_i32(&r);
++  GLenum pname = ar_u32(&r);
++  static PFNGLGETTEXLEVELPARAMETERIVPROC fn;
++  if (!fn)
++    fn = (PFNGLGETTEXLEVELPARAMETERIVPROC)eglGetProcAddress(
++        "glGetTexLevelParameteriv");
++  GLint v = 0;
++  if (fn)
++    fn(target, level, pname, &v);
++  memcpy(C->result_buf, &v, sizeof(v));
++  C->result_buf_len = sizeof(v);
++}
++
++void h_glGetTexLevelParameterfv(BridgeCtrl *C, uint8_t *D)
++{
++  (void)D;
++  AR(r);
++  GLenum target = ar_u32(&r);
++  GLint level = ar_i32(&r);
++  GLenum pname = ar_u32(&r);
++  static PFNGLGETTEXLEVELPARAMETERFVPROC fn;
++  if (!fn)
++    fn = (PFNGLGETTEXLEVELPARAMETERFVPROC)eglGetProcAddress(
++        "glGetTexLevelParameterfv");
++  GLfloat v = 0;
++  if (fn)
++    fn(target, level, pname, &v);
++  memcpy(C->result_buf, &v, sizeof(v));
++  C->result_buf_len = sizeof(v);
++}
+diff --git a/proxy/protocol/gles3_2.h b/proxy/protocol/gles3_2.h
+index e9fcc81..3015891 100644
+--- a/proxy/protocol/gles3_2.h
++++ b/proxy/protocol/gles3_2.h
+@@ -244,6 +244,9 @@ void h_glDrawElementsIndirect(BridgeCtrl *C, uint8_t *D);
+ 
+ void h_glDrawRangeElements(BridgeCtrl *C, uint8_t *D);
+ void h_bridgeIndexRange(BridgeCtrl *C, uint8_t *D);
++void h_glGetMultisamplefv(BridgeCtrl *C, uint8_t *D);
++void h_glGetTexLevelParameteriv(BridgeCtrl *C, uint8_t *D);
++void h_glGetTexLevelParameterfv(BridgeCtrl *C, uint8_t *D);
+ 
+ void h_glDrawElementsBaseVertex(BridgeCtrl *C, uint8_t *D);
+ void h_glDrawElementsInstancedBaseVertex(BridgeCtrl *C, uint8_t *D);
+diff --git a/proxy/proxy.c b/proxy/proxy.c
+index fd6660e..66ef3bd 100644
+--- a/proxy/proxy.c
++++ b/proxy/proxy.c
+@@ -420,6 +420,9 @@ static const HandlerFn dispatch_table[OP_MAX] = {
+     ENTRY(OP_glBindImageTexture, h_glBindImageTexture),
+     ENTRY(OP_glDrawRangeElements, h_glDrawRangeElements),
+     ENTRY(OP_bridgeIndexRange, h_bridgeIndexRange),
++    ENTRY(OP_glGetMultisamplefv, h_glGetMultisamplefv),
++    ENTRY(OP_glGetTexLevelParameteriv, h_glGetTexLevelParameteriv),
++    ENTRY(OP_glGetTexLevelParameterfv, h_glGetTexLevelParameterfv),
+     ENTRY(OP_glSamplerParameterIiv, h_glSamplerParameterIiv),
+     ENTRY(OP_glGetPointerv, h_glGetPointerv),
+     ENTRY(OP_glPopDebugGroup, h_glPopDebugGroup),
+diff --git a/stub/gles3_2_stub.c b/stub/gles3_2_stub.c
+index b5965ae..46cbf21 100644
+--- a/stub/gles3_2_stub.c
++++ b/stub/gles3_2_stub.c
+@@ -4431,3 +4431,57 @@ GL_APICALL void GL_APIENTRY glInvalidateSubFramebuffer(
+                               numAttachments, attachments, x, y, width,
+                               height);
+ }
++
++/* ───────── GLES 3.1 queries ─────────
++ * Skia's GL interface check requires these for a 3.1 context. */
++
++GL_APICALL void GL_APIENTRY glGetMultisamplefv(GLenum pname, GLuint index,
++                                               GLfloat *val)
++{
++  BRIDGE_BEGIN();
++  BridgeCtrl *C = BRIDGE_CTRL();
++  setup_scalar(OP_glGetMultisamplefv);
++  ArgWriter W = aw_init(C->args, BRIDGE_ARGS_SIZE);
++  aw_u32(&W, pname);
++  aw_u32(&W, index);
++  C->args_len = W.pos;
++  BRIDGE_SEND_CALL();
++  if (val)
++    memcpy(val, BRIDGE_CTRL()->result_buf, 2 * sizeof(GLfloat));
++}
++
++GL_APICALL void GL_APIENTRY glGetTexLevelParameteriv(GLenum target,
++                                                     GLint level,
++                                                     GLenum pname,
++                                                     GLint *params)
++{
++  BRIDGE_BEGIN();
++  BridgeCtrl *C = BRIDGE_CTRL();
++  setup_scalar(OP_glGetTexLevelParameteriv);
++  ArgWriter W = aw_init(C->args, BRIDGE_ARGS_SIZE);
++  aw_u32(&W, target);
++  aw_i32(&W, level);
++  aw_u32(&W, pname);
++  C->args_len = W.pos;
++  BRIDGE_SEND_CALL();
++  if (params)
++    memcpy(params, BRIDGE_CTRL()->result_buf, sizeof(GLint));
++}
++
++GL_APICALL void GL_APIENTRY glGetTexLevelParameterfv(GLenum target,
++                                                     GLint level,
++                                                     GLenum pname,
++                                                     GLfloat *params)
++{
++  BRIDGE_BEGIN();
++  BridgeCtrl *C = BRIDGE_CTRL();
++  setup_scalar(OP_glGetTexLevelParameterfv);
++  ArgWriter W = aw_init(C->args, BRIDGE_ARGS_SIZE);
++  aw_u32(&W, target);
++  aw_i32(&W, level);
++  aw_u32(&W, pname);
++  C->args_len = W.pos;
++  BRIDGE_SEND_CALL();
++  if (params)
++    memcpy(params, BRIDGE_CTRL()->result_buf, sizeof(GLfloat));
++}
+diff --git a/stub/libGLESv3_2.map b/stub/libGLESv3_2.map
+index e2527ab..8e9c2a1 100644
+--- a/stub/libGLESv3_2.map
++++ b/stub/libGLESv3_2.map
+@@ -478,6 +478,11 @@ global:
+ 
+     glDrawRangeElements;
+ 
++    /* ---- GLES 3.1 queries ---- */
++    glGetMultisamplefv;
++    glGetTexLevelParameteriv;
++    glGetTexLevelParameterfv;
++
+     glDrawElementsBaseVertex;
+     glDrawElementsInstancedBaseVertex;
+     glDrawRangeElementsBaseVertex;

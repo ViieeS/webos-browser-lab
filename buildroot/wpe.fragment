@@ -1,0 +1,28 @@
+# Appended to openlgtv/buildroot-nc4 webos_tv_defconfig.
+
+# Thumb-2 alone does not enable JavaScriptCore's ARMv7 JIT: it also needs a hard-float userspace,
+# and webOS is softfp, so build.sh pins WebKit to CLoop. Thumb-2 stays for smaller code.
+BR2_ARM_INSTRUCTIONS_THUMB2=y
+# BR2_ARM_INSTRUCTIONS_ARM is not set
+
+BR2_PACKAGE_WPEWEBKIT=y
+BR2_PACKAGE_WPEWEBKIT_MULTIMEDIA=y
+BR2_PACKAGE_WPEBACKEND_FDO=y
+# Containers and software audio decoders for MSE. Video goes to LG's hardware pipeline, not here.
+BR2_PACKAGE_GST1_PLUGINS_GOOD=y
+BR2_PACKAGE_GST1_PLUGINS_GOOD_PLUGIN_ISOMP4=y
+BR2_PACKAGE_GST1_PLUGINS_GOOD_PLUGIN_MATROSKA=y
+BR2_PACKAGE_GST1_LIBAV=y
+# Its Wayland library needs wayland-client >= 1.15; webOS 6 has 1.11. Video does not use it anyway.
+# BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_WAYLAND is not set
+
+# HTTPS: glib's TLS module and the CA bundle.
+BR2_PACKAGE_GLIB_NETWORKING=y
+BR2_PACKAGE_CA_CERTIFICATES=y
+
+# 6 jobs: at -O2 (see build.sh) 8 WebKit jobs ran the 20 GB VM out of memory (cc1plus killed).
+BR2_JLEVEL=6
+BR2_CCACHE=y
+BR2_CCACHE_DIR="/work/ccache"
+BR2_DL_DIR="/work/dl"
+BR2_GLOBAL_PATCH_DIR="/src/patches"

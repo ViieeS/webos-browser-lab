@@ -1,0 +1,37 @@
+records=329 recorded_s=20.0 self_total_ms=16461
+     8073 ms  49.0%    2752  FunctionCall
+     6209 ms  37.7%      41  EvaluateScript
+      979 ms   5.9%     171  RenderingFrame
+      808 ms   4.9%      60  RecalculateStyles
+      205 ms   1.2%      28  Layout
+      143 ms   0.9%      84  Paint
+       20 ms   0.1%     395  EventDispatch
+       16 ms   0.1%     401  TimerFire
+        4 ms   0.0%      40  ObserverCallback
+        2 ms   0.0%      24  Composite
+        2 ms   0.0%      34  FireAnimationFrame
+        0 ms   0.0%      56  ScheduleStyleRecalculation
+        0 ms   0.0%      25  InvalidateLayout
+        0 ms   0.0%       1  FirstContentfulPaint
+        0 ms   0.0%      34  RequestAnimationFrame
+        0 ms   0.0%      42  TimeStamp
+        0 ms   0.0%     371  TimerInstall
+        0 ms   0.0%      66  TimerRemove
+        0 ms   0.0%      16  CancelAnimationFrame
+        0 ms   0.0%       1  LargestContentfulPaint
+-- heaviest script entries (inclusive ms)
+    11237  FunctionCall https://www.youtube.com/s/_/ytmainappweb/_/js/k=ytmainappweb.kevlar_base.en_US.1OiVCHSMn24.2021.O
+     7077  EvaluateScript https://www.youtube.com/s/_/ytmainappweb/_/js/k=ytmainappweb.kevlar_base.en_US.1OiVCHSMn24.2021
+     5981  TimerFire 
+     2930  FunctionCall undefined
+     1738  ObserverCallback MutationObserver
+     1634  FunctionCall 
+      488  EventDispatch yt-page-data-fetched
+      222  EvaluateScript https://www.youtube.com/
+      145  EventDispatch yt-navigate-finish
+      136  ObserverCallback IntersectionObserver
+      133  EventDispatch mini-guide-visible-changed
+      109  EventDispatch load
+      103  EventDispatch success
+       93  EventDispatch query-matches-changed
+       86  EventDispatch yt-action

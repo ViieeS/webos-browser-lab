@@ -1,0 +1,11 @@
+--- a/build/config/compiler/BUILD.gn	2026-11-16 13:42:53.550989647 +0000
++++ b/build/config/compiler/BUILD.gn	2026-11-16 13:42:53.551990471 +0000
+@@ -1192,7 +1192,7 @@
+     } else if (current_cpu == "arm") {
+       if (is_clang && !is_android && !is_nacl &&
+           !(is_chromeos_lacros && is_chromeos_device)) {
+-        if (current_toolchain == "//build/toolchain/linux:clang_webos_arm" ) {
++        if (current_toolchain == "//build/toolchain/linux:clang_webos_arm" || arm_float_abi != "hard") {
+           cflags += [ "--target=arm-linux-gnueabi" ]
+           ldflags += [ "--target=arm-linux-gnueabi" ]
+         } else {

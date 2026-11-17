@@ -1,0 +1,232 @@
+From 9cb140cf91b55daf2e33e7a9b3e7a705ca465e6d Mon Sep 17 00:00:00 2001
+From: deten <6029514+deten@users.noreply.github.com>
+Date: Tue, 27 Oct 2026 16:34:48 -0700
+Subject: [PATCH 05/12] gles: keep per-VAO enable flags, and never draw from a
+ truncated pointer
+
+glVertexAttribPointer and glVertexAttribIPointer copied the whole global
+attribute record into the current VAO, enable flag and divisor included.
+The global record is shared by every context and VAO in the process (and
+in the proxy), so a pointer change in one VAO overwrote the enable state
+another context had set for its own VAO. The stub then left enabled
+client-side arrays out of a draw's copies, and the proxy drew from the
+64-bit pointer truncated to 32 bits; this crashed the Mali driver in
+memcpy (seen with Skia's GPU painting on two threads). The VAO now keeps
+its own enable flag and divisor.
+
+As a last line of defence the proxy checks, before each draw, that every
+enabled attribute without a buffer points into the data arena (real GL
+state, not the shadow state), and skips and logs the draw otherwise,
+instead of letting the driver read unrelated memory.
+---
+ proxy/protocol/gles2.c   | 62 ++++++++++++++++++++++++++++++++++++----
+ proxy/protocol/gles3_2.c | 21 +++++++++++---
+ stub/gles2_stub.c        | 11 ++++++-
+ stub/gles3_2_stub.c      | 11 ++++++-
+ 4 files changed, 93 insertions(+), 12 deletions(-)
+
+diff --git a/proxy/protocol/gles2.c b/proxy/protocol/gles2.c
+index 4ae96bc..e3c980d 100644
+--- a/proxy/protocol/gles2.c
++++ b/proxy/protocol/gles2.c
+@@ -1494,9 +1494,16 @@ void h_glVertexAttribPointer(BridgeCtrl *C, uint8_t *D)
+     g_attrib_proxy_state[index].vbo = vbo;
+     g_attrib_proxy_state[index].integer = GL_FALSE;
+ 
+-    g_proxy_ctx[g_current_ctx]
+-        .vaos[g_proxy_ctx[g_current_ctx].current_vao]
+-        .attribs[index] = g_attrib_proxy_state[index];
++    {
++      /* enable flag and divisor are per-VAO state; the global attribute
++       * state is shared by every context and VAO, so keep the VAO's own */
++      AttribState *va = &g_proxy_ctx[g_current_ctx].vaos[g_proxy_ctx[g_current_ctx].current_vao].attribs[index];
++      GLboolean en = va->enabled;
++      GLuint div = va->divisor;
++      *va = g_attrib_proxy_state[index];
++      va->enabled = en;
++      va->divisor = div;
++    }
+   }
+   else
+     log_error("h_glVertexAttribPointer: index:%d >= MAX_VERTEX_ATTRIBS", index);
+@@ -1689,6 +1696,46 @@ bool proxy_apply_client_arrays(ArgReader *r, GLint *prev_array_buffer)
+   return true;
+ }
+ 
++/* Last line of defence before a draw: every enabled attribute without a
++ * buffer must point into the data arena (a copy made for this draw). Anything
++ * else is a 64-bit client pointer truncated to 32 bits, which the driver
++ * would read (and usually crash on). Such a draw is skipped and logged. Uses
++ * the real GL state, not the proxy's shadow. */
++bool proxy_client_arrays_valid(const char *op)
++{
++  static GLint max_attribs = 0;
++  if (!max_attribs)
++  {
++    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &max_attribs);
++    if (max_attribs > MAX_VERTEX_ATTRIBS || max_attribs <= 0)
++      max_attribs = MAX_VERTEX_ATTRIBS;
++  }
++
++  for (GLint i = 0; i < max_attribs; i++)
++  {
++    GLint enabled = 0;
++    glGetVertexAttribiv(i, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &enabled);
++    if (!enabled)
++      continue;
++    GLint buffer = 0;
++    glGetVertexAttribiv(i, GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING, &buffer);
++    if (buffer)
++      continue;
++    void *p = NULL;
++    glGetVertexAttribPointerv(i, GL_VERTEX_ATTRIB_ARRAY_POINTER, &p);
++    if ((uint8_t *)p < data || (uint8_t *)p >= data + GLES_BRIDGE_DATA_SIZE)
++    {
++      static unsigned logged;
++      if (logged++ < 20)
++        log_error("%s: attribute %d has no buffer and points outside the "
++                  "data arena (%p); draw skipped",
++                  op, i, p);
++      return false;
++    }
++  }
++  return true;
++}
++
+ void h_glDrawArrays(BridgeCtrl *C, uint8_t *D)
+ {
+   AR(r);
+@@ -1819,7 +1866,8 @@ void h_glDrawArrays(BridgeCtrl *C, uint8_t *D)
+     }
+   }
+ 
+-  glDrawArrays(mode, first, count);
++  if (proxy_client_arrays_valid("glDrawArrays"))
++    glDrawArrays(mode, first, count);
+ 
+ #ifdef DEBUG_VERBOSE
+   GLint pack_pbo = 0;
+@@ -1943,7 +1991,8 @@ void h_glDrawElements(BridgeCtrl *C, uint8_t *D)
+         glVertexAttribPointer(i, a->size, a->type, a->normalized, a->stride,
+                               (const void *)a->pointer);
+     }
+-    glDrawElements(mode, count, type, (const void *)indices);
++    if (proxy_client_arrays_valid("glDrawElements"))
++      glDrawElements(mode, count, type, (const void *)indices);
+     if (restore_ab)
+       glBindBuffer(GL_ARRAY_BUFFER, prev_ab);
+     return;
+@@ -1977,7 +2026,8 @@ void h_glDrawElements(BridgeCtrl *C, uint8_t *D)
+   }
+ 
+   const void *local = dp(C->data_offset);
+-  glDrawElements(mode, count, type, local);
++  if (proxy_client_arrays_valid("glDrawElements"))
++    glDrawElements(mode, count, type, local);
+ 
+ #ifdef DEBUG_VERBOSE
+   log_console("h_glDrawElements: completed alternative mode");
+diff --git a/proxy/protocol/gles3_2.c b/proxy/protocol/gles3_2.c
+index e48a877..d712810 100644
+--- a/proxy/protocol/gles3_2.c
++++ b/proxy/protocol/gles3_2.c
+@@ -11,6 +11,7 @@
+ 
+ /* client-side vertex arrays carried by draw calls (gles2.c) */
+ bool proxy_apply_client_arrays(ArgReader *r, GLint *prev_array_buffer);
++bool proxy_client_arrays_valid(const char *op);
+ 
+ /* Dolphin alone keeps 16 fences per stream buffer, across 4 buffers */
+ #define MAX_SYNCS 256
+@@ -320,7 +321,8 @@ void h_glDrawArraysInstanced(BridgeCtrl *C, uint8_t *D)
+   GLint prev_array_buffer = 0;
+   bool restore = proxy_apply_client_arrays(&r, &prev_array_buffer);
+ 
+-  glDrawArraysInstanced(mode, first, count, instances);
++  if (proxy_client_arrays_valid("glDrawArraysInstanced"))
++    glDrawArraysInstanced(mode, first, count, instances);
+ 
+   if (restore)
+     glBindBuffer(GL_ARRAY_BUFFER, prev_array_buffer);
+@@ -1304,7 +1306,16 @@ void h_glVertexAttribIPointer(BridgeCtrl *C, uint8_t *D)
+ 
+     GLContextState *ctx = &g_proxy_ctx[g_current_ctx];
+     VAOState *vao = &ctx->vaos[ctx->current_vao];
+-    vao->attribs[index] = g_attrib_proxy_state[index];
++    {
++      /* enable flag and divisor are per-VAO state; the global attribute
++       * state is shared by every context and VAO, so keep the VAO's own */
++      AttribState *va = &vao->attribs[index];
++      GLboolean en = va->enabled;
++      GLuint div = va->divisor;
++      *va = g_attrib_proxy_state[index];
++      va->enabled = en;
++      va->divisor = div;
++    }
+   }
+   else
+     log_error("h_glVertexAttribIPointer: index:%d >= MAX_VERTEX_ATTRIBS",
+@@ -2085,7 +2096,8 @@ void h_glDrawElementsInstanced(BridgeCtrl *C, uint8_t *D)
+   if (C->data_size)
+     indices = dp(C->data_offset);
+ 
+-  glDrawElementsInstanced(mode, count, type, indices, inst);
++  if (proxy_client_arrays_valid("glDrawElementsInstanced"))
++    glDrawElementsInstanced(mode, count, type, indices, inst);
+ 
+   if (restore)
+     glBindBuffer(GL_ARRAY_BUFFER, prev_array_buffer);
+@@ -2201,7 +2213,8 @@ void h_glDrawRangeElements(BridgeCtrl *C, uint8_t *D)
+   if (C->data_size)
+     indices = dp(C->data_offset);
+ 
+-  glDrawRangeElements(mode, start, end, count, type, indices);
++  if (proxy_client_arrays_valid("glDrawRangeElements"))
++    glDrawRangeElements(mode, start, end, count, type, indices);
+ 
+   if (restore)
+     glBindBuffer(GL_ARRAY_BUFFER, prev_array_buffer);
+diff --git a/stub/gles2_stub.c b/stub/gles2_stub.c
+index 523a337..54750f8 100644
+--- a/stub/gles2_stub.c
++++ b/stub/gles2_stub.c
+@@ -2346,7 +2346,16 @@ GL_APICALL void GL_APIENTRY glVertexAttribPointer(GLuint index, GLint size,
+ 
+     GLContextState *ctx = &g_stub_ctx[g_stub_current_ctx];
+     VAOState *vao = &ctx->vaos[ctx->current_vao];
+-    vao->attribs[index] = g_attrib_stub_state[index];
++    {
++      /* enable flag and divisor are per-VAO state; the global attribute
++       * state is shared by every context and VAO, so keep the VAO's own */
++      AttribState *va = &vao->attribs[index];
++      GLboolean en = va->enabled;
++      GLuint div = va->divisor;
++      *va = g_attrib_stub_state[index];
++      va->enabled = en;
++      va->divisor = div;
++    }
+   }
+   else
+     log_error("glVertexAttribPointer: index:%d > MAX_VERTEX_ATTRIBS!", index);
+diff --git a/stub/gles3_2_stub.c b/stub/gles3_2_stub.c
+index 46cbf21..bffc61e 100644
+--- a/stub/gles3_2_stub.c
++++ b/stub/gles3_2_stub.c
+@@ -1445,7 +1445,16 @@ GL_APICALL void GL_APIENTRY glVertexAttribIPointer(GLuint index, GLint size,
+ 
+     GLContextState *ctx = &g_stub_ctx[g_stub_current_ctx];
+     VAOState *vao = &ctx->vaos[ctx->current_vao];
+-    vao->attribs[index] = g_attrib_stub_state[index];
++    {
++      /* enable flag and divisor are per-VAO state; the global attribute
++       * state is shared by every context and VAO, so keep the VAO's own */
++      AttribState *va = &vao->attribs[index];
++      GLboolean en = va->enabled;
++      GLuint div = va->divisor;
++      *va = g_attrib_stub_state[index];
++      va->enabled = en;
++      va->divisor = div;
++    }
+     vao->attribs[index].integer = GL_TRUE;
+   }
+   else

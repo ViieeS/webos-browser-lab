@@ -1,0 +1,235 @@
+Hardware video through NDL, viz side: draw VideoHoleDrawQuads as a transparent hole (kSrc) instead of the
+opaque black fallback, keep an alpha root pass, and report the hole rect to ozone (cn_video_hole_geometry, weak).
+Mali reports GL_ALPHA_BITS 0 like PowerVR, so keep RGBA. Only when $CN_MEDIA_SOCK is set (the cr120 launcher).
+From WebOS-Chromium (github.com/sarahahzub/WebOS-Chromium, BSD-3) patches 0024 and 0026, rebased onto Chromium 120.
+diff -ru a/components/viz/service/display/direct_renderer.cc b/components/viz/service/display/direct_renderer.cc
+--- a/components/viz/service/display/direct_renderer.cc	2026-11-16 13:35:55.000000000 +0000
++++ b/components/viz/service/display/direct_renderer.cc	2026-11-17 09:03:20.444917026 +0000
+@@ -3,6 +3,15 @@
+ // found in the LICENSE file.
+ 
+ #include "components/viz/service/display/direct_renderer.h"
++#include "components/viz/common/quads/video_hole_draw_quad.h"
++
++#include <sys/socket.h>  // chromium-native (patch 0023)
++#include <sys/un.h>
++#include <unistd.h>
++
++#include <cerrno>
++#include <cstdlib>
++#include <cstring>
+ 
+ #include <limits.h>
+ #include <stddef.h>
+@@ -55,6 +64,22 @@
+ DirectRenderer::SwapFrameData& DirectRenderer::SwapFrameData::operator=(
+     SwapFrameData&&) = default;
+ 
++}  // namespace viz
++
++// chromium-native (patch 0023): defined in ozone (webos_foreign_video_window_manager.cc); weak so viz still links
++// without it.
++extern "C" __attribute__((weak)) void cn_video_hole_geometry(int x, int y, int w, int h);
++
++namespace viz {
++
++// chromium-native (patch 0023): the LG TV shows hardware video on a plane under the window. The browser process
++// exported that plane from its window; this places it at the hole's window-pixel rect (every frame; deduped there).
++void CnReportVideoHole(const base::UnguessableToken& token, const gfx::Rect& r) {
++  if (cn_video_hole_geometry) {
++    cn_video_hole_geometry(r.x(), r.y(), r.width(), r.height());
++  }
++}
++
+ DirectRenderer::DirectRenderer(const RendererSettings* settings,
+                                const DebugRendererSettings* debug_settings,
+                                OutputSurface* output_surface,
+@@ -208,6 +233,32 @@
+   current_frame_ = DrawingFrame();
+   current_frame()->render_passes_in_draw_order = render_passes_in_draw_order;
+   current_frame()->root_render_pass = root_render_pass;
++  // chromium-native (patch 0023): a video hole anywhere in the frame needs a
++  // premultiplied-alpha root framebuffer, and its root-space rect goes to the
++  // launcher (CnReportVideoHole). Holes inside child passes are recorded so the
++  // pass quads that carry them replace (kSrc) instead of blend.
++  cn_hole_passes_.clear();
++  if (getenv("CN_MEDIA_SOCK")) {
++    for (const auto& pass : *render_passes_in_draw_order) {
++      for (const DrawQuad* q : pass->quad_list) {
++        if (q->material != DrawQuad::Material::kVideoHole) {
++          continue;
++        }
++        root_render_pass->has_transparent_background = true;
++        gfx::Transform t = pass->transform_to_root_target;
++        t.PreConcat(q->shared_quad_state->quad_to_target_transform);
++        const gfx::Rect r = gfx::ToEnclosingRect(t.MapRect(gfx::RectF(q->rect)));
++        LOG_IF(WARNING, cn_hole_logged_++ < 5)
++            << "cn-ndl viz: video hole in pass " << pass->id.GetUnsafeValue()
++            << (pass.get() == root_render_pass ? " (root)" : " (child)")
++            << " root rect " << r.ToString();
++        CnReportVideoHole(VideoHoleDrawQuad::MaterialCast(q)->overlay_plane_id, r);
++        if (pass.get() != root_render_pass) {
++          cn_hole_passes_.insert(pass->id);
++        }
++      }
++    }
++  }
+   current_frame()->root_damage_rect = root_render_pass->damage_rect;
+   if (overlay_processor_) {
+     current_frame()->root_damage_rect.Union(
+diff -ru a/components/viz/service/display/direct_renderer.h b/components/viz/service/display/direct_renderer.h
+--- a/components/viz/service/display/direct_renderer.h	2026-11-16 13:35:55.000000000 +0000
++++ b/components/viz/service/display/direct_renderer.h	2026-11-17 09:03:20.445917042 +0000
+@@ -13,6 +13,7 @@
+ #include "base/containers/flat_map.h"
+ #include "base/functional/callback.h"
+ #include "base/memory/raw_ptr.h"
++#include "base/containers/flat_set.h"
+ #include "base/memory/raw_ptr_exclusion.h"
+ #include "base/time/time.h"
+ #include "build/build_config.h"
+@@ -125,6 +126,10 @@
+       const std::vector<gpu::Mailbox>& released_overlays) {}
+ 
+   // Public for tests that poke at internals.
++  // chromium-native (patch 0023): child passes that contain a video hole.
++  base::flat_set<AggregatedRenderPassId> cn_hole_passes_;
++  int cn_hole_logged_ = 0;
++
+   struct VIZ_SERVICE_EXPORT DrawingFrame {
+     DrawingFrame();
+     ~DrawingFrame();
+diff -ru a/components/viz/service/display/skia_renderer.cc b/components/viz/service/display/skia_renderer.cc
+--- a/components/viz/service/display/skia_renderer.cc	2026-11-16 13:35:55.000000000 +0000
++++ b/components/viz/service/display/skia_renderer.cc	2026-11-17 09:03:20.445917042 +0000
+@@ -4,6 +4,14 @@
+ 
+ #include "components/viz/service/display/skia_renderer.h"
+ 
++#include <sys/socket.h>  // chromium-native (patch 0023)
++#include <sys/un.h>
++#include <unistd.h>
++
++#include <cerrno>
++#include <cstdlib>
++#include <cstring>
++
+ #include <limits>
+ #include <string>
+ #include <utility>
+@@ -49,6 +57,7 @@
+ #include "components/viz/service/display/display_resource_provider_skia.h"
+ #include "components/viz/service/display/output_surface.h"
+ #include "components/viz/service/display/output_surface_frame.h"
++#include "components/viz/common/quads/video_hole_draw_quad.h"
+ #include "components/viz/service/display/renderer_utils.h"
+ #include "components/viz/service/display/resource_fence.h"
+ #include "components/viz/service/display/skia_output_surface.h"
+@@ -101,6 +110,15 @@
+ 
+ namespace viz {
+ 
++// chromium-native (patch 0023): see direct_renderer.cc.
++void CnReportVideoHole(const base::UnguessableToken& token, const gfx::Rect& r);
++namespace {
++bool CnHwVideo() {
++  static const bool on = getenv("CN_MEDIA_SOCK") && *getenv("CN_MEDIA_SOCK");
++  return on;
++}
++}  // namespace
++
+ namespace {
+ 
+ // Smallest unit that impacts anti-aliasing output. We use this to determine
+@@ -1268,7 +1286,11 @@
+     FlushBatchedQuads();
+   }
+ 
+-  if (OverlayCandidate::RequiresOverlay(quad)) {
++  // chromium-native (patch 0023): a VideoHoleDrawQuad "requires an overlay" and was replaced right here by an OPAQUE
++  // BLACK quad (probe: framebuffer 0,0,0,255 at the hole), before the kVideoHole case below could punch the hole. With
++  // hardware video the TV's plane is that overlay, so let the hole through to the transparent kSrc draw.
++  if (OverlayCandidate::RequiresOverlay(quad) &&
++      !(CnHwVideo() && quad->material == DrawQuad::Material::kVideoHole)) {
+     // We cannot composite this quad properly, replace it with a fallback
+     // solid color quad.
+     if (!batched_quads_.empty()) {
+@@ -1284,6 +1306,11 @@
+ 
+   switch (quad->material) {
+     case DrawQuad::Material::kAggregatedRenderPass:
++      if (CnHwVideo() &&
++          cn_hole_passes_.contains(
++              AggregatedRenderPassDrawQuad::MaterialCast(quad)->render_pass_id)) {
++        params->blend_mode = SkBlendMode::kSrc;  // chromium-native (patch 0023)
++      }
+       DrawRenderPassQuad(AggregatedRenderPassDrawQuad::MaterialCast(quad),
+                          rpdq_params, params);
+       break;
+@@ -1329,6 +1356,14 @@
+       NOTREACHED();
+       break;
+     case DrawQuad::Material::kVideoHole:
++      if (CnHwVideo()) {
++        // chromium-native (patch 0023): punch a transparent hole for the TV's
++        // video plane and tell the launcher where it is.
++        params->blend_mode = SkBlendMode::kSrc;
++        params->opacity = 1.f;
++        DrawColoredQuad(SkColors::kTransparent, rpdq_params, params);
++        break;
++      }
+       // VideoHoleDrawQuad should only be used by Cast, and should
+       // have been replaced by cast-specific OverlayProcessor before
+       // reach here. In non-cast build, an untrusted render could send such
+diff -ru a/components/viz/service/display/software_renderer.cc b/components/viz/service/display/software_renderer.cc
+--- a/components/viz/service/display/software_renderer.cc	2026-11-16 13:35:55.000000000 +0000
++++ b/components/viz/service/display/software_renderer.cc	2026-11-17 09:03:20.445917042 +0000
+@@ -4,6 +4,8 @@
+ 
+ #include "components/viz/service/display/software_renderer.h"
+ 
++#include <cstdlib>  // chromium-native (patch 0023)
++
+ #include <memory>
+ #include <utility>
+ #include <vector>
+@@ -350,6 +352,13 @@
+       NOTREACHED();
+       break;
+     case DrawQuad::Material::kVideoHole:
++      if (getenv("CN_MEDIA_SOCK")) {  // chromium-native (patch 0023): transparent hole for the TV video plane
++        current_paint_.setColor(SkColors::kTransparent);
++        current_paint_.setBlendMode(SkBlendMode::kSrc);
++        current_canvas_->drawRect(gfx::RectToSkRect(quad->visible_rect), current_paint_);
++        current_paint_.setBlendMode(SkBlendMode::kSrcOver);
++        break;
++      }
+       // VideoHoleDrawQuad should only be used by Cast, and should
+       // have been replaced by cast-specific OverlayProcessor before
+       // reach here. In non-cast build, an untrusted render could send such
+diff -ru a/components/viz/service/display_embedder/skia_output_device_gl.cc b/components/viz/service/display_embedder/skia_output_device_gl.cc
+--- a/components/viz/service/display_embedder/skia_output_device_gl.cc	2026-11-16 13:35:55.000000000 +0000
++++ b/components/viz/service/display_embedder/skia_output_device_gl.cc	2026-11-17 09:03:20.446917058 +0000
+@@ -4,6 +4,8 @@
+ 
+ #include "components/viz/service/display_embedder/skia_output_device_gl.h"
+ 
++#include <cstdlib>  // chromium-native (patch 0023): getenv
++
+ #include <tuple>
+ #include <utility>
+ 
+@@ -118,6 +120,13 @@
+     glGetIntegerv(GL_ALPHA_BITS, &alpha_bits);
+   }
+   CHECK_GL_ERROR();
++  // chromium-native (patch 0023): GL_ALPHA_BITS is not part of GLES 3, and the TV's PowerVR driver answers 0 although
++  // the EGL config has 8 alpha bits (buffers are ARGB8888). Chrome then drew RGBX, alpha forced to 1, so the video
++  // hole was opaque black over the TV's video plane (VIDEO capture showed the picture, DISPLAY black). With hardware
++  // video keep RGBA.
++  if (alpha_bits == 0 && getenv("CN_MEDIA_SOCK") && *getenv("CN_MEDIA_SOCK")) {
++    alpha_bits = 8;
++  }
+ 
+   auto color_type = kRGBA_8888_SkColorType;
+ 

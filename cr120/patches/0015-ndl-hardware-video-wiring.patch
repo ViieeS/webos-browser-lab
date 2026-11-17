@@ -1,0 +1,133 @@
+Hardware video through NDL, wiring: content/renderer uses CnNdlRendererFactory (extra/.../cn_ndl_renderer.cc) when
+the cr120 launcher exported $CN_MEDIA_SOCK; ozone/wayland starts cn_video_export (extra/) after the display is up,
+gives the window the app's $APPID instead of com.webos.app.N, and sends no opaque region (LSM would hide the plane).
+diff -ru a/content/renderer/BUILD.gn b/content/renderer/BUILD.gn
+--- a/content/renderer/BUILD.gn	2026-11-17 09:08:36.000000000 +0000
++++ b/content/renderer/BUILD.gn	2026-11-17 09:08:36.130058669 +0000
+@@ -85,6 +85,8 @@
+     "media/gpu/gpu_video_accelerator_factories_impl.h",
+     "media/inspector_media_event_handler.cc",
+     "media/inspector_media_event_handler.h",
++    "media/cn_ndl_renderer.cc",
++    "media/cn_ndl_renderer.h",
+     "media/media_factory.cc",
+     "media/media_factory.h",
+     "media/media_interface_factory.cc",
+diff -ru a/content/renderer/media/media_factory.cc b/content/renderer/media/media_factory.cc
+--- a/content/renderer/media/media_factory.cc	2026-11-17 09:08:36.000000000 +0000
++++ b/content/renderer/media/media_factory.cc	2026-11-17 09:08:36.130058669 +0000
+@@ -4,6 +4,8 @@
+ 
+ #include "content/renderer/media/media_factory.h"
+ 
++#include "content/renderer/media/cn_ndl_renderer.h"
++
+ #include <memory>
+ #include <string>
+ #include <tuple>
+@@ -848,8 +850,16 @@
+     is_base_renderer_factory_set = true;
+     auto renderer_impl_factory = CreateRendererImplFactory(
+         player_id, media_log, decoder_factory, render_thread, render_frame_);
+-    factory_selector->AddBaseFactory(RendererType::kRendererImpl,
+-                                     std::move(renderer_impl_factory));
++    // Hardware video through the cr120 launcher (NDL) when it exported $CN_MEDIA_SOCK; streams NDL cannot take
++    // still go to RendererImpl inside CnNdlRenderer.
++    if (CnNdlRendererFactory::Enabled()) {
++      factory_selector->AddBaseFactory(
++          RendererType::kRendererImpl,
++          std::make_unique<CnNdlRendererFactory>(std::move(renderer_impl_factory), media_log));
++    } else {
++      factory_selector->AddBaseFactory(RendererType::kRendererImpl,
++                                       std::move(renderer_impl_factory));
++    }
+   }
+ 
+   return factory_selector;
+diff -ru a/ozone/wayland/BUILD.gn b/ozone/wayland/BUILD.gn
+--- a/ozone/wayland/BUILD.gn	2026-11-17 09:08:36.000000000 +0000
++++ b/ozone/wayland/BUILD.gn	2026-11-17 09:08:36.129058653 +0000
+@@ -132,6 +132,11 @@
+       deps += [ "//ui/events/keycodes:xkb" ]
+     }
+   }
++  # Hardware video through the cr120 launcher (NDL): exports the video plane, places it at the hole.
++  sources += [
++    "foreign_window/cn_video_export.cc",
++    "foreign_window/cn_video_export.h",
++  ]
+   if (use_neva_media) {
+     deps += [ "//ui/platform_window:mojom" ]
+     if (use_gav && is_webos) {
+diff -ru a/ozone/wayland/display.cc b/ozone/wayland/display.cc
+--- a/ozone/wayland/display.cc	2026-11-17 09:08:36.000000000 +0000
++++ b/ozone/wayland/display.cc	2026-11-17 09:08:36.129058653 +0000
+@@ -69,6 +69,8 @@
+ #include "ozone/wayland/protocol/text-client-protocol.h"
+ #endif
+ 
++#include "ozone/wayland/foreign_window/cn_video_export.h"
++
+ #if defined(USE_DATA_DEVICE_MANAGER)
+ #include "ozone/wayland/data_device.h"
+ #endif
+@@ -267,6 +269,7 @@
+   // Ensure we are processing wayland event requests. This needs to be done here
+   // so we start polling before sandbox is initialized.
+   StartProcessingEvents();
++  CnVideoExportStart(this);
+ 
+ #if defined(USE_NEVA_MEDIA)
+   video_window_controller_impl_ =
+diff -ru a/ozone/wayland/display.h b/ozone/wayland/display.h
+--- a/ozone/wayland/display.h	2026-11-17 09:08:36.000000000 +0000
++++ b/ozone/wayland/display.h	2026-11-17 09:08:36.129058653 +0000
+@@ -135,6 +135,9 @@
+ 
+   wl_registry* registry() const { return registry_; }
+ 
++  // The browser windows by handle (cn_video_export.cc exports the video plane from the first one).
++  const WindowMap& windows() const { return widget_map_; }
++
+   // Warning: Most uses of this function need to be removed in order to fix
+   // multiseat. See: https://github.com/01org/ozone-wayland/issues/386
+   WaylandSeat* PrimarySeat() const { return primary_seat_; }
+diff -ru a/ozone/wayland/window.cc b/ozone/wayland/window.cc
+--- a/ozone/wayland/window.cc	2026-11-17 09:08:36.000000000 +0000
++++ b/ozone/wayland/window.cc	2026-11-17 09:08:36.130058669 +0000
+@@ -18,6 +18,10 @@
+ 
+ #include "ozone/wayland/window.h"
+ 
++#include <cstdlib>
++
++#include "ozone/wayland/foreign_window/cn_video_export.h"
++
+ #include "base/logging.h"
+ #include "ozone/wayland/display.h"
+ #include "ozone/wayland/egl/egl_window.h"
+@@ -86,7 +90,7 @@
+   const char kApp[] = "com.webos.app.";
+   std::stringstream strs;
+   strs << kApp << id;
+-  std::string kAppWindowId = strs.str();
++  std::string kAppWindowId = getenv("APPID") ? getenv("APPID") : strs.str();
+   SetWindowProperty(kAppId, kAppWindowId);
+ #endif
+ }
+@@ -334,6 +338,7 @@
+   // leaving the condition for the webOS platform only.
+   if (opacity_ == ui::PlatformWindowOpacity::kOpaqueWindow)
+ #endif  // defined(OS_WEBOS)
++  if (!CnHardwareVideo())
+     wl_surface_set_opaque_region(shell_surface_->GetWLSurface(), region);
+   wl_region_destroy(region);
+ }
+@@ -348,6 +353,7 @@
+   // leaving the condition for the webOS platform only.
+   if (opacity_ == ui::PlatformWindowOpacity::kOpaqueWindow)
+ #endif  // defined(OS_WEBOS)
++  if (!CnHardwareVideo())
+     wl_surface_set_opaque_region(shell_surface_->GetWLSurface(), region);
+   wl_region_destroy(region);
+ }

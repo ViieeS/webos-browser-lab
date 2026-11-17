@@ -1,0 +1,8 @@
+1s procs=--type=zygote,browser cpu_s=0.0
+32s procs=--type=zygote,browser cpu_s=0.2
+64s procs=--type=zygote,browser cpu_s=0.1
+95s procs=--type=zygote,browser cpu_s=0.2
+126s procs=--type=zygote,browser cpu_s=0.1
+158s procs=--type=zygote,browser cpu_s=0.1
+189s procs=--type=zygote,browser cpu_s=0.1
+220s procs=--type=zygote,browser cpu_s=0.1

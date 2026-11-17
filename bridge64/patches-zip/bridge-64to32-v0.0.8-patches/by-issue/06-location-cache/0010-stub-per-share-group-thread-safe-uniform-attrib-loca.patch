@@ -1,0 +1,203 @@
+From af349e6e4500f18782f6f87191c66553f8a98fd9 Mon Sep 17 00:00:00 2001
+From: deten <6029514+deten@users.noreply.github.com>
+Date: Tue, 27 Oct 2026 17:23:59 -0700
+Subject: [PATCH 10/12] stub: per-share-group, thread-safe uniform/attrib
+ location cache
+
+The location cache was keyed by program name only and used without a
+lock. Program names are unique only within a share group, so a program
+of one context could hand its locations to an unrelated program of the
+same name in another group; and two threads updating the table at once
+could leave half-written entries.
+
+Contexts now record their share group (from eglCreateContext's share
+context), cache entries carry the group, and a mutex guards the table.
+Invalidated entries are emptied instead of freed, so the linear probing
+of later entries keeps working.
+---
+ include/gles_util_stub.h | 11 ++++++++++
+ stub/bridge_core.c       |  2 ++
+ stub/egl_stub.c          |  7 ++++++
+ stub/gles2_stub.c        | 47 +++++++++++++++++++++++++++++++---------
+ 4 files changed, 57 insertions(+), 10 deletions(-)
+
+diff --git a/include/gles_util_stub.h b/include/gles_util_stub.h
+index 3de281e..fa809da 100644
+--- a/include/gles_util_stub.h
++++ b/include/gles_util_stub.h
+@@ -520,6 +520,17 @@ typedef struct
+ extern StubShadowState g_shadow_ctx[MAX_CONTEXTS];
+ extern unsigned int g_stub_new_ctx;
+ extern volatile uint8_t g_stub_ctx_reset_pending[MAX_CONTEXTS];
++extern volatile uint8_t g_stub_ctx_group[MAX_CONTEXTS];
++
++/* share group of the calling thread's current context: object names (programs,
++ * textures, buffers) are only unique within a group */
++static inline uint8_t stub_current_group(void)
++{
++  unsigned int c = g_stub_current_ctx;
++  if (c >= MAX_CONTEXTS)
++    return 0;
++  return g_stub_ctx_group[c] ? g_stub_ctx_group[c] : (uint8_t)c;
++}
+ 
+ typedef struct
+ {
+diff --git a/stub/bridge_core.c b/stub/bridge_core.c
+index 3f833aa..2485769 100644
+--- a/stub/bridge_core.c
++++ b/stub/bridge_core.c
+@@ -70,6 +70,8 @@ __thread unsigned int g_stub_current_ctx;
+ unsigned int g_stub_new_ctx = 0;
+ /* per context: state must be reset before its next use (set by EGL) */
+ volatile uint8_t g_stub_ctx_reset_pending[8]; /* MAX_CONTEXTS (gles_util_shared.h) */
++/* per context: its share group (the index of the first context of the group) */
++volatile uint8_t g_stub_ctx_group[8];
+ 
+ /* ── Ring state (stub/producer side) ─────────────────────────────────── */
+ static BridgeRing *g_ring = NULL;
+diff --git a/stub/egl_stub.c b/stub/egl_stub.c
+index bc4657a..9e1105a 100644
+--- a/stub/egl_stub.c
++++ b/stub/egl_stub.c
+@@ -807,7 +807,14 @@ EGLAPI EGLContext EGLAPIENTRY eglCreateContext(EGLDisplay dpy, EGLConfig config,
+    * the next GL call of any thread and also wiped the live state of whichever
+    * context that thread had current. */
+   if (raw != 0 && raw < MAX_CONTEXTS)
++  {
+     g_stub_ctx_reset_pending[raw] = 1;
++    uint32_t share = H2I(share_context);
++    g_stub_ctx_group[raw] =
++        (share != 0 && share < MAX_CONTEXTS && g_stub_ctx_group[share])
++            ? g_stub_ctx_group[share]
++            : (uint8_t)raw;
++  }
+ 
+ #ifdef DEBUG
+   log_console("eglCreateContext: returning EGLContext=%p", ctx);
+diff --git a/stub/gles2_stub.c b/stub/gles2_stub.c
+index 44ae95d..e42add5 100644
+--- a/stub/gles2_stub.c
++++ b/stub/gles2_stub.c
+@@ -21,6 +21,7 @@
+ #include <alloca.h>
+ #include <stdarg.h>
+ #include <stdint.h>
++#include <pthread.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+@@ -59,19 +60,24 @@ static void setup_scalar(GLBridgeOpcode op)
+ #define LOC_CACHE_MASK (LOC_CACHE_SLOTS - 1)
+ #define LOC_CACHE_NAME_MAX 64
+ 
++/* Program names are only unique within a share group, and several threads use
++ * the cache at once: entries carry the group, and a lock guards the table. */
+ typedef struct
+ {
+   GLuint program; /* 0 = empty slot (GL program names are nonzero) */
+   char name[LOC_CACHE_NAME_MAX];
+   GLint location;
+   uint8_t is_attrib; /* separate namespace from uniforms */
++  uint8_t group;     /* share group (stub_current_group()) */
+ } LocCacheEntry;
+ 
+ static LocCacheEntry g_loc_cache[LOC_CACHE_SLOTS];
++static pthread_mutex_t g_loc_lock = PTHREAD_MUTEX_INITIALIZER;
+ 
+ static uint32_t loc_hash(GLuint program, const char *name, uint8_t is_attrib)
+ {
+-  uint32_t h = program * 2654435761u + (uint32_t)is_attrib * 0x9e3779b9u;
++  uint32_t h = program * 2654435761u + (uint32_t)is_attrib * 0x9e3779b9u +
++               (uint32_t)stub_current_group() * 0x85ebca6bu;
+   for (const unsigned char *p = (const unsigned char *)name; *p; p++)
+     h = h * 131u + *p;
+   return h;
+@@ -80,50 +86,64 @@ static uint32_t loc_hash(GLuint program, const char *name, uint8_t is_attrib)
+ static int loc_cache_lookup(GLuint program, const char *name, uint8_t is_attrib,
+                             GLint *out)
+ {
++  uint8_t group = stub_current_group();
+   uint32_t h = loc_hash(program, name, is_attrib) & LOC_CACHE_MASK;
++  int found = 0;
++  pthread_mutex_lock(&g_loc_lock);
+   for (uint32_t i = 0; i < LOC_CACHE_SLOTS; i++)
+   {
+     LocCacheEntry *e = &g_loc_cache[(h + i) & LOC_CACHE_MASK];
+     if (e->program == 0)
+-      return 0;
++      break;
+     if (e->program == program && e->is_attrib == is_attrib &&
+-        strncmp(e->name, name, LOC_CACHE_NAME_MAX) == 0)
++        e->group == group && strncmp(e->name, name, LOC_CACHE_NAME_MAX) == 0)
+     {
+       *out = e->location;
+-      return 1;
++      found = 1;
++      break;
+     }
+   }
+-  return 0;
++  pthread_mutex_unlock(&g_loc_lock);
++  return found;
+ }
+ 
+ static void loc_cache_insert(GLuint program, const char *name,
+                              uint8_t is_attrib, GLint location)
+ {
++  uint8_t group = stub_current_group();
+   uint32_t h = loc_hash(program, name, is_attrib) & LOC_CACHE_MASK;
++  pthread_mutex_lock(&g_loc_lock);
+   for (uint32_t i = 0; i < LOC_CACHE_SLOTS; i++)
+   {
+     LocCacheEntry *e = &g_loc_cache[(h + i) & LOC_CACHE_MASK];
+     if (e->program == 0 ||
+         (e->program == program && e->is_attrib == is_attrib &&
+-         strncmp(e->name, name, LOC_CACHE_NAME_MAX) == 0))
++         e->group == group && strncmp(e->name, name, LOC_CACHE_NAME_MAX) == 0))
+     {
+-      e->program = program;
+       e->is_attrib = is_attrib;
++      e->group = group;
+       strncpy(e->name, name, LOC_CACHE_NAME_MAX - 1);
+       e->name[LOC_CACHE_NAME_MAX - 1] = '\0';
+       e->location = location;
+-      return;
++      e->program = program; /* last: marks the slot used */
++      break;
+     }
+   }
+   /* table full — skip caching this */
++  pthread_mutex_unlock(&g_loc_lock);
+ }
+ 
+ /* Locations become invalid on relink/binary-load/delete. */
+ void loc_cache_invalidate_program(GLuint program)
+ {
++  /* clearing slots would break the linear probing of entries after them:
++   * mark them with an impossible location instead */
++  uint8_t group = stub_current_group();
++  pthread_mutex_lock(&g_loc_lock);
+   for (uint32_t i = 0; i < LOC_CACHE_SLOTS; i++)
+-    if (g_loc_cache[i].program == program)
+-      g_loc_cache[i].program = 0;
++    if (g_loc_cache[i].program == program && g_loc_cache[i].group == group)
++      g_loc_cache[i].name[0] = '\0';
++  pthread_mutex_unlock(&g_loc_lock);
+ }
+ #endif
+ 
+@@ -1653,6 +1673,13 @@ GL_APICALL void GL_APIENTRY glDeleteProgram(GLuint program)
+ #ifdef CACHE_UNIFORM_ATTRIB_LOCATION
+   loc_cache_invalidate_program(program);
+ #endif
++#ifdef CACHE_GL_STATE
++  /* the name may come back as a different program: never skip its next use */
++  if (program)
++    for (int c = 0; c < MAX_CONTEXTS; c++)
++      if (g_shadow_ctx[c].program == program)
++        g_shadow_ctx[c].program = SHADOW_TEX_INVALID;
++#endif
+ 
+   BRIDGE_BEGIN();
+   BridgeCtrl *C = BRIDGE_CTRL();

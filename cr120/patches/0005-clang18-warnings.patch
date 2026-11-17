@@ -1,0 +1,13 @@
+--- a/build/config/compiler/BUILD.gn	2026-11-16 14:06:10.629920300 +0000
++++ b/build/config/compiler/BUILD.gn	2026-11-16 14:06:10.630920420 +0000
+@@ -1915,6 +1915,10 @@
+ 
+           # TODO(crbug.com/1495100): Evaluate and possibly enable.
+           "-Wno-delayed-template-parsing-in-cxx20",
++
++          # Released clang 18 (C1 build) makes these errors; Chromium 120 code predates it.
++          "-Wno-c++11-narrowing-const-reference",
++          "-Wno-error=unknown-warning-option",
+         ]
+       }
+     }

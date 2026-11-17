@@ -1,0 +1,44 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>math fold</title>
+<pre id="out"></pre>
+<script>
+// Correctness probe for the softfp JIT. Every Math function runs hot in two shapes: on a constant
+// (DFG folds it at compile time, calling the C function from C++) and on a variable (the JIT emits
+// the call). A calling-convention mismatch shows as a wrong value in one shape only.
+// Expected values come from the interpreter run of the same function, so no table to maintain.
+const X = 0.75;
+const unary = ["sin", "sinh", "cos", "cosh", "tan", "tanh", "asin", "asinh", "acos", "atan", "atanh",
+               "log", "log10", "log1p", "log2", "cbrt", "exp", "expm1", "sqrt", "fround", "round",
+               "floor", "ceil", "trunc", "sign", "abs", "clz32"];
+const out = document.getElementById("out");
+let bad = 0, total = 0;
+function report(name, got, want) {
+  total++;
+  const same = Object.is(got, want) || Math.abs(got - want) <= 1e-12 * Math.max(1, Math.abs(want));
+  if (!same) {
+    bad++;
+    const line = `MATHFOLD ${name} WRONG got=${got} want=${want}`;
+    console.log(line);
+    out.textContent += line + "\n";
+  }
+}
+function hot(fn) { let r; for (let i = 0; i < 100000; i++) r = fn(); return r; }
+for (const name of unary) {
+  const want = Math[name](X);
+  // new Function gives each case its own code, so tiers and folding do not mix between cases.
+  report(name + "(const)", hot(new Function(`return Math.${name}(${X});`)), want);
+  report(name + "(var)", hot(new Function("x", `return () => Math.${name}(x);`)(X)), want);
+}
+const binary = [["pow", 2, 0.5], ["atan2", 1, 2], ["hypot", 3, 4], ["max", 1.5, 2.5], ["min", 1.5, 2.5], ["imul", 7, 9]];
+for (const [name, a, b] of binary) {
+  const want = Math[name](a, b);
+  report(name + "(const)", hot(new Function(`return Math.${name}(${a}, ${b});`)), want);
+  report(name + "(var)", hot(new Function("a", "b", `return () => Math.${name}(a, b);`)(a, b)), want);
+}
+const ops = [["x % 0.3", (x) => x % 0.3], ["x ** 3.5", (x) => x ** 3.5], ["parseFloat", (x) => parseFloat(String(x * 3))],
+             ["toFixed", (x) => Number((x * 7).toFixed(3))], ["toPrecision", (x) => Number((x * 7).toPrecision(4))]];
+for (const [name, fn] of ops) report(name, hot(() => fn(X)), fn(X));
+console.log(`MATHFOLD done bad=${bad} of ${total}`);
+out.textContent += `done bad=${bad} of ${total}\n`;
+</script>

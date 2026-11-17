@@ -1,0 +1,27 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Long text</title>
+<!-- Plain long page for the scroll cases: no scripts, no sticky or fixed elements, so any layout
+     during scrolling is the engine's own. -->
+<style>body { font: 28px/1.5 sans-serif; margin: 40px; background: #fff; color: #222; }</style>
+<body>
+<script>
+// Generated once at load; the scroll runs after it, from harness.html.
+const words = "lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore".split(" ");
+let html = "";
+for (let i = 0; i < 400; i++) {
+  let p = "";
+  for (let j = 0; j < 60; j++) p += words[(i * 7 + j * 3) % words.length] + " ";
+  html += `<h3>Section ${i}</h3><p>${p}</p>`;
+}
+// ?box=static|sticky adds one small box with its own scrolling (overflow: auto), like Wikipedia's
+// pinned side panels: the minimal case for per-frame layout while the page scrolls.
+// &overflow=visible drops the box's own scrolling.
+const params = new URLSearchParams(location.search);
+const box = params.get("box"), overflow = params.get("overflow") || "auto";
+if (box) html = `<div style="position:${box};top:0;width:200px;height:300px;overflow:${overflow};float:right;background:#eef">` +
+  "menu item<br>".repeat(10) + "</div>" + html;
+// &wrap=paint puts everything in a contain: paint wrapper, like Wikipedia's page columns.
+if (params.get("wrap")) html = `<div style="contain:${params.get("wrap")}">` + html + "</div>";
+document.body.innerHTML = html;
+</script>

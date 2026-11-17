@@ -1,0 +1,42 @@
+DUMP RenderingFrame > TimerFire | {"scriptName": "", "scriptLine": 125, "scriptColumn": 22466}
+DUMP RenderingFrame > TimerFire > FunctionCall | {"scriptName": "", "scriptLine": 125, "scriptColumn": 26767}
+DUMP RenderingFrame > TimerFire | {"scriptName": "https://www.youtube.com/s/_/ytmainappweb/_/js/k=ytmainappweb.kevlar_base.en_US.1OiVCHSMn24.2021.O/am=AAAAAEAAAEAAICU/d=1/rs=AGKMywHij5C1c8mkeEI3UD6QrQElsf-5yA/m=kevlar_base_module,kevlar_main_module,kevlar_base_sync_mod_chunk", "scriptLine": 1454, "scriptColumn": 57}
+DUMP RenderingFrame > TimerFire | {"scriptName": "https://www.youtube.com/s/_/ytmainappweb/_/js/k=ytmainappweb.kevlar_base.en_US.1OiVCHSMn24.2021.O/am=AAAAAEAAAEAAICU/d=1/rs=AGKMywHij5C1c8mkeEI3UD6QrQElsf-5yA/m=kevlar_base_module,kevlar_main_module,kevlar_base_sync_mod_chunk", "scriptLine": 1454, "scriptColumn": 57}
+DUMP RenderingFrame > TimerFire | {"scriptName": "", "scriptLine": 125, "scriptColumn": 22466}
+DUMP RenderingFrame > TimerFire | {"scriptName": "https://www.youtube.com/s/_/ytmainappweb/_/js/k=ytmainappweb.kevlar_base.en_US.1OiVCHSMn24.2021.O/am=AAAAAEAAAEAAICU/d=1/rs=AGKMywHij5C1c8mkeEI3UD6QrQElsf-5yA/m=kevlar_base_module,kevlar_main_module,kevlar_base_sync_mod_chunk", "scriptLine": 1454, "scriptColumn": 57}
+records=267 recorded_s=9.0 self_total_ms=7959
+     5858 ms  73.6%    2197  FunctionCall
+     1303 ms  16.4%     150  RenderingFrame
+      457 ms   5.7%      28  RecalculateStyles
+      181 ms   2.3%      17  Layout
+      121 ms   1.5%      74  Paint
+       17 ms   0.2%     278  EventDispatch
+       11 ms   0.1%     275  TimerFire
+        8 ms   0.1%      28  Composite
+        2 ms   0.0%      25  ObserverCallback
+        1 ms   0.0%      16  FireAnimationFrame
+        0 ms   0.0%     228  TimerInstall
+        0 ms   0.0%      25  TimerRemove
+        0 ms   0.0%      16  RequestAnimationFrame
+        0 ms   0.0%      27  ScheduleStyleRecalculation
+        0 ms   0.0%      14  InvalidateLayout
+        0 ms   0.0%       6  CancelAnimationFrame
+        0 ms   0.0%       1  FirstContentfulPaint
+        0 ms   0.0%       2  LargestContentfulPaint
+        0 ms   0.0%       3  TimeStamp
+-- heaviest script entries (inclusive ms)
+     8502  FunctionCall https://www.youtube.com/s/_/ytmainappweb/_/js/k=ytmainappweb.kevlar_base.en_US.1OiVCHSMn24.2021.O
+     5294  TimerFire 
+     1852  ObserverCallback MutationObserver
+     1639  FunctionCall undefined
+     1535  FunctionCall 
+      101  EventDispatch query-matches-changed
+       95  ObserverCallback IntersectionObserver
+       57  EventDispatch success
+       41  EventDispatch yt-action
+       31  EventDispatch complete
+       14  EventDispatch wheel
+       13  FunctionCall https://www.youtube.com/s/desktop/bb2198ae/jsbin/webcomponents-sd.vflset/webcomponents-sd.js
+       13  EventDispatch iron-request-resize-notifications
+       10  ObserverCallback ResizeObserver
+        6  EventDispatch focus

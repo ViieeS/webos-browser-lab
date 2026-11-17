@@ -1,0 +1,23 @@
+The arm64 build host (Apple silicon) cannot execute AArch32, but V8 builds mksnapshot, torque
+and the other snapshot tools with the 32-bit target toolchain when host is arm64 and target arm.
+Run 32-bit ARM ELF binaries through qemu-arm-static with the target sysroot.
+--- a/v8/tools/run.py
++++ b/v8/tools/run.py
+@@ -9,7 +9,16 @@
+ import subprocess
+ import sys
+
+-result = subprocess.call(sys.argv[1:])
++cmd = sys.argv[1:]
++try:
++  with open(cmd[0], 'rb') as f:
++    head = f.read(20)
++  # ELF, 32-bit class, e_machine EM_ARM (40)
++  if head[:4] == b'\x7fELF' and head[4] == 1 and head[18] == 40:
++    cmd = ['qemu-arm-static', '-L', '/w/sysroot'] + cmd
++except OSError:
++  pass
++result = subprocess.call(cmd)
+ if result != 0:
+   # Windows error codes such as 0xC0000005 and 0xC0000409 are much easier
+   # to recognize and differentiate in hex.

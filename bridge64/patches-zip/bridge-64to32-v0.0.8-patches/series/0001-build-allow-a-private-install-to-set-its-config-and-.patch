@@ -1,0 +1,81 @@
+From 7f0cfccebe40814788c6dc63b16173f8b1fd623f Mon Sep 17 00:00:00 2001
+From: deten <6029514+deten@users.noreply.github.com>
+Date: Tue, 27 Oct 2026 15:31:15 -0700
+Subject: [PATCH 01/12] build: allow a private install to set its config and
+ log paths
+
+BRIDGE_CONFIG_PATH and LOG_FILENAME can now be given on the make command
+line, so a copy of the bridge shipped inside an application can keep its
+bridge.conf next to its own libraries instead of in the bridge app's folder.
+
+Also stop unlinking the log file on start-up unless the build actually
+logs to it (DEBUG_TO_LOGFILE); a build that logs to stderr should not
+delete /media/developer/temp/gles_proxy.log owned by another install.
+---
+ Makefile                | 10 ++++++++++
+ bridge/shared_util.c    |  5 +++++
+ include/bridge_config.h |  2 ++
+ 3 files changed, 17 insertions(+)
+
+diff --git a/Makefile b/Makefile
+index 0766714..af62b8f 100644
+--- a/Makefile
++++ b/Makefile
+@@ -140,6 +140,16 @@ else
+   CFLAGS_32      += -O2
+ endif
+ 
++# Optional install-specific paths (a private copy of the bridge next to an application)
++ifneq ($(BRIDGE_CONFIG_PATH),)
++  CFLAGS_64_BASE += -DBRIDGE_CONFIG_PATH=\"$(BRIDGE_CONFIG_PATH)\"
++  CFLAGS_32 += -DBRIDGE_CONFIG_PATH=\"$(BRIDGE_CONFIG_PATH)\"
++endif
++ifneq ($(LOG_FILENAME),)
++  CFLAGS_64_BASE += -DLOG_FILENAME=\"$(LOG_FILENAME)\"
++  CFLAGS_32 += -DLOG_FILENAME=\"$(LOG_FILENAME)\"
++endif
++
+ ifeq ($(DEBUG_TO_LOGFILE),1)
+   CFLAGS_64_BASE += -DDEBUG_TO_LOGFILE
+   CFLAGS_32 += -DDEBUG_TO_LOGFILE
+diff --git a/bridge/shared_util.c b/bridge/shared_util.c
+index 99acdac..efe9957 100644
+--- a/bridge/shared_util.c
++++ b/bridge/shared_util.c
+@@ -4,7 +4,9 @@
+ #include <string.h>
+ #include <unistd.h>
+ 
++#ifndef LOG_FILENAME
+ #define LOG_FILENAME "/media/developer/temp/gles_proxy.log"
++#endif
+ 
+ static int g_log_fd = -1;
+ static unsigned long long g_log_counter = 1;
+@@ -26,7 +28,10 @@ void delete_log_file(void)
+     g_log_fd = -1;
+   }
+ 
++#ifdef DEBUG_TO_LOGFILE
++  /* only a build that logs to the file owns it */
+   unlink(LOG_FILENAME);
++#endif
+ 
+   g_log_counter = 1;
+ }
+diff --git a/include/bridge_config.h b/include/bridge_config.h
+index 9b233a2..92ac967 100644
+--- a/include/bridge_config.h
++++ b/include/bridge_config.h
+@@ -13,9 +13,11 @@ extern "C"
+    * Falls back to BRIDGE_RING_SLOTS_DEFAULT if the file is missing
+    */
+ 
++#ifndef BRIDGE_CONFIG_PATH
+ #define BRIDGE_CONFIG_PATH                                                     \
+   "/media/developer/apps/usr/palm/applications/org.webosbrew.bridge-64to32/"   \
+   "bridge.conf"
++#endif
+ #define BRIDGE_RING_SLOTS_DEFAULT 256u
+ #define BRIDGE_RING_SLOTS_MIN 64u
+ #define BRIDGE_RING_SLOTS_MAX 65536u

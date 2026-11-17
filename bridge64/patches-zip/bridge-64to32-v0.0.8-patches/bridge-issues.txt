@@ -1,0 +1,76 @@
+64-to-32 bridge (org.webosbrew.bridge-64to32 v0.0.8): issues found with a multi-threaded GL client
+=================================================================================================
+
+Setup
+-----
+- TV: LG OLED65C1PUB (2021), Mali-G51, aarch64 kernel with 32-bit userspace.
+- TV software: webOS 6.4.0 (build 1804), firmware 03.40.87.
+- Bridge: org.webosbrew.bridge-64to32 v0.0.8 (release ipk).
+- Client: WPE WebKit 2.54.2 (Debian sid arm64 packages) started through the bridge loader.
+- WebKit runs several GL contexts on different threads (a compositor plus painting threads), and it has two bridge clients at once (its UI process and its web process). Most of the problems below only show up under those conditions.
+
+Bugs with local fixes (patches against v0.0.8)
+-----------------------------------------------
+1. Fixed shared-memory keys. Every client uses SysV keys 0x4701-0x4704, and shm_create() first removes any segment with those keys. A second bridge client (another app, or a second process of the same app) therefore removes the first client's segments. Fix: IPC_PRIVATE segments whose ids go to the proxy on its command line.
+
+2. Client-side vertex arrays. Only glDrawArrays, and glDrawElements with client-side indices, copy client-side attribute arrays. glDrawElements with an element buffer, glDrawRangeElements and the instanced draws pass the 64-bit pointer through, and the proxy gives the driver that pointer truncated to 32 bits. Result: gles_proxy SIGSEGV in memcpy inside the Mali driver. Skia hits this on Mali, where it prefers client-side arrays for dynamic data. glDrawElementsInstanced also ignores the element-buffer offset.
+
+3. Per-VAO enable flags. glVertexAttribPointer copies the process-wide attribute record (enable flag and divisor included) into the current VAO. One context can then switch off another context's client-side array in the stub's records, which leads to the same memcpy crash.
+
+4. New-context reset. eglCreateContext sets one process-wide flag, and the next GL call on any thread wipes the shadow and VAO state of whatever context that thread has current.
+
+5. Binding caches across contexts.
+   - Deleting an FBO or VAO resets the cached binding in every context that uses the same name.
+   - Deleting a buffer clears the element-array binding of every VAO in every context.
+   - The bind that follows is then skipped, and a context keeps drawing into the wrong framebuffer.
+
+6. Location cache. The uniform and attribute location cache is keyed by program name only (no share group) and has no lock.
+
+7. Context limit. The proxy hands out context indices 1-8 while the per-context arrays hold 0-7. The eighth context overruns the stub's arrays and is never made current in the proxy.
+
+8. Call results read after the ring lock is released. bridge_send_call() unlocks before the caller reads its results (glGen* names, glGet* values, info logs), so another thread can reuse the slot or arena range first. glGetStringi also returns a pointer into that reusable buffer.
+
+9. EGL fences. eglCreateSyncKHR and the related calls go through the generic dispatch with the stub's display index and an unconverted 64-bit attribute pointer, so no fence is ever created. Client waits in the single-threaded proxy also need a flush first, or they can block forever.
+
+10. Missing GLES 3.1 queries. glGetMultisamplefv and glGetTexLevelParameteriv/fv are missing, and eglGetProcAddress does not return them either. Skia rejects the context without them.
+
+11. Log file. Start-up deletes /media/developer/temp/gles_proxy.log even in builds that log to stderr, which removes another install's log.
+
+Still open
+----------
+- Black window with GPU painting on several threads. Skia GPU painting shows a black window. With a delay added around every GL call, pages draw partly, with garbled text. Fixes 1-11 make no difference. Leads:
+  - per-context state inside the proxy as it switches between contexts
+  - data-arena memory reused while the driver may still read it asynchronously, for example texture uploads from client memory
+  - the process-wide glMapBufferRange table, which has no lock
+- Multisample renderbuffers sometimes come back incomplete.
+- Exit hang. A process that only probes Wayland/EGL (no window) still starts its own gles_proxy, and that proxy deadlocked when the process exited. We avoid it on the client side.
+
+Missing features
+----------------
+- Pointer: the proxy does not subscribe to pointer events, so motion, clicks and the wheel never reach the client. Keys work. Keyboard focus loss is not forwarded.
+- Wayland: the only way to show anything is an EGL window on a wl_shell + wl_webos_shell surface.
+  - Missing: xdg_wm_base, subsurfaces, linux-dmabuf and EGL_WL_bind_wayland_display.
+  - wl_shm is advertised, but attaching a buffer does nothing.
+  - So Cog, wpebackend-fdo and WPE's own Wayland platform cannot run.
+- EGL: no surfaceless or GBM platform.
+- eglSwapBuffers returns at once, so clients have to pace their own frames.
+
+Patches
+-------
+Fixes 1-11 are 12 patches against tag v0.0.8 of webosbrew/webos-bridge-64to32, one change per patch with a commit message. With them, single-threaded painting plus multi-threaded GPU compositing runs stably at about 55-58 fps.
+
+- series/ holds all 12 in order. They apply cleanly to v0.0.8 with: git am series/*.patch
+- by-issue/ holds the same files sorted by the numbers above, for reading. Some patches build on earlier ones, so apply the full series rather than single folders.
+
+Which patch fixes which issue:
+- 1. Fixed shared-memory keys: 0002 (by-issue/01-shared-memory-keys)
+- 2. Client-side vertex arrays: 0003 (by-issue/02-client-side-vertex-arrays)
+- 3. Per-VAO enable flags: 0005, which also adds a proxy-side guard that skips and logs any draw from a pointer outside the data arena (by-issue/03-per-vao-enable-flags)
+- 4. New-context reset: 0006 (by-issue/04-new-context-reset)
+- 5. Binding caches across contexts: 0009 (by-issue/05-binding-caches-across-contexts)
+- 6. Location cache: 0010 (by-issue/06-location-cache)
+- 7. Context limit: 0011 (by-issue/07-context-limit)
+- 8. Call results after unlock: 0012 (by-issue/08-call-results-after-unlock)
+- 9. EGL fences: 0008 (by-issue/09-egl-fences)
+- 10. Missing GLES 3.1 queries: 0004 adds the calls, 0007 adds them to eglGetProcAddress (by-issue/10-gles31-queries)
+- 11. Log file: 0001, which also lets a private install set its config and log paths at build time (by-issue/11-log-file-and-install-paths)

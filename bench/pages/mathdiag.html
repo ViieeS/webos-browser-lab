@@ -1,0 +1,27 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>math diag</title>
+<script>
+// Narrows the softfp JIT Math bug: which shape of a hot function returns a wrong double.
+const want = Math.sin(0.75);
+function hot(fn, arg) { let r; for (let i = 0; i < 100000; i++) r = fn(arg); return r; }
+const shapes = [
+  ["const return", function () { return 0.75; }, 0.75],
+  ["const arith", function () { return 0.75 * 2 + 0.25; }, 1.75],
+  ["sin(const)", function () { return Math.sin(0.75); }, want],
+  ["sin(arg)", function (x) { return Math.sin(x); }, want],
+  ["sin(arg+0)", function (x) { return Math.sin(x + 0.0); }, want],
+  ["sqrt(const)", function () { return Math.sqrt(0.5625); }, 0.75],
+  ["sin(const) then +1", function () { return Math.sin(0.75) + 1; }, want + 1],
+];
+for (const [name, fn, expect] of shapes) {
+  const got = hot(fn, 0.75);
+  console.log(`MATHDIAG ${name} ${Object.is(got, expect) || Math.abs(got - expect) < 1e-12 ? "ok" : "WRONG " + got}`);
+}
+// Varying argument: every 1000th value checked against a cold copy of the same call.
+function sinv(x) { return Math.sin(x); }
+let badv = 0;
+for (let i = 0; i < 200000; i++) { const x = i * 0.001; const g = sinv(x); if (i % 1000 === 0 && g !== Math.sin.call(null, x)) badv++; }
+console.log(`MATHDIAG sin(varying) bad=${badv}`);
+console.log("MATHDIAG done");
+</script>

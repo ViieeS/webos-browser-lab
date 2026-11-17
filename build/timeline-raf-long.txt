@@ -1,0 +1,23 @@
+records=1350 recorded_s=16.0 self_total_ms=1282
+      516 ms  40.3%     615  FunctionCall
+      268 ms  20.9%     705  RenderingFrame
+      200 ms  15.6%      28  Paint
+      148 ms  11.5%       4  Layout
+       47 ms   3.7%      11  RecalculateStyles
+       41 ms   3.2%     700  Composite
+       35 ms   2.7%     613  FireAnimationFrame
+       27 ms   2.1%       2  EvaluateScript
+        0 ms   0.0%       2  EventDispatch
+        0 ms   0.0%       1  TimerFire
+        0 ms   0.0%       5  ScheduleStyleRecalculation
+        0 ms   0.0%       4  InvalidateLayout
+        0 ms   0.0%       1  TimerInstall
+        0 ms   0.0%       1  FirstContentfulPaint
+        0 ms   0.0%       1  LargestContentfulPaint
+        0 ms   0.0%     613  RequestAnimationFrame
+-- heaviest script entries (inclusive ms)
+      516  FunctionCall http://127.0.0.1:8099/pages/harness.html?case=raf-long&tag=tl&run=3
+       24  EvaluateScript http://127.0.0.1:8099/pages/long.html
+        3  EvaluateScript http://127.0.0.1:8099/pages/harness.html?case=raf-long&tag=tl&run=3
+        1  TimerFire 
+        1  EventDispatch load

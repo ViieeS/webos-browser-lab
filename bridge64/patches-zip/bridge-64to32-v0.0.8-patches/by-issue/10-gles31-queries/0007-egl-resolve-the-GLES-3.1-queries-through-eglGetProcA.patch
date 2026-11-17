@@ -1,0 +1,29 @@
+From 9c771a48eee67e53bfa7382154570913bf44478a Mon Sep 17 00:00:00 2001
+From: deten <6029514+deten@users.noreply.github.com>
+Date: Tue, 27 Oct 2026 16:58:17 -0700
+Subject: [PATCH 07/12] egl: resolve the GLES 3.1 queries through
+ eglGetProcAddress
+
+glGetMultisamplefv and glGetTexLevelParameteriv/fv were exported but not
+in eglGetProcAddress's table, so callers that load GL through
+eglGetProcAddress (Skia) still got NULL.
+---
+ stub/egl_stub.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/stub/egl_stub.c b/stub/egl_stub.c
+index 024a691..080dc5d 100644
+--- a/stub/egl_stub.c
++++ b/stub/egl_stub.c
+@@ -1319,6 +1319,11 @@ void *lookup_core_func(const char *procname)
+   CORE_GLES3(glGetSynciv)
+   CORE_GLES3(glIsSync)
+ 
++  /* ---- GLES 3.1 queries ---- */
++  CORE_GLES3(glGetMultisamplefv)
++  CORE_GLES3(glGetTexLevelParameteriv)
++  CORE_GLES3(glGetTexLevelParameterfv)
++
+   /* ---- Misc ---- */
+   CORE_GLES3(glGetStringi)
+   CORE_GLES3(glGetInteger64v)

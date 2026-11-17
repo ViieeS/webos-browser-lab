@@ -1,0 +1,38 @@
+RegExp: no cellLock re-entry when the compiler thread falls back to bytecode
+
+--- a/Source/JavaScriptCore/runtime/RegExpInlines.h	2026-11-12 11:07:45.082249751 +0000
++++ b/Source/JavaScriptCore/runtime/RegExpInlines.h	2026-11-12 11:07:45.082249751 +0000
+@@ -165,11 +165,14 @@
+ 
+         if (result == static_cast<int>(Yarr::JSRegExpResult::JITCodeFailure)) {
+             // JIT'ed code couldn't handle expression, so punt back to the interpreter.
++            // The compiler thread gets here from matchConcurrently, which already holds the
++            // non-recursive cellLock that byteCodeCompileIfNecessary takes: it may only use
++            // bytecode that exists. Reached when the JIT punts at run time (32-bit YARR).
+             if constexpr (matchFrom == Yarr::MatchFrom::CompilerThread) {
+                 if (!m_regExpBytecode)
+                     return -1;
+-            }
+-            byteCodeCompileIfNecessary(&vm);
++            } else
++                byteCodeCompileIfNecessary(&vm);
+             if (m_state == ParseError)
+                 return throwError();
+             {
+@@ -293,11 +296,14 @@
+             return result;
+ 
+         // JIT'ed code couldn't handle expression, so punt back to the interpreter.
++        // The compiler thread gets here from matchConcurrently, which already holds the
++        // non-recursive cellLock that byteCodeCompileIfNecessary takes: it may only use
++        // bytecode that exists. Reached when the JIT punts at run time (32-bit YARR).
+         if constexpr (matchFrom == Yarr::MatchFrom::CompilerThread) {
+             if (!m_regExpBytecode)
+                 return MatchResult::failed();
+-        }
+-        byteCodeCompileIfNecessary(&vm);
++        } else
++            byteCodeCompileIfNecessary(&vm);
+         if (m_state == ParseError)
+             return throwError();
+     }

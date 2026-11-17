@@ -1,0 +1,14 @@
+MediaPosition::get_position() exists only under OS_WEBOS, which the C1 build does not define.
+GetPosition() is the same value adjusted to TimeTicks::Now(): on two snapshots taken back to back
+the drift check still works.
+--- a/third_party/blink/renderer/platform/media/neva/web_media_player_neva.cc
++++ b/third_party/blink/renderer/platform/media/neva/web_media_player_neva.cc
+@@ -149,7 +149,7 @@
+     return !old_position.GetPosition().is_max();
+
+   const auto drift =
+-      (old_position.get_position() - new_position.get_position()).magnitude();
++      (old_position.GetPosition() - new_position.GetPosition()).magnitude();
+   return drift > base::Milliseconds(100);
+ }
+

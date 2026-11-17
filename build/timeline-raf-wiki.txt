@@ -1,0 +1,35 @@
+records=768 recorded_s=16.0 self_total_ms=11810
+     4105 ms  34.8%      87  Layout
+     2831 ms  24.0%      28  RecalculateStyles
+     2501 ms  21.2%     354  FunctionCall
+     1390 ms  11.8%     230  Paint
+      799 ms   6.8%     262  RenderingFrame
+      136 ms   1.2%       7  EvaluateScript
+       19 ms   0.2%     426  Composite
+       11 ms   0.1%     146  EventDispatch
+        9 ms   0.1%      32  ObserverCallback
+        5 ms   0.0%     105  TimerFire
+        4 ms   0.0%      75  FireAnimationFrame
+        0 ms   0.0%      22  ScheduleStyleRecalculation
+        0 ms   0.0%      87  InvalidateLayout
+        0 ms   0.0%       1  FirstContentfulPaint
+        0 ms   0.0%       1  TimeStamp
+        0 ms   0.0%     111  TimerInstall
+        0 ms   0.0%      76  RequestAnimationFrame
+        0 ms   0.0%       1  LargestContentfulPaint
+        0 ms   0.0%       3  TimerRemove
+-- heaviest script entries (inclusive ms)
+     2487  FunctionCall http://127.0.0.1:8099/pages/harness.html?case=raf-wiki&tag=tl&run=1
+     1621  TimerFire 
+     1130  FunctionCall https://en.wikipedia.org/w/load.php?lang=en&modules=jquery&skin=vector-2022&version=tkra7
+     1069  FunctionCall undefined
+      459  FunctionCall http://127.0.0.1:8099/pages/wiki/en.wikipedia.org/w/load.php%3Flang=en&modules=startup&only=scrip
+       92  EvaluateScript http://127.0.0.1:8099/pages/wiki/en.wikipedia.org/w/load.php%3Flang=en&modules=startup&only=scr
+       89  FunctionCall 
+       47  ObserverCallback IntersectionObserver
+       25  EventDispatch scroll
+       21  EvaluateScript https://en.wikipedia.org/w/load.php?lang=en&modules=jquery&skin=vector-2022&version=tkra7
+       18  EvaluateScript http://127.0.0.1:8099/pages/wiki/en.wikipedia.org/wiki/Television.html
+       10  ObserverCallback PerformanceObserver
+        5  EvaluateScript http://127.0.0.1:8099/pages/harness.html?case=raf-wiki&tag=tl&run=1
+        1  EventDispatch load

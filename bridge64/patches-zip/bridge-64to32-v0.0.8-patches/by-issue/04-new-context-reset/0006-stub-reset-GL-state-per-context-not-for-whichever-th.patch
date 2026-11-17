@@ -1,0 +1,120 @@
+From c0a03dbeb40bd93e975f7749200f9304b3d166c7 Mon Sep 17 00:00:00 2001
+From: deten <6029514+deten@users.noreply.github.com>
+Date: Tue, 27 Oct 2026 16:58:17 -0700
+Subject: [PATCH 06/12] stub: reset GL state per context, not for whichever
+ thread calls next
+
+eglCreateContext set a process-wide "new context" flag, and the next GL
+call on any thread reset the shadow and VAO state of the new context and
+also of the context that thread had current. With several threads, each
+with its own context (a browser's compositor and its painting threads),
+creating a context wiped the live state of another thread's context:
+its cached bindings and its VAO records, including which attributes are
+client-side arrays.
+
+Each context index now has its own pending-reset flag, set by
+eglCreateContext and eglDestroyContext (where the reset was dead code
+after the return) and acted on only by the thread that makes that
+context current.
+---
+ include/gles_util_stub.h | 19 +++++++------------
+ stub/bridge_core.c       |  2 ++
+ stub/egl_stub.c          | 23 ++++++++++++-----------
+ 3 files changed, 21 insertions(+), 23 deletions(-)
+
+diff --git a/include/gles_util_stub.h b/include/gles_util_stub.h
+index d91dcbe..4b9886b 100644
+--- a/include/gles_util_stub.h
++++ b/include/gles_util_stub.h
+@@ -519,6 +519,7 @@ typedef struct
+ 
+ extern StubShadowState g_shadow_ctx[MAX_CONTEXTS];
+ extern unsigned int g_stub_new_ctx;
++extern volatile uint8_t g_stub_ctx_reset_pending[MAX_CONTEXTS];
+ 
+ typedef struct
+ {
+@@ -584,22 +585,16 @@ static inline void stub_context_state_reset(unsigned int idx)
+ 
+ static inline StubShadowState *shadow_state_for_current_ctx(void)
+ {
+-  if (g_stub_new_ctx > 0)
++  /* only the context this thread has current is ever reset here */
++  if (g_stub_current_ctx < MAX_CONTEXTS &&
++      g_stub_ctx_reset_pending[g_stub_current_ctx])
+   {
+-#ifdef DEBUG
+-    log_console("shadow_state_for_current_ctx: NEW g_stub_new_ctx=%u, causing "
+-                "cache reset. g_stub_current_ctx=%u",
+-                g_stub_new_ctx, g_stub_current_ctx);
+-#endif
+-    stub_context_state_reset(g_stub_new_ctx);
+-
+-    if (g_stub_new_ctx != g_stub_current_ctx)
+-      stub_context_state_reset(g_stub_current_ctx);
+-    g_stub_new_ctx = 0;
++    g_stub_ctx_reset_pending[g_stub_current_ctx] = 0;
++    stub_context_state_reset(g_stub_current_ctx);
+   }
+ 
+   StubShadowState *s = &g_shadow_ctx[g_stub_current_ctx];
+-  if (!s->initialised || g_stub_new_ctx > 0)
++  if (!s->initialised)
+     shadow_state_init(s);
+   return s;
+ }
+diff --git a/stub/bridge_core.c b/stub/bridge_core.c
+index 02c39fc..3f833aa 100644
+--- a/stub/bridge_core.c
++++ b/stub/bridge_core.c
+@@ -68,6 +68,8 @@ static WLBridge g_wl;
+ /* ── libEGL needs to notify libGLES of a change in context ─────────── */
+ __thread unsigned int g_stub_current_ctx;
+ unsigned int g_stub_new_ctx = 0;
++/* per context: state must be reset before its next use (set by EGL) */
++volatile uint8_t g_stub_ctx_reset_pending[8]; /* MAX_CONTEXTS (gles_util_shared.h) */
+ 
+ /* ── Ring state (stub/producer side) ─────────────────────────────────── */
+ static BridgeRing *g_ring = NULL;
+diff --git a/stub/egl_stub.c b/stub/egl_stub.c
+index e67223d..024a691 100644
+--- a/stub/egl_stub.c
++++ b/stub/egl_stub.c
+@@ -801,11 +801,13 @@ EGLAPI EGLContext EGLAPIENTRY eglCreateContext(EGLDisplay dpy, EGLConfig config,
+ 
+   EGLContext ctx = I2H(EGLContext, raw);
+ 
+-#ifdef CACHE_GL_STATE
+-  if (raw != 0)
+-    g_stub_new_ctx = raw; // triger cache reset
+-  // stub_context_state_reset((unsigned int)raw);
+-#endif
++  /* A new context starts with default state: mark its shadow and VAO state
++   * for a reset, which the GLES side does on the next call made with this
++   * context current. The old process-wide "new context" flag was acted on by
++   * the next GL call of any thread and also wiped the live state of whichever
++   * context that thread had current. */
++  if (raw != 0 && raw < MAX_CONTEXTS)
++    g_stub_ctx_reset_pending[raw] = 1;
+ 
+ #ifdef DEBUG
+   log_console("eglCreateContext: returning EGLContext=%p", ctx);
+@@ -823,13 +825,12 @@ EGLAPI EGLBoolean EGLAPIENTRY eglDestroyContext(EGLDisplay dpy, EGLContext ctx)
+   aw_u32(&W, H2I(dpy));
+   aw_u32(&W, H2I(ctx));
+   C->args_len = W.pos;
+-  return (EGLBoolean)BRIDGE_SEND_CALL();
++  EGLBoolean ok = (EGLBoolean)BRIDGE_SEND_CALL();
+ 
+-#ifdef CACHE_GL_STATE
+-  if (H2I(ctx) != 0)
+-    g_stub_new_ctx = H2I(ctx); // triger cache reset
+-  // stub_context_state_reset((unsigned int)ctx);
+-#endif
++  /* the index may be reused by the next context created */
++  if (ok && H2I(ctx) != 0 && H2I(ctx) < MAX_CONTEXTS)
++    g_stub_ctx_reset_pending[H2I(ctx)] = 1;
++  return ok;
+ }
+ 
+ EGLAPI EGLBoolean EGLAPIENTRY eglMakeCurrent(EGLDisplay display,

@@ -1,0 +1,11 @@
+--- a/neva/app_runtime/BUILD.gn	2026-11-16 14:36:59.807331959 +0000
++++ b/neva/app_runtime/BUILD.gn	2026-11-16 14:36:59.808332274 +0000
+@@ -471,7 +471,7 @@
+ if (!use_cbe) {
+   repack_locales("locales_repack") {
+     source_patterns = [ "${root_gen_dir}/neva/app_runtime/locales/" ]
+-    deps = [ ":app_runtime_network_error_strings" ]
++    deps = [ ":app_runtime_network_error_strings", ":repack" ]
+ 
+     output_dir = "$root_out_dir/neva_locales"
+     input_locales = app_runtime_locales

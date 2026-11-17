@@ -1,0 +1,49 @@
+bmalloc SystemHeap (env Malloc=1, which the host sets): return 16-byte aligned memory on Linux
+
+glibc malloc aligns to 8 on 32-bit ARM, while WebKit types may be alignas(16) and its fastMalloc
+ignores the type's alignment (bmalloc's own heaps happen to give 16). With -mcpu=cortex-a55 GCC
+zeroes such members with "vst1.8 {d16-d17}, [rN :128]", which raises SIGBUS on an 8-aligned object
+(WebPageProxy::resetState). realloc copies instead of growing in place, since glibc realloc may
+return an 8-aligned block.
+
+--- a/Source/bmalloc/bmalloc/SystemHeap.cpp
++++ b/Source/bmalloc/bmalloc/SystemHeap.cpp
+@@ -31,6 +31,8 @@
+ #include "VMAllocate.h"
+ #include <cstdlib>
++#include <cstring>
++#include <malloc.h>
+ #include <thread>
+
+ #if BENABLE(LIBPAS)
+ #include "pas_mte.h"
+@@ -165,9 +167,13 @@
+ {
+ }
+
++// glibc malloc gives only 8 on 32-bit ARM. WebKit's alignas(16) types, allocated through fastMalloc
++// that ignores their alignment, then fault on aligned NEON stores.
++static constexpr size_t systemHeapAlignment = 16;
++
+ void* SystemHeap::malloc(size_t size, FailureAction action)
+ {
+-    void* result = ::malloc(size);
++    void* result = ::aligned_alloc(systemHeapAlignment, size);
+     RELEASE_BASSERT(action == FailureAction::ReturnNull || result);
+     return result;
+ }
+@@ -181,7 +187,13 @@
+
+ void* SystemHeap::realloc(void* object, size_t size, FailureAction action)
+ {
+-    void* result = ::realloc(object, size);
++    if (!object)
++        return malloc(size, action);
++    void* result = ::aligned_alloc(systemHeapAlignment, size);
++    if (result) {
++        memcpy(result, object, std::min(malloc_usable_size(object), size));
++        ::free(object);
++    }
+     RELEASE_BASSERT(action == FailureAction::ReturnNull || result);
+     return result;
+ }

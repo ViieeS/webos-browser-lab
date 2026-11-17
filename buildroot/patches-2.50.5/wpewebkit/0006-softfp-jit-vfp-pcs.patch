@@ -1,0 +1,26 @@
+Enable the ARMv7 JIT on softfp (webOS) by giving JIT operations the VFP calling convention.
+JSC only ever assumes the hard-float PCS for JIT<->C++ calls; pcs(aapcs-vfp) makes the C++ side match.
+
+--- a/Source/WTF/wtf/PlatformCallingConventions.h	2026-11-10 18:58:15.763059970 +0000
++++ b/Source/WTF/wtf/PlatformCallingConventions.h	2026-11-10 18:58:15.779157929 +0000
+@@ -82,6 +82,9 @@
+ #define JIT_OPERATION_ATTRIBUTES CDECL
+ #elif OS(WINDOWS)
+ #define JIT_OPERATION_ATTRIBUTES SYSV_ABI
++#elif CPU(ARM_THUMB2) && !CPU(ARM_HARDFP)
++// webOS is softfp, but the JIT passes doubles in VFP registers: give every JIT operation the VFP PCS.
++#define JIT_OPERATION_ATTRIBUTES __attribute__((pcs("aapcs-vfp")))
+ #else
+ #define JIT_OPERATION_ATTRIBUTES
+ #endif
+--- a/Source/WTF/wtf/PlatformEnable.h	2026-11-10 18:58:15.762053847 +0000
++++ b/Source/WTF/wtf/PlatformEnable.h	2026-11-10 18:58:15.772115072 +0000
+@@ -637,7 +637,7 @@
+ #endif
+ 
+ #if USE(JSVALUE32_64)
+-#if CPU(ARM_THUMB2) && CPU(ARM_HARDFP) && OS(LINUX)
++#if CPU(ARM_THUMB2) && OS(LINUX)
+ /* On ARMv7 Linux the JIT is enabled unless explicitly disabled. */
+ #if !defined(ENABLE_JIT)
+ #define ENABLE_JIT 1

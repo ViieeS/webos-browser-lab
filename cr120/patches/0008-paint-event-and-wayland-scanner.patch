@@ -1,0 +1,26 @@
+paint_timing.cc uses kFirstContainerResetPaint under USE_NEVA_APPRUNTIME, the enum only under
+OS_WEBOS; the global is_webos is off here.
+The C1 runs libwayland 1.11. The in-tree scanner (1.21+) emits wl_proxy_marshal_flags, which
+1.11 lacks, so WAYLAND_SCANNER (scanner 1.16 from Debian buster) replaces it when set.
+--- a/third_party/blink/renderer/core/paint/paint_event.h
++++ b/third_party/blink/renderer/core/paint/paint_event.h
+@@ -16,9 +16,7 @@
+   kProvisionalFirstMeaningfulPaint,
+   kFirstImagePaint,
+   kPortalActivatedPaint,
+-#if defined(OS_WEBOS)
+   kFirstContainerResetPaint,
+-#endif
+ };
+
+ }  // namespace blink
+--- a/third_party/wayland/wayland_scanner_wrapper.py
++++ b/third_party/wayland/wayland_scanner_wrapper.py
+@@ -32,6 +32,6 @@
+
+   options = parser.parse_args()
+-  cmd = os.path.realpath(options.cmd)
++  cmd = os.environ.get("WAYLAND_SCANNER") or os.path.realpath(options.cmd)
+   src_root = options.src_root
+   root_gen_dir = options.root_gen_dir
+   protocols = options.protocols

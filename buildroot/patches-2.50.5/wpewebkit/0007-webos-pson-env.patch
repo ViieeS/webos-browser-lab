@@ -1,0 +1,12 @@
+--- a/Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp
++++ b/Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp
+@@ -448,7 +448,8 @@
+     configuration.setUseSystemAppearanceForScrollbars(priv->useSystemAppearanceForScrollbars);
+ #endif
+ #else
+-    configuration.setProcessSwapsOnNavigation(true);
++    // webOS TV: WEBKIT_DISABLE_PSON keeps every site in one warm web process.
++    configuration.setProcessSwapsOnNavigation(!g_getenv("WEBKIT_DISABLE_PSON"));
+ #endif
+     if (priv->memoryPressureSettings) {
+         configuration.setMemoryPressureHandlerConfiguration(webkitMemoryPressureSettingsGetMemoryPressureHandlerConfiguration(priv->memoryPressureSettings));

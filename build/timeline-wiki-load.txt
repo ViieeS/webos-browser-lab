@@ -1,0 +1,31 @@
+records=395 recorded_s=14.0 self_total_ms=7738
+     2850 ms  36.8%      18  RecalculateStyles
+     2055 ms  26.6%      10  Layout
+     1987 ms  25.7%      81  FunctionCall
+      594 ms   7.7%     348  RenderingFrame
+      122 ms   1.6%       6  EvaluateScript
+      114 ms   1.5%      18  Paint
+       11 ms   0.1%     324  Composite
+        4 ms   0.1%      74  TimerFire
+        1 ms   0.0%       4  ObserverCallback
+        0 ms   0.0%       2  EventDispatch
+        0 ms   0.0%       3  FireAnimationFrame
+        0 ms   0.0%      17  ScheduleStyleRecalculation
+        0 ms   0.0%      10  InvalidateLayout
+        0 ms   0.0%       1  FirstContentfulPaint
+        0 ms   0.0%       1  TimeStamp
+        0 ms   0.0%      76  TimerInstall
+        0 ms   0.0%       3  RequestAnimationFrame
+        0 ms   0.0%       1  LargestContentfulPaint
+-- heaviest script entries (inclusive ms)
+     1669  TimerFire 
+     1166  FunctionCall https://en.wikipedia.org/w/load.php?lang=en&modules=jquery&skin=vector-2022&version=tkra7
+      783  FunctionCall undefined
+      492  FunctionCall http://127.0.0.1:8099/pages/wiki/en.wikipedia.org/w/load.php%3Flang=en&modules=startup&only=scrip
+       71  EvaluateScript http://127.0.0.1:8099/pages/wiki/en.wikipedia.org/w/load.php%3Flang=en&modules=startup&only=scr
+       31  FunctionCall 
+       26  EvaluateScript https://en.wikipedia.org/w/load.php?lang=en&modules=jquery&skin=vector-2022&version=tkra7
+       24  EvaluateScript http://127.0.0.1:8099/pages/wiki/en.wikipedia.org/wiki/Television.html
+       14  ObserverCallback IntersectionObserver
+       11  ObserverCallback PerformanceObserver
+        1  EventDispatch load

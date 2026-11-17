@@ -1,0 +1,15 @@
+YARR JIT on ARMv7: read the 5th argument above the saved fp/lr pair
+
+--- a/Source/JavaScriptCore/yarr/YarrJIT.cpp	2026-11-12 11:17:46.590441839 +0000
++++ b/Source/JavaScriptCore/yarr/YarrJIT.cpp	2026-11-12 11:17:46.591441839 +0000
+@@ -5300,7 +5300,9 @@
+ #if CPU(ARM_THUMB2)
+             // Not enough argument registers: try to load the 5th argument from the stack
+             MacroAssembler::RegisterID matchingContext = m_regs.regT1;
+-            unsigned offset = POKE_ARGUMENT_OFFSET;
++            // The prologue pushed {fp, lr} and set fp = sp, so the caller's stacked arguments start
++            // two words above fp; fp + 0 is the caller's saved r7, not the MatchingContextHolder*.
++            unsigned offset = POKE_ARGUMENT_OFFSET + 2;
+             m_jit.loadPtr(MacroAssembler::Address(GPRInfo::callFrameRegister, offset * sizeof(void*)), matchingContext);
+ #else
+             MacroAssembler::RegisterID matchingContext = m_regs.matchingContext;

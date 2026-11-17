@@ -1,0 +1,11 @@
+--- a/build/config/ui.gni	2026-11-16 13:43:12.808328023 +0000
++++ b/build/config/ui.gni	2026-11-16 13:43:12.808328023 +0000
+@@ -43,7 +43,7 @@
+ assert(!use_glib || (is_linux && !is_castos))
+ 
+ # TODO(neva): check whether we can remove webOS flags
+-use_atk = use_glib && !is_webos && !is_webos_lite &&
++use_atk = false && use_glib && !is_webos && !is_webos_lite &&
+           current_toolchain == default_toolchain
+ 
+ # Whether using Xvfb to provide a display server for a test might be

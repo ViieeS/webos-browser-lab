@@ -1,0 +1,22 @@
+records=991 recorded_s=16.0 self_total_ms=7842
+     2306 ms  29.4%     204  Layout
+     2210 ms  28.2%     491  Paint
+     1376 ms  17.5%     199  FunctionCall
+     1060 ms  13.5%      14  RecalculateStyles
+      862 ms  11.0%     298  RenderingFrame
+       14 ms   0.2%     294  Composite
+        9 ms   0.1%     197  FireAnimationFrame
+        3 ms   0.0%       1  EvaluateScript
+        2 ms   0.0%       2  EventDispatch
+        0 ms   0.0%       1  TimerFire
+        0 ms   0.0%       8  ScheduleStyleRecalculation
+        0 ms   0.0%     204  InvalidateLayout
+        0 ms   0.0%       1  FirstContentfulPaint
+        0 ms   0.0%       1  TimerInstall
+        0 ms   0.0%       1  LargestContentfulPaint
+        0 ms   0.0%     198  RequestAnimationFrame
+-- heaviest script entries (inclusive ms)
+     2047  FunctionCall http://127.0.0.1:8099/pages/harness.html?case=raf-wiki-nosticky&noimg=1&tag=tl&run=5
+      334  EventDispatch load
+        3  EvaluateScript http://127.0.0.1:8099/pages/harness.html?case=raf-wiki-nosticky&noimg=1&tag=tl&run=5
+        1  TimerFire 

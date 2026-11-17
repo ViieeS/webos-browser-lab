@@ -1,0 +1,27 @@
+content/browser and services/network, built with use_neva_appruntime, call neva code that only
+the webOS app shells link. Give content_shell those pieces: the watchdog switches, the CORS/CORB
+exception list (sources gated on is_webos) and stubs for app-runtime file origins and the PWA
+manager binder (extra/content/shell/neva_c1_stubs.cc).
+--- a/content/shell/BUILD.gn
++++ b/content/shell/BUILD.gn
+@@ -201,4 +201,5 @@
+   ]
+   sources = [
++    "neva_c1_stubs.cc",
+     "browser/shell_browser_main_parts.cc",
+     "browser/shell_browser_main_parts.h",
+@@ -301,4 +302,5 @@
+   deps = [
+     ":content_browsertests_mojom",
+     ":content_shell_nontest_lib",
++    "//components/watchdog",
+     ":resources",
+--- a/services/network/public/cpp/BUILD.gn
++++ b/services/network/public/cpp/BUILD.gn
+@@ -172,5 +172,5 @@
+   }
+
+-  if (is_webos) {
++  if (true) {  # C1: content/browser calls CorsCorbException
+     sources += [
+       "neva/cors_corb_exception.cc",

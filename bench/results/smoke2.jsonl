@@ -1,0 +1,1 @@
+{"label": "smoke2", "case": "motionmark", "iter": 0, "ts": "2026-11-11 14:19:25", "params": {}, "lib_md5": "d152864eeb0b", "host_md5": "b2a42d44383f", "avail_kb_before": 891696, "metrics": {"load_ms": 584, "probe_s": 374, "score": 119.27, "rss_kb": 371888, "webprocs": 1, "crashes": 0}}

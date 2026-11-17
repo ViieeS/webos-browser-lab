@@ -1,0 +1,251 @@
+From 79c92b8e3cc98839205fce07d9f13c794e9a775d Mon Sep 17 00:00:00 2001
+From: deten <6029514+deten@users.noreply.github.com>
+Date: Tue, 27 Oct 2026 15:32:43 -0700
+Subject: [PATCH 02/12] shm: give every client private segments instead of
+ fixed keys
+
+All clients used the SysV keys 0x4701-0x4704, and shm_create() removed
+any existing segment with those keys first. A second bridge client
+(another app, or a second process of the same app, such as a browser's
+web process next to its UI process) therefore removed the first client's
+segments, and a proxy that attached by key after a second client had
+started got the wrong client's ring.
+
+The stub now creates IPC_PRIVATE segments and passes their ids to the
+proxy as argv[6..9]. The proxy attaches by id when it gets them (and by
+key otherwise, so an older stub still works), then marks the segments for
+removal, so the kernel frees them when both sides have detached, also
+after a crash. Segments are removed before detaching on clean-up, so a
+freed id that is reused by someone else is never removed by mistake.
+---
+ bridge/bridge_shm.c | 60 ++++++++++++++++++++++++++++++++++++++++++---
+ bridge/bridge_shm.h | 12 +++++++++
+ proxy/proxy.c       | 37 ++++++++++++++++++++++++----
+ stub/bridge_core.c  | 22 +++++++++++++----
+ 4 files changed, 117 insertions(+), 14 deletions(-)
+
+diff --git a/bridge/bridge_shm.c b/bridge/bridge_shm.c
+index b6ed37e..bb861aa 100644
+--- a/bridge/bridge_shm.c
++++ b/bridge/bridge_shm.c
+@@ -81,14 +81,16 @@ static BridgeShm sysv_attach(key_t key, size_t size)
+ 
+ static void sysv_destroy(BridgeShm *s)
+ {
+-  if (s->ptr)
++  /* remove while still attached: once the last process detaches, the id
++   * may be reused by an unrelated segment */
++  if (s->shmid >= 0)
+   {
+-    shmdt(s->ptr);
++    shmctl(s->shmid, IPC_RMID, NULL);
+   }
+ 
+-  if (s->shmid >= 0)
++  if (s->ptr)
+   {
+-    shmctl(s->shmid, IPC_RMID, NULL);
++    shmdt(s->ptr);
+   }
+ }
+ 
+@@ -104,6 +106,56 @@ BridgeShm shm_attach(const char *name_or_key, size_t size)
+   return sysv_attach((key_t)strtoul(name_or_key, NULL, 0), size);
+ }
+ 
++BridgeShm shm_create_private(size_t size)
++{
++  BridgeShm s = {0};
++
++  s.shmid = shmget(IPC_PRIVATE, size, IPC_CREAT | 0600);
++  if (s.shmid < 0)
++  {
++    log_error("shm_create_private: shmget FAILED size=%zu errno=%d (%s)", size,
++              errno, strerror(errno));
++    return s;
++  }
++
++  s.ptr = shmat(s.shmid, NULL, 0);
++  if (s.ptr == (void *)-1)
++  {
++    log_error("shm_create_private: shmat FAILED shmid=%d errno=%d (%s)",
++              s.shmid, errno, strerror(errno));
++    shmctl(s.shmid, IPC_RMID, NULL);
++    s.ptr = NULL;
++    s.shmid = -1;
++    return s;
++  }
++
++  memset(s.ptr, 0, size);
++  return s;
++}
++
++BridgeShm shm_attach_id(int shmid)
++{
++  BridgeShm s = {0};
++
++  s.shmid = shmid;
++  s.ptr = shmat(shmid, NULL, 0);
++  if (s.ptr == (void *)-1)
++  {
++    log_error("shm_attach_id: shmat FAILED shmid=%d errno=%d (%s)", shmid,
++              errno, strerror(errno));
++    s.ptr = NULL;
++    s.shmid = -1;
++  }
++
++  return s;
++}
++
++void shm_mark_removed(const BridgeShm *s)
++{
++  if (s && s->ptr && s->shmid >= 0)
++    shmctl(s->shmid, IPC_RMID, NULL);
++}
++
+ void shm_detach(BridgeShm *s)
+ {
+   if (!s)
+diff --git a/bridge/bridge_shm.h b/bridge/bridge_shm.h
+index 3c1eb16..dc17e34 100644
+--- a/bridge/bridge_shm.h
++++ b/bridge/bridge_shm.h
+@@ -21,6 +21,18 @@ extern "C"
+   /* attach to existing segment (client side) */
+   BridgeShm shm_attach(const char *name_or_key, size_t size);
+ 
++  /* create a new private segment (IPC_PRIVATE): no key, so separate clients
++   * can never collide or remove each other's segments; the id is passed to
++   * the proxy instead */
++  BridgeShm shm_create_private(size_t size);
++
++  /* attach to a segment by id (proxy side of shm_create_private) */
++  BridgeShm shm_attach_id(int shmid);
++
++  /* mark a segment for removal once every process has detached (called when
++   * both sides are attached: the kernel then frees it even after a crash) */
++  void shm_mark_removed(const BridgeShm *s);
++
+   /* detach local mapping */
+   void shm_detach(BridgeShm *s);
+ 
+diff --git a/proxy/proxy.c b/proxy/proxy.c
+index 4b6ed00..06279de 100644
+--- a/proxy/proxy.c
++++ b/proxy/proxy.c
+@@ -574,13 +574,28 @@ void at_exit_proxy_cleanup()
+   close_wl_thread();
+ }
+ 
+-int setup_bridge()
++/* Segment ids passed by a client that uses private segments (argv[6..9]);
++ * -1 when an older client relies on the fixed keys. */
++static int g_shm_ids[4] = {-1, -1, -1, -1};
++
++static BridgeShm attach_segment(int which, const char *key, size_t size)
++{
++  if (g_shm_ids[which] >= 0)
++    return shm_attach_id(g_shm_ids[which]);
++  return shm_attach(key, size);
++}
++
++int setup_bridge(int argc, char **argv)
+ {
+   log_console("setting up bridge");
+ 
++  if (argc >= 10)
++    for (int i = 0; i < 4; i++)
++      g_shm_ids[i] = atoi(argv[6 + i]);
++
+   g_ring_mask = bridge_config_ring_mask();
+-  ctrl_shm = shm_attach(GLES_BRIDGE_CTRL_SHM, bridge_ctrl_shm_size());
+-  data_shm = shm_attach(GLES_BRIDGE_DATA_SHM, GLES_BRIDGE_DATA_SIZE);
++  ctrl_shm = attach_segment(0, GLES_BRIDGE_CTRL_SHM, bridge_ctrl_shm_size());
++  data_shm = attach_segment(1, GLES_BRIDGE_DATA_SHM, GLES_BRIDGE_DATA_SIZE);
+ 
+   ring = (BridgeRing *)ctrl_shm.ptr;
+   data = (uint8_t *)data_shm.ptr;
+@@ -602,13 +617,25 @@ int setup_bridge()
+ 
+ int setup_bridge_wl(void)
+ {
+-  wl_ctrl_shm = shm_attach(GLES_BRIDGE_WL_CTRL_SHM, bridge_ctrl_shm_size());
++  wl_ctrl_shm =
++      attach_segment(2, GLES_BRIDGE_WL_CTRL_SHM, bridge_ctrl_shm_size());
+ 
+-  wl_data_shm = shm_attach(GLES_BRIDGE_WL_DATA_SHM, GLES_BRIDGE_DATA_SIZE);
++  wl_data_shm = attach_segment(3, GLES_BRIDGE_WL_DATA_SHM, GLES_BRIDGE_DATA_SIZE);
+ 
+   wl_ctrl = (BridgeCtrl *)wl_ctrl_shm.ptr;
+   wl_data = (uint8_t *)wl_data_shm.ptr;
+ 
++  /* Private segments: client and proxy are both attached now, so mark them
++   * for removal; the kernel frees them when the last of the two detaches,
++   * including after a crash (nothing can attach by key anyway). */
++  if (g_shm_ids[0] >= 0)
++  {
++    shm_mark_removed(&ctrl_shm);
++    shm_mark_removed(&data_shm);
++    shm_mark_removed(&wl_ctrl_shm);
++    shm_mark_removed(&wl_data_shm);
++  }
++
+ #ifdef DEBUG
+   log_console("wl_ctrl=%p wl_data=%p wl_ctrl_shm.shmid=%d "
+               "wl_data_shm.shmid=%d",
+diff --git a/stub/bridge_core.c b/stub/bridge_core.c
+index 4ab8c4d..02c39fc 100644
+--- a/stub/bridge_core.c
++++ b/stub/bridge_core.c
+@@ -237,6 +237,13 @@ static int start_proxy(void)
+ 
+   const char *appId = getenv("APPID") ? getenv("APPID") : "";
+ 
++  /* ids of the private shared-memory segments (argv[6..9] of the proxy) */
++  char ctrl_id[16], data_id[16], wl_ctrl_id[16], wl_data_id[16];
++  snprintf(ctrl_id, sizeof(ctrl_id), "%d", g_ctrl_shm.shmid);
++  snprintf(data_id, sizeof(data_id), "%d", g_data_shm.shmid);
++  snprintf(wl_ctrl_id, sizeof(wl_ctrl_id), "%d", g_ctrl_wl_shm.shmid);
++  snprintf(wl_data_id, sizeof(wl_data_id), "%d", g_data_wl_shm.shmid);
++
+   /* Dummy placeholders kept so argv indices match proxy's main() */
+   pid_t pid = fork();
+   if (pid < 0)
+@@ -248,7 +255,8 @@ static int start_proxy(void)
+   if (pid == 0)
+   {
+     /* Child — will become the proxy process */
+-    execl(bin, bin, req_str, resp_str, req_wl_str, resp_wl_str, appId, NULL);
++    execl(bin, bin, req_str, resp_str, req_wl_str, resp_wl_str, appId, ctrl_id,
++          data_id, wl_ctrl_id, wl_data_id, NULL);
+     log_console("execl(%s) FAILED: %s", bin, strerror(errno));
+     _exit(1);
+   }
+@@ -277,9 +285,13 @@ static void bridge_init(void)
+     log_console("%d -> %s", i, opcode_to_string(i));
+   }*/
+ 
+-  g_ctrl_shm = shm_create(GLES_BRIDGE_CTRL_SHM, bridge_ctrl_shm_size());
++  /* Private segments: every client gets its own, and the proxy attaches by
++   * id. With the fixed keys 0x4701-0x4704 a second bridge client (another
++   * app, or a second process of the same app) removed the first client's
++   * segments, and a proxy could attach to the wrong client's ring. */
++  g_ctrl_shm = shm_create_private(bridge_ctrl_shm_size());
+ 
+-  g_data_shm = shm_create(GLES_BRIDGE_DATA_SHM, GLES_BRIDGE_DATA_SIZE);
++  g_data_shm = shm_create_private(GLES_BRIDGE_DATA_SIZE);
+ 
+   g_ring = (BridgeRing *)g_ctrl_shm.ptr;
+   g_data = (uint8_t *)g_data_shm.ptr;
+@@ -552,9 +564,9 @@ void wl_bridge_init(void)
+ {
+   log_console("initialising wl bridge");
+ 
+-  g_ctrl_wl_shm = shm_create(GLES_BRIDGE_WL_CTRL_SHM, bridge_ctrl_shm_size());
++  g_ctrl_wl_shm = shm_create_private(bridge_ctrl_shm_size());
+ 
+-  g_data_wl_shm = shm_create(GLES_BRIDGE_WL_DATA_SHM, GLES_BRIDGE_DATA_SIZE);
++  g_data_wl_shm = shm_create_private(GLES_BRIDGE_DATA_SIZE);
+ 
+   g_wl.ctrl = (BridgeCtrl *)g_ctrl_wl_shm.ptr;
+ 

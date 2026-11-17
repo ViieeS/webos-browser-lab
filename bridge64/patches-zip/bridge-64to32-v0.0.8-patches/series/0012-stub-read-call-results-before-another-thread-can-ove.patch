@@ -1,0 +1,276 @@
+From c6dd7f7656ae4acdaaa4ed69772b88ccb052614f Mon Sep 17 00:00:00 2001
+From: deten <6029514+deten@users.noreply.github.com>
+Date: Tue, 27 Oct 2026 17:28:31 -0700
+Subject: [PATCH 12/12] stub: read call results before another thread can
+ overwrite them
+
+bridge_send_call() releases the ring lock once the proxy has completed
+the command, and the caller then reads the results: names from
+glGenTextures/glGenBuffers/glGenFramebuffers/glGenVertexArrays, values
+from glGet*, info logs. At that point the command's slot and its range
+of the data arena are already free: another thread could take the lock,
+reuse the arena range at once (or the slot after 255 more commands) and
+overwrite the results before they were read. With several GL threads
+(a browser's compositor and painting threads) that hands out duplicate
+or wrong object names, which shows as missing or garbled drawing that
+depends on timing.
+
+The results (the slot, and the command's data and data2 ranges) are now
+copied to thread-local storage while the lock is still held;
+BRIDGE_CTRL() and bridge_data_read() serve them from there. A few
+functions that kept the slot pointer from before the call now fetch it
+again.
+
+glGetStringi (and glGetString for enums it does not cache) returned a pointer into the result buffer itself, which
+was only valid until the slot was reused (and with the copy above, until
+the thread's next call); callers keep these strings, so every distinct
+string is now kept once and returned from there.
+---
+ stub/bridge_core.c  | 69 +++++++++++++++++++++++++++++++++++++++++++++
+ stub/egl_stub.c     |  1 +
+ stub/gles2_stub.c   | 12 ++++++--
+ stub/gles3_2_stub.c | 45 ++++++++++++++++++++++++++++-
+ 4 files changed, 123 insertions(+), 4 deletions(-)
+
+diff --git a/stub/bridge_core.c b/stub/bridge_core.c
+index 3eecd7c..0f7f9a2 100644
+--- a/stub/bridge_core.c
++++ b/stub/bridge_core.c
+@@ -82,6 +82,11 @@ static uint32_t g_ring_mask = 0;
+  * repoint the slot it reads them from. */
+ static __thread BridgeCtrl *g_cur_slot = NULL;
+ static __thread uint64_t g_cur_seq = 0;
++/* results of this thread's last call, see snapshot_call_results() */
++static __thread BridgeCtrl t_call_ctrl;
++static __thread uint8_t *t_call_data;
++static __thread size_t t_call_data_cap;
++static __thread uint32_t t_call_off[2], t_call_len[2];
+ 
+ /* Process-local — there is only ever one producer (serialized by g_lock),
+  * so these don't need to live in shared memory or be atomic. */
+@@ -493,6 +498,24 @@ void bridge_data_read(void *dst, uint32_t offset, size_t size)
+     abort();
+   }
+ 
++  /* results of this thread's last call come from its copy (see
++   * snapshot_call_results) */
++  if (g_cur_slot == &t_call_ctrl)
++  {
++    if (t_call_len[0] && offset >= t_call_off[0] &&
++        (uint64_t)offset + size <= (uint64_t)t_call_off[0] + t_call_len[0])
++    {
++      memcpy(dst, t_call_data + (offset - t_call_off[0]), size);
++      return;
++    }
++    if (t_call_len[1] && offset >= t_call_off[1] &&
++        (uint64_t)offset + size <= (uint64_t)t_call_off[1] + t_call_len[1])
++    {
++      memcpy(dst, t_call_data + t_call_len[0] + (offset - t_call_off[1]), size);
++      return;
++    }
++  }
++
+   memcpy(dst, g_data + offset, size);
+ }
+ 
+@@ -513,6 +536,50 @@ void bridge_send_void(void)
+   pthread_mutex_unlock(&g_lock);
+ }
+ 
++/* Results of a call, kept per thread. bridge_send_call() drops g_lock before
++ * the caller reads the results (result_buf through BRIDGE_CTRL(), output data
++ * through bridge_data_read()). By then the slot and the data range are free
++ * again: the proxy has completed the command, so another thread could reuse
++ * the slot (after 255 more commands) or the arena range (right away) and
++ * overwrite the results first: wrong names from glGenTextures/glGenBuffers,
++ * wrong values from glGet*. The results are copied here while the lock is
++ * still held. */
++
++static void snapshot_call_results(void)
++{
++  memcpy(&t_call_ctrl, g_cur_slot, sizeof(t_call_ctrl));
++
++  size_t need = (size_t)g_cur_slot->data_size + g_cur_slot->data2_size;
++  if (need > t_call_data_cap)
++  {
++    uint8_t *n = realloc(t_call_data, need);
++    if (n)
++    {
++      t_call_data = n;
++      t_call_data_cap = need;
++    }
++  }
++  t_call_off[0] = g_cur_slot->data_offset;
++  t_call_len[0] = g_cur_slot->data_size;
++  t_call_off[1] = g_cur_slot->data2_offset;
++  t_call_len[1] = g_cur_slot->data2_size;
++  if (need > t_call_data_cap)
++  {
++    t_call_len[0] = t_call_len[1] = 0; /* out of memory: read the arena */
++    return;
++  }
++  if (t_call_len[0] &&
++      (uint64_t)t_call_off[0] + t_call_len[0] <= GLES_BRIDGE_DATA_SIZE)
++    memcpy(t_call_data, g_data + t_call_off[0], t_call_len[0]);
++  else
++    t_call_len[0] = 0;
++  if (t_call_len[1] &&
++      (uint64_t)t_call_off[1] + t_call_len[1] <= GLES_BRIDGE_DATA_SIZE)
++    memcpy(t_call_data + t_call_len[0], g_data + t_call_off[1], t_call_len[1]);
++  else
++    t_call_len[1] = 0;
++}
++
+ uint64_t bridge_send_call(void)
+ {
+   g_cur_slot->needs_response = 1;
+@@ -534,6 +601,8 @@ uint64_t bridge_send_call(void)
+   }
+ 
+   uint64_t r = g_cur_slot->result;
++  snapshot_call_results();
++  g_cur_slot = &t_call_ctrl; /* BRIDGE_CTRL() now reads the copy */
+   pthread_mutex_unlock(&g_lock);
+   return r;
+ }
+diff --git a/stub/egl_stub.c b/stub/egl_stub.c
+index 9e1105a..e7d3d0c 100644
+--- a/stub/egl_stub.c
++++ b/stub/egl_stub.c
+@@ -202,6 +202,7 @@ EGLAPI EGLBoolean EGLAPIENTRY eglInitialize(EGLDisplay dpy, EGLint *major,
+ #endif
+ 
+   EGLBoolean ok = (EGLBoolean)BRIDGE_SEND_CALL();
++  C = BRIDGE_CTRL(); /* results of the call (copied while locked) */
+ 
+ #ifdef DEBUG
+   log_console("[eglInitialize] returned ok=%d", ok);
+diff --git a/stub/gles2_stub.c b/stub/gles2_stub.c
+index e42add5..361b97c 100644
+--- a/stub/gles2_stub.c
++++ b/stub/gles2_stub.c
+@@ -1921,6 +1921,7 @@ GL_APICALL void GL_APIENTRY glGetActiveUniform(GLuint program, GLuint index,
+   C->data2_offset = 0;
+   C->data2_size = 0;
+   BRIDGE_SEND_CALL();
++  C = BRIDGE_CTRL(); /* results of the call (copied while locked) */
+   /* Proxy packs: result = (type<<32 | size), name in data, length in result_buf
+    */
+   if (size)
+@@ -2171,6 +2172,7 @@ GL_APICALL void GL_APIENTRY glGetActiveAttrib(GLuint program, GLuint index,
+   C->data2_offset = 0;
+   C->data2_size = 0;
+   BRIDGE_SEND_CALL();
++  C = BRIDGE_CTRL(); /* results of the call (copied while locked) */
+   if (size)
+     *size = (GLint)(C->result & 0xFFFFFFFF);
+   if (type)
+@@ -3384,6 +3386,8 @@ GL_APICALL void GL_APIENTRY glGetIntegerv(GLenum pname, GLint *data)
+  * a static copy so the caller gets a stable address.
+  */
+ 
++const GLubyte *intern_gl_string(const char *str); /* gles3_2_stub.c */
++
+ GL_APICALL const GLubyte *GL_APIENTRY glGetString(GLenum name)
+ {
+   enum
+@@ -3447,11 +3451,13 @@ GL_APICALL const GLubyte *GL_APIENTRY glGetString(GLenum name)
+     return (const GLubyte *)cache[idx];
+   }
+ 
+-  /* Unknown enum: return directly */
++  /* Other enums (GL_SHADING_LANGUAGE_VERSION, ...): the result buffer is
++   * only valid until this thread's next call, so return a kept copy */
+ #ifdef DEBUG_GL_GETSTRING
+-  log_console("glGetString(%u) -> \"%s\" (direct)", name, src);
++  log_console("glGetString(%u) -> \"%s\" (interned)", name, src);
+ #endif
+-  return (const GLubyte *)src;
++  C2->result_buf[BRIDGE_RESULT_SIZE - 1] = 0;
++  return intern_gl_string(src);
+ }
+ 
+ GL_APICALL void GL_APIENTRY glReadPixels(GLint x, GLint y, GLsizei width,
+diff --git a/stub/gles3_2_stub.c b/stub/gles3_2_stub.c
+index fea18e2..13382e0 100644
+--- a/stub/gles3_2_stub.c
++++ b/stub/gles3_2_stub.c
+@@ -1,5 +1,6 @@
+ #include <GLES3/gl32.h>
+ #include <alloca.h>
++#include <pthread.h>
+ #include <stdarg.h>
+ #include <stdbool.h>
+ #include <stdio.h>
+@@ -78,6 +79,7 @@ GL_APICALL void GL_APIENTRY glGenVertexArrays(GLsizei n, GLuint *arrays)
+   C->args_len = W.pos;
+ 
+   BRIDGE_SEND_CALL();
++  C = BRIDGE_CTRL(); /* results of the call (copied while locked) */
+ 
+   memcpy(arrays, C->result_buf, n * sizeof(GLuint));
+ 
+@@ -181,6 +183,7 @@ GL_APICALL void GL_APIENTRY glGenQueries(GLsizei n, GLuint *ids)
+   C->args_len = W.pos;
+ 
+   BRIDGE_SEND_CALL();
++  C = BRIDGE_CTRL(); /* results of the call (copied while locked) */
+ 
+   memcpy(ids, C->result_buf, n * sizeof(GLuint));
+ }
+@@ -1013,6 +1016,43 @@ GL_APICALL void GL_APIENTRY glCopyTexSubImage3D(GLenum target, GLint level,
+   BRIDGE_SEND_VOID();
+ }
+ 
++/* glGetStringi must return strings that stay valid: the result buffer is only
++ * valid until this thread's next call (and the ring slot it came from is reused
++ * by other threads). Keep one copy of every distinct string. */
++const GLubyte *intern_gl_string(const char *str)
++{
++  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
++  static char **pool;
++  static size_t count, cap;
++  const char *found = NULL;
++
++  pthread_mutex_lock(&lock);
++  for (size_t i = 0; i < count && !found; i++)
++    if (strcmp(pool[i], str) == 0)
++      found = pool[i];
++  if (!found)
++  {
++    if (count == cap)
++    {
++      size_t ncap = cap ? cap * 2 : 128;
++      char **np = realloc(pool, ncap * sizeof(*np));
++      if (np)
++      {
++        pool = np;
++        cap = ncap;
++      }
++    }
++    char *copy = count < cap ? strdup(str) : NULL;
++    if (copy)
++    {
++      pool[count++] = copy;
++      found = copy;
++    }
++  }
++  pthread_mutex_unlock(&lock);
++  return (const GLubyte *)found;
++}
++
+ GL_APICALL const GLubyte *GL_APIENTRY glGetStringi(GLenum name, GLuint index)
+ {
+   BRIDGE_BEGIN();
+@@ -1031,7 +1071,10 @@ GL_APICALL const GLubyte *GL_APIENTRY glGetStringi(GLenum name, GLuint index)
+ 
+   /* Proxy writes null‑terminated string into result_buf */
+   BridgeCtrl *C2 = BRIDGE_CTRL();
+-  return (const GLubyte *)C2->result_buf;
++  if (!C2->result_buf[0])
++    return NULL;
++  C2->result_buf[BRIDGE_RESULT_SIZE - 1] = 0;
++  return intern_gl_string((const char *)C2->result_buf);
+ }
+ 
+ GL_APICALL void GL_APIENTRY glGetInteger64v(GLenum pname, GLint64 *data)

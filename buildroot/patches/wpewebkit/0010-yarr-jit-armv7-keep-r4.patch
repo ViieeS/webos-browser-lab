@@ -1,0 +1,16 @@
+YARR JIT on 32-bit: do not clobber r4 before saving it
+
+--- a/Source/JavaScriptCore/yarr/YarrJIT.cpp	2026-11-12 10:46:02.844121720 +0000
++++ b/Source/JavaScriptCore/yarr/YarrJIT.cpp	2026-11-12 10:46:02.845121729 +0000
+@@ -5099,8 +5099,9 @@
+ #if CPU(X86_64) || CPU(ARM64)
+             m_jit.subPtr(GPRInfo::callFrameRegister, CCallHelpers::TrustedImm32(stackSizeForCalleeSaves), MacroAssembler::stackPointerRegister);
+ #else
+-            m_jit.subPtr(GPRInfo::callFrameRegister, CCallHelpers::TrustedImm32(stackSizeForCalleeSaves), m_regs.regT0);
+-            m_jit.move(m_regs.regT0, MacroAssembler::stackPointerRegister);
++            // regT0 is r4 on ARMv7, itself a callee save: computing the new sp in it clobbered the
++            // caller's r4 before emitSaveCalleeSavesFor stored it. sp == fp right after the prologue.
++            m_jit.subPtr(CCallHelpers::TrustedImm32(stackSizeForCalleeSaves), MacroAssembler::stackPointerRegister);
+ #endif
+             m_jit.emitSaveCalleeSavesFor(&m_calleeSaves);
+         }

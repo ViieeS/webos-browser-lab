@@ -1,0 +1,126 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Harness</title>
+<!-- Measures a local bench page in a browser we cannot instrument (the stock webOS browser): the page
+     runs in a same-origin full-screen iframe, and the result goes out as GET /beacon?..., which
+     lighttpd's access log records. Run it in our browser too, so both are measured the same way.
+     usage: harness.html?case=micro|load-wiki|raf-wiki|speedometer&tag=<browser>&run=<n> -->
+<style>html, body { margin: 0; height: 100%; background: #000; } iframe { border: 0; width: 100%; height: 100%; display: block; }</style>
+<iframe id="f"></iframe>
+<script>
+const q = new URLSearchParams(location.search);
+const kase = q.get("case"), tag = q.get("tag") || "unknown", run = q.get("run") || "0";
+const frame = document.getElementById("f");
+const WIKI = "/pages/wiki/en.wikipedia.org/wiki/Television.html";
+
+function report(fields) {
+  new Image().src = "/beacon?" + new URLSearchParams({ tag, case: kase, run, ua: navigator.userAgent.slice(0, 60), ...fields });
+}
+
+// Polls the iframe's text until the regex matches, then reports its first group under `key`.
+function pollText(regex, key, limitS) {
+  const t0 = Date.now();
+  const timer = setInterval(() => {
+    let m = null;
+    try { m = frame.contentDocument.body.innerText.match(regex); } catch (e) { report({ error: String(e) }); clearInterval(timer); return; }
+    if (m) { clearInterval(timer); report({ [key]: m[1], wall_s: Math.round((Date.now() - t0) / 1000) }); }
+    else if (Date.now() - t0 > limitS * 1000) { clearInterval(timer); report({ timeout: 1 }); }
+  }, 500);
+}
+
+function frameLoadMs() {
+  const nav = frame.contentWindow.performance.getEntriesByType("navigation")[0];
+  return nav ? Math.round(nav.loadEventEnd) : -1;
+}
+
+// rAF-driven scroll inside the page for 10 s, like the host's autoscroll=raf: the fps is how often
+// the page's main thread gets a frame while it keeps scrolling.
+function rafScroll() {
+  const w = frame.contentWindow;
+  let frames = 0;
+  const t0 = performance.now();
+  function step(now) {
+    frames++;
+    w.scrollBy(0, 8);
+    if (w.scrollY + w.innerHeight >= w.document.documentElement.scrollHeight - 2) w.scrollTo(0, 0);
+    if (now - t0 < 10000) w.requestAnimationFrame(step);
+    else report({ load_ms: frameLoadMs(), raf_fps: (frames / ((now - t0) / 1000)).toFixed(1) });
+  }
+  w.requestAnimationFrame(step);
+}
+
+if (kase === "micro") {
+  frame.src = "/pages/bench.html";
+  pollText(/total\s+(\d+) ms/, "micro_total_ms", 60);
+} else if (kase === "load-wiki") {
+  frame.onload = () => setTimeout(() => report({ load_ms: frameLoadMs() }), 100);
+  frame.src = WIKI;
+} else if (kase === "raf-wiki") {
+  frame.onload = () => setTimeout(rafScroll, 2000);
+  frame.src = WIKI;
+} else if (kase === "settle-wiki" || kase === "settle-wiki-nojs") {
+  // How long the page keeps the main thread busy after load: rAF ticks for 12 s from load; settle_ms
+  // is when the last gap over 100 ms ended, busy_ms the sum of time lost in gaps over 50 ms.
+  if (kase === "settle-wiki-nojs") frame.setAttribute("sandbox", "allow-same-origin");
+  frame.onload = () => {
+    const w = frame.contentWindow, t0 = performance.now();
+    let last = t0, settle = 0, busy = 0, frames = 0, worst = 0;
+    function tick(now) {
+      const gap = now - last;
+      if (gap > 100) settle = now - t0;
+      if (gap > 50) busy += gap - 16.7;
+      if (gap > worst) worst = gap;
+      last = now; frames++;
+      if (now - t0 < 12000) w.requestAnimationFrame(tick);
+      else report({ load_ms: frameLoadMs(), settle_ms: Math.round(settle), busy_ms: Math.round(busy), worst_gap: Math.round(worst), frames });
+    }
+    w.requestAnimationFrame(tick);
+  };
+  frame.src = WIKI;
+} else if (kase === "raf-wiki-nojs") {
+  // The same scroll with the page's own scripts off: tells the page's scroll handlers apart from
+  // the engine's cost of scrolling itself.
+  frame.setAttribute("sandbox", "allow-same-origin");
+  frame.onload = () => setTimeout(rafScroll, 2000);
+  frame.src = WIKI;
+} else if (kase === "raf-wiki-nosticky") {
+  // Scripts off and every sticky/fixed element made static: is per-frame layout from them?
+  frame.setAttribute("sandbox", "allow-same-origin");
+  frame.onload = () => {
+    const d = frame.contentDocument;
+    let n = 0;
+    for (const e of d.querySelectorAll("*")) {
+      const p = frame.contentWindow.getComputedStyle(e).position;
+      if (p === "sticky" || p === "fixed") { e.style.setProperty("position", "static", "important"); n++; }
+    }
+    if (q.get("noimg")) for (const img of [...d.images]) img.remove();
+    // rm=<selector> removes suspects; rm=:scrollers removes boxes with their own vertical scrolling.
+    const rm = q.get("rm");
+    let removed = 0;
+    if (rm === ":scrollers") {
+      for (const e of [...d.querySelectorAll("body *")])
+        if (/auto|scroll/.test(frame.contentWindow.getComputedStyle(e).overflowY)) { e.remove(); removed++; }
+    } else if (rm) {
+      for (const e of [...d.querySelectorAll(rm)]) { e.remove(); removed++; }
+    }
+    report({ removed });
+    report({ pinned: n, imgs: d.images.length });
+    setTimeout(rafScroll, 2000);
+  };
+  frame.src = WIKI;
+} else if (kase === "raf-long") {
+  frame.onload = () => setTimeout(rafScroll, 2000);
+  frame.src = "/pages/long.html" + (q.get("box") ? "?box=" + q.get("box") : "");
+} else if (kase === "speedometer") {
+  frame.src = "/speedometer3.1/index.html?startAutomatically&iterationCount=2";
+  const t0 = Date.now();
+  const timer = setInterval(() => {
+    const el = frame.contentDocument && frame.contentDocument.querySelector("#result-number");
+    const text = el && el.textContent.trim();
+    if (text && /^[\d.]+$/.test(text)) { clearInterval(timer); report({ score: text, wall_s: Math.round((Date.now() - t0) / 1000) }); }
+    else if (Date.now() - t0 > 1200 * 1000) { clearInterval(timer); report({ timeout: 1 }); }
+  }, 1000);
+} else {
+  report({ error: "unknown case" });
+}
+</script>

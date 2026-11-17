@@ -1,0 +1,10 @@
+cr120 micro #52358-0: micro_total_ms=309 wall_s=1
+cr120 load-wiki #52358-0: load_ms=3147
+cr120 raf-wiki #52358-0: load_ms=3653 raf_fps=61.4
+cr120 raf-wiki-nojs #52358-0: load_ms=5094 raf_fps=62.8
+cr120 speedometer #52358-0: score=0.581 wall_s=137
+cr120 micro #52358-1: micro_total_ms=259 wall_s=1
+cr120 load-wiki #52358-1: load_ms=3282
+cr120 raf-wiki #52358-1: load_ms=3349 raf_fps=61.4
+cr120 raf-wiki-nojs #52358-1: load_ms=4945 raf_fps=63.1
+cr120 speedometer #52358-1: score=0.596 wall_s=134

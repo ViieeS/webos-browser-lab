@@ -1,0 +1,22 @@
+The C1 build has is_webos=false and no g-media-pipeline, so media/neva would fall back to the
+stub factory. Build the webOS UMS player instead, with WebOSMediaClientLuna
+(extra/media/neva/webos/webos_mediaclient_luna.*) in place of UMediaClientImpl, whose base class
+lives in the TV's libstdc++-built libumedia_api.
+--- a/media/neva/BUILD.gn
++++ b/media/neva/BUILD.gn
+@@ -51,6 +51,15 @@
+       "fake_url_media_player.cc",
+       "fake_url_media_player.h",
+     ]
++  } else if (use_neva_media) {  # C1: uMediaServer through luna-send
++    sources += [
++      "webos/media_player_neva_factory_webos.cc",
++      "webos/media_player_ums.cc",
++      "webos/media_player_ums.h",
++      "webos/webos_mediaclient.h",
++      "webos/webos_mediaclient_luna.cc",
++      "webos/webos_mediaclient_luna.h",
++    ]
+   } else {
+     sources += [ "media_player_neva_factory_stub.cc" ]
+   }

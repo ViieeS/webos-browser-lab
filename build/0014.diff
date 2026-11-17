@@ -1,0 +1,22 @@
+--- a/Source/WebCore/page/LocalFrameView.cpp
++++ b/Source/WebCore/page/LocalFrameView.cpp
+@@ -1926,8 +1926,17 @@
+         return;
+ 
+     m_layoutViewportOrigin = origin;
+-    if (layoutTriggering == TriggerLayoutOrNot::Yes)
+-        setViewportConstrainedObjectsNeedLayout();
++    // A scroll moves the layout viewport. Sticky boxes take their offset from the layer position update
++    // after the scroll, so only fixed ones need layout: a sticky box with its own scrolling (Wikipedia's
++    // pinned table of contents) relaid out on every frame held rAF-driven scrolling at 10-20 fps.
++    if (layoutTriggering == TriggerLayoutOrNot::Yes && hasViewportConstrainedObjects()) {
++        for (auto& renderer : *m_viewportConstrainedObjects) {
++            if (!renderer.isStickilyPositioned())
++                renderer.setNeedsLayout();
++            if (renderer.hasLayer())
++                downcast<RenderBoxModelObject>(renderer).layer()->setNeedsCompositingGeometryUpdate();
++        }
++    }
+     
+     if (TiledBacking* tiledBacking = this->tiledBacking()) {
+         FloatRect layoutViewport = layoutViewportRect();

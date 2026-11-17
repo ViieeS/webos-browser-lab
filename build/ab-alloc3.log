@@ -1,0 +1,45 @@
+494d793b8b3ff86c19f28585c3008ea2  /media/developer/apps/usr/palm/applications/com.viiees.browser/lib/libWPEWebKit-2.0.so.1
+micro #0: load_ms=51 micro_total_ms=304 rss_kb=83908 webprocs=1 crashes=0
+load-wiki #0: load_ms=3080 rss_kb=185888 webprocs=1 crashes=0
+wheel-wiki #0: load_ms=3114 rss_kb=207272 webprocs=1 crashes=0 screen_fps=33.6
+speedometer #0: load_ms=86 probe_s=101 score=0.767 rss_kb=444952 webprocs=1 crashes=0 peak_rss_kb=480436
+c728adf7e39325f022dd4c6dd70d8d28  /media/developer/apps/usr/palm/applications/com.viiees.browser/lib/libWPEWebKit-2.0.so.1
+micro #0: load_ms=35 micro_total_ms=277 rss_kb=84300 webprocs=1 crashes=0
+load-wiki #0: load_ms=3237 rss_kb=180328 webprocs=1 crashes=0
+wheel-wiki #0: load_ms=3022 rss_kb=210836 webprocs=1 crashes=0 screen_fps=32.0
+speedometer #0: load_ms=73 probe_s=102 score=0.751 rss_kb=480248 webprocs=1 crashes=0 peak_rss_kb=504272
+7d53ec67ed65495b8526e9060beb53a0  /media/developer/apps/usr/palm/applications/com.viiees.browser/lib/libWPEWebKit-2.0.so.1
+micro #0: load_ms=72 micro_total_ms=271 rss_kb=82584 webprocs=1 crashes=0
+load-wiki #0: load_ms=3119 rss_kb=193572 webprocs=1 crashes=0
+wheel-wiki #0: load_ms=3195 rss_kb=216612 webprocs=1 crashes=0 screen_fps=31.6
+speedometer #0: load_ms=99 probe_s=103 score=0.733 rss_kb=514496 webprocs=1 crashes=0 peak_rss_kb=534412
+494d793b8b3ff86c19f28585c3008ea2  /media/developer/apps/usr/palm/applications/com.viiees.browser/lib/libWPEWebKit-2.0.so.1
+micro #0: load_ms=38 micro_total_ms=264 rss_kb=83392 webprocs=1 crashes=0
+load-wiki #0: load_ms=2938 rss_kb=179736 webprocs=1 crashes=0
+wheel-wiki #0: load_ms=3110 rss_kb=202016 webprocs=1 crashes=0 screen_fps=35.0
+speedometer #0: load_ms=72 probe_s=103 score=0.758 rss_kb=498056 webprocs=1 crashes=0 peak_rss_kb=517740
+c728adf7e39325f022dd4c6dd70d8d28  /media/developer/apps/usr/palm/applications/com.viiees.browser/lib/libWPEWebKit-2.0.so.1
+micro #0: load_ms=46 micro_total_ms=270 rss_kb=84732 webprocs=1 crashes=0
+load-wiki #0: load_ms=3229 rss_kb=185040 webprocs=1 crashes=0
+wheel-wiki #0: load_ms=2985 rss_kb=200392 webprocs=1 crashes=0 screen_fps=31.1
+speedometer #0: load_ms=80 probe_s=101 score=0.757 rss_kb=473348 webprocs=1 crashes=0 peak_rss_kb=512916
+7d53ec67ed65495b8526e9060beb53a0  /media/developer/apps/usr/palm/applications/com.viiees.browser/lib/libWPEWebKit-2.0.so.1
+micro #0: load_ms=126 micro_total_ms=303 rss_kb=84496 webprocs=1 crashes=0
+load-wiki #0: load_ms=3160 rss_kb=193772 webprocs=1 crashes=0
+wheel-wiki #0: load_ms=3222 rss_kb=209160 webprocs=1 crashes=0 screen_fps=32.1
+speedometer #0: load_ms=42 probe_s=102 score=0.751 rss_kb=536632 webprocs=1 crashes=0 peak_rss_kb=537144
+494d793b8b3ff86c19f28585c3008ea2  /media/developer/apps/usr/palm/applications/com.viiees.browser/lib/libWPEWebKit-2.0.so.1
+micro #0: load_ms=50 micro_total_ms=261 rss_kb=82984 webprocs=1 crashes=0
+load-wiki #0: load_ms=3167 rss_kb=186332 webprocs=1 crashes=0
+wheel-wiki #0: load_ms=3111 rss_kb=206672 webprocs=1 crashes=0 screen_fps=31.2
+speedometer #0: load_ms=107 probe_s=107 score=0.726 rss_kb=457868 webprocs=1 crashes=0 peak_rss_kb=520672
+c728adf7e39325f022dd4c6dd70d8d28  /media/developer/apps/usr/palm/applications/com.viiees.browser/lib/libWPEWebKit-2.0.so.1
+micro #0: load_ms=54 micro_total_ms=268 rss_kb=83812 webprocs=1 crashes=0
+load-wiki #0: load_ms=3364 rss_kb=184504 webprocs=1 crashes=0
+wheel-wiki #0: load_ms=3355 rss_kb=205764 webprocs=1 crashes=0 screen_fps=32.9
+speedometer #0: load_ms=100 probe_s=109 score=0.704 rss_kb=455912 webprocs=1 crashes=0 peak_rss_kb=501924
+7d53ec67ed65495b8526e9060beb53a0  /media/developer/apps/usr/palm/applications/com.viiees.browser/lib/libWPEWebKit-2.0.so.1
+micro #0: load_ms=47 micro_total_ms=265 rss_kb=84308 webprocs=1 crashes=0
+load-wiki #0: load_ms=3256 rss_kb=195036 webprocs=1 crashes=0
+wheel-wiki #0: load_ms=3239 rss_kb=212620 webprocs=1 crashes=0 screen_fps=31.2
+speedometer #0: load_ms=72 probe_s=104 score=0.731 rss_kb=507244 webprocs=1 crashes=0 peak_rss_kb=536908

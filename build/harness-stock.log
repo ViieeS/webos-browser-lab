@@ -1,0 +1,18 @@
+stock micro #32481-0: micro_total_ms=341 wall_s=2
+ours micro #32481-0: micro_total_ms=264 wall_s=1
+stock load-wiki #32481-0: load_ms=4842
+ours load-wiki #32481-0: load_ms=8862
+stock raf-wiki #32481-0: load_ms=5093 raf_fps=58.9
+ours raf-wiki #32481-0: load_ms=3137 raf_fps=9.9
+stock micro #33089-0: micro_total_ms=334 wall_s=1
+ours micro #33089-0: micro_total_ms=232 wall_s=1
+stock load-wiki #33089-0: load_ms=4953
+ours load-wiki #33089-0: load_ms=3163
+stock raf-wiki #33089-0: load_ms=4958 raf_fps=59.9
+ours raf-wiki #33089-0: load_ms=3201 raf_fps=9.9
+stock micro #33089-1: micro_total_ms=355 wall_s=2
+ours micro #33089-1: micro_total_ms=241 wall_s=1
+stock load-wiki #33089-1: load_ms=4825
+ours load-wiki #33089-1: load_ms=3307
+stock raf-wiki #33089-1: load_ms=5064 raf_fps=58.9
+ours raf-wiki #33089-1: load_ms=3249 raf_fps=10.0

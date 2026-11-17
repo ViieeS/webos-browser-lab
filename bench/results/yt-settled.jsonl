@@ -1,0 +1,2 @@
+{"label": "yt-settled", "case": "wheel-youtube-settled", "iter": 0, "ts": "2026-11-16 14:16:00", "params": {}, "lib_md5": "6ccb7b464649", "host_md5": "1466b296fd18", "avail_kb_before": 317400, "metrics": {"load_ms": 10172, "rss_kb": 467688, "webprocs": 2, "crashes": 0, "screen_fps": 21.4}}
+{"label": "yt-settled", "case": "wheel-youtube-settled", "iter": 0, "ts": "2026-11-16 14:17:06", "params": {}, "lib_md5": "6ccb7b464649", "host_md5": "1466b296fd18", "avail_kb_before": 317400, "metrics": {"load_ms": 10262, "rss_kb": 507688, "webprocs": 2, "crashes": 0, "screen_fps": 21.6}}

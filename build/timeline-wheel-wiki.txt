@@ -1,0 +1,27 @@
+DUMP  | {"clip": [1246, 707, 1272, 707, 1272, 712, 1246, 712]}
+DUMP  | {"clip": [32, 24, 240, 24, 240, 445, 32, 445]}
+DUMP  | {"clip": [1040, 24, 1236, 24, 1236, 468, 1040, 468]}
+DUMP  | {"clip": [1246, 707, 1272, 707, 1272, 712, 1246, 712]}
+DUMP  | {"clip": [32, 24, 240, 24, 240, 445, 32, 445]}
+DUMP  | {"clip": [1040, 24, 1236, 24, 1236, 468, 1040, 468]}
+records=1486 recorded_s=9.0 self_total_ms=2368
+     1519 ms  64.1%     347  Paint
+      406 ms  17.1%     294  Layout
+      175 ms   7.4%     462  FunctionCall
+      122 ms   5.1%     427  RenderingFrame
+       81 ms   3.4%     474  Composite
+       27 ms   1.1%     364  EventDispatch
+       23 ms   1.0%       7  RecalculateStyles
+       12 ms   0.5%      36  ObserverCallback
+        4 ms   0.2%      66  TimerFire
+        0 ms   0.0%      52  TimerInstall
+        0 ms   0.0%       7  ScheduleStyleRecalculation
+        0 ms   0.0%     160  InvalidateLayout
+        0 ms   0.0%       3  TimerRemove
+-- heaviest script entries (inclusive ms)
+      113  TimerFire 
+      108  FunctionCall 
+       76  ObserverCallback IntersectionObserver
+       70  FunctionCall https://en.wikipedia.org/w/load.php?lang=en&modules=jquery&skin=vector-2022&version=tkra7
+       48  EventDispatch scroll
+       17  FunctionCall http://127.0.0.1:8099/pages/wiki/en.wikipedia.org/w/load.php%3Flang=en&modules=startup&only=scrip

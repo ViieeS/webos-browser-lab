@@ -1,0 +1,20 @@
+DFG constant folding called Math.* C functions through a deduced template argument, which drops
+the VFP calling-convention attribute on softfp ARMv7: Math.log(10) folded to NaN, sin/cos/exp wrong.
+
+--- a/Source/JavaScriptCore/dfg/DFGAbstractInterpreterInlines.h
++++ b/Source/JavaScriptCore/dfg/DFGAbstractInterpreterInlines.h
+@@ -1556,7 +1556,13 @@
+         break;
+ 
+     case ArithUnary:
+-        executeDoubleUnaryOpEffects(node, arithUnaryFunction(node->arithUnaryType()));
++        {
++            // softfp ARMv7: a function pointer passed as a deduced template argument loses its
++            // pcs("aapcs-vfp") attribute, so the call would pass the double in r0:r1 while the
++            // function reads d0. Calling through the typed pointer in a lambda keeps the VFP ABI.
++            Arith::UnaryFunction function = arithUnaryFunction(node->arithUnaryType());
++            executeDoubleUnaryOpEffects(node, [function](double value) -> double { return function(value); });
++        }
+         break;
+             
+     case ToBoolean:

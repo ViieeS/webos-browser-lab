@@ -1,0 +1,29 @@
+--- a/ozone/wayland/BUILD.gn	2026-11-16 13:38:43.724811402 +0000
++++ b/ozone/wayland/BUILD.gn	2026-11-16 13:38:43.725813087 +0000
+@@ -15,7 +15,7 @@
+     "wayland-cursor",
+     "wayland-egl",
+   ]
+-  if (is_webos) {
++  if (true) {  # C1: webOS shell without the rest of is_webos
+     packages += [
+       "wayland-webos-client",
+     ]
+@@ -28,7 +28,7 @@
+ }
+ 
+ config("wayland_config") {
+-  defines = [ "OZONE_WAYLAND_IMPLEMENTATION=1" ]
++  defines = [ "OZONE_WAYLAND_IMPLEMENTATION=1", "OS_WEBOS=1" ]
+ 
+   if (enable_drm_support) {
+     defines += [ "ENABLE_DRM_SUPPORT" ]
+@@ -109,7 +109,7 @@
+     "shell/ivi_shell_surface.cc",
+     "shell/ivi_shell_surface.h",
+   ]
+-  if (is_webos) {
++  if (true) {
+     sources += [
+       "group/wayland_webos_surface_group.cc",
+       "group/wayland_webos_surface_group.h",

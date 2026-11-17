@@ -1,0 +1,48 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Bench</title>
+<style>
+  body { background: #111; color: #eee; font: 32px/1.5 sans-serif; margin: 60px; }
+  td { padding: 4px 32px 4px 0; } .bad { color: #f66; } .ok { color: #6f6; }
+</style>
+<h1>JS bench</h1>
+<table id="out"></table>
+<script>
+// Each test returns a value whose checksum is fixed: a wrong number means a miscompiled JIT
+// (e.g. a double passed in the wrong registers), not just a slow one.
+const tests = [
+  ["int loop", () => { let s = 0; for (let i = 0; i < 3e6; i++) s = (s + i * 7) | 0; return s; }, 699351136],
+  ["math sin/cos/pow", () => {
+      let s = 0;
+      for (let i = 1; i < 2e5; i++) s += Math.sin(i) * Math.cos(i / 3) + Math.pow(i % 17, 0.5) + Math.atan2(i, 7);
+      return Math.round(s * 1000) / 1000; }, 837242.606],   // from node; libm may differ in the last ulp
+  ["objects", () => {
+      const a = []; for (let i = 0; i < 2e5; i++) a.push({ x: i, y: i * 2 });
+      return a.reduce((t, o) => t + o.x + o.y, 0); }, 59999700000],
+  ["strings", () => {
+      let s = ""; for (let i = 0; i < 5e4; i++) s += String.fromCharCode(65 + i % 26);
+      return s.split("A").length; }, 1925],
+  ["DOM", () => {
+      const d = document.createElement("div");
+      for (let i = 0; i < 3000; i++) { const e = document.createElement("span"); e.textContent = i; d.appendChild(e); }
+      return d.textContent.length; }, 10890],
+];
+const out = document.getElementById("out");
+let total = 0, i = 0;
+function next() {
+  if (i === tests.length) {
+    out.insertAdjacentHTML("beforeend", `<tr><td><b>total</b></td><td><b>${total} ms</b></td></tr>`);
+    console.log("BENCH total " + total);
+    return;
+  }
+  const [name, fn, want] = tests[i++];
+  const t0 = Date.now(); const got = fn(); const ms = Date.now() - t0;
+  total += ms;
+  const ok = typeof want === "number" && !Number.isInteger(want) ? Math.abs(got - want) < 0.01 : got === want;
+  out.insertAdjacentHTML("beforeend",
+    `<tr><td>${name}</td><td>${ms} ms</td><td class="${ok ? "ok" : "bad"}">${ok ? "ok" : "WRONG " + got}</td></tr>`);
+  console.log(`BENCH ${name} ${ms} ${ok ? "ok" : "WRONG " + got}`);
+  setTimeout(next, 50);
+}
+setTimeout(next, 300);
+</script>

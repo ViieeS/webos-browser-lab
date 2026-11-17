@@ -1,0 +1,313 @@
+From bec105e9b3cfaa593e4fb32c8b96932ab16d3725 Mon Sep 17 00:00:00 2001
+From: deten <6029514+deten@users.noreply.github.com>
+Date: Tue, 27 Oct 2026 16:58:17 -0700
+Subject: [PATCH 08/12] egl: forward EGL_KHR_fence_sync and EGL_KHR_wait_sync
+ properly
+
+The sync calls went through the generic dynamic dispatch, which passed
+the stub's display index as the EGLDisplay and the client's 64-bit
+attribute-list pointer through unchanged. eglCreateSyncKHR therefore
+failed (or read unrelated memory), and a client that synchronises
+contexts with EGL fences (WebKit: painting threads to compositor) got no
+synchronisation at all.
+
+eglCreateSyncKHR, eglDestroySyncKHR, eglClientWaitSyncKHR, eglWaitSyncKHR
+and eglGetSyncAttribKHR now have their own opcodes: the display index is
+translated, the attribute list copied, the sync handle passed back as an
+opaque value.
+
+Fence waits in the single-threaded proxy: a client wait blocks every
+context until the fence signals, which is only safe if the fence's
+commands have been submitted. The proxy flushes right after creating a
+fence and adds EGL_SYNC_FLUSH_COMMANDS_BIT_KHR to client waits, so the
+GPU always makes progress and the wait ends on its own; server waits
+(eglWaitSyncKHR) never block the proxy.
+---
+ include/gles_bridge_protocol.h |   7 +++
+ proxy/protocol/egl.c           |  96 +++++++++++++++++++++++++++++
+ proxy/protocol/egl.h           |   5 ++
+ proxy/proxy.c                  |   5 ++
+ stub/egl_stub.c                | 109 +++++++++++++++++++++++++++++++++
+ 5 files changed, 222 insertions(+)
+
+diff --git a/include/gles_bridge_protocol.h b/include/gles_bridge_protocol.h
+index f1f5b98..1dd7018 100644
+--- a/include/gles_bridge_protocol.h
++++ b/include/gles_bridge_protocol.h
+@@ -478,6 +478,13 @@ typedef enum
+ 
+   /* bridge-internal: highest index read from the bound element buffer, for
+    * draws that combine an element buffer with client-side vertex arrays */
++  /* EGL_KHR_fence_sync / EGL_KHR_wait_sync, with display translation */
++  OP_eglCreateSyncKHR,
++  OP_eglDestroySyncKHR,
++  OP_eglClientWaitSyncKHR,
++  OP_eglWaitSyncKHR,
++  OP_eglGetSyncAttribKHR,
++
+   /* GLES 3.1 queries */
+   OP_glGetMultisamplefv,
+   OP_glGetTexLevelParameteriv,
+diff --git a/proxy/protocol/egl.c b/proxy/protocol/egl.c
+index b1fa772..6ba435b 100644
+--- a/proxy/protocol/egl.c
++++ b/proxy/protocol/egl.c
+@@ -1246,3 +1246,99 @@ void h_eglDestroyImageKHR(BridgeCtrl *C, uint8_t *D)
+ 
+   C->result = ok ? 1 : 0;
+ }
++
++/* ── EGL fences (EGL_KHR_fence_sync, EGL_KHR_wait_sync) ─────────────────────
++ *
++ * These used to go through the generic dynamic dispatch, which passed the
++ * stub's display index as the EGLDisplay and the 64-bit attribute-list pointer
++ * through unchanged, so fence creation failed (or read garbage) and WebKit's
++ * cross-context synchronisation (painting threads to compositor) silently did
++ * nothing: tiles were sampled before the GPU had finished painting them.
++ *
++ * Waiting: this proxy serves every client thread from one thread, so a blocking
++ * client wait stalls all contexts until the fence signals. That is safe as long
++ * as the fence's commands have been submitted: the fence is flushed right after
++ * it is created, and the client wait also asks for a flush. The GPU then always
++ * makes progress, and the wait ends without help from another context. A
++ * server wait (eglWaitSyncKHR) never blocks the proxy. */
++
++typedef EGLSyncKHR (*PFN_CreateSync)(EGLDisplay, EGLenum, const EGLint *);
++typedef EGLBoolean (*PFN_DestroySync)(EGLDisplay, EGLSyncKHR);
++typedef EGLint (*PFN_ClientWaitSync)(EGLDisplay, EGLSyncKHR, EGLint, EGLTimeKHR);
++typedef EGLint (*PFN_WaitSync)(EGLDisplay, EGLSyncKHR, EGLint);
++typedef EGLBoolean (*PFN_GetSyncAttrib)(EGLDisplay, EGLSyncKHR, EGLint, EGLint *);
++
++#define SYNC_PROC(type, var, name)                                             \
++  static type var;                                                             \
++  if (!var)                                                                    \
++    var = (type)eglGetProcAddress(name);
++
++void h_eglCreateSyncKHR(BridgeCtrl *C, uint8_t *D)
++{
++  (void)D;
++  AR(r);
++  uint32_t di = ar_u32(&r);
++  EGLenum type = ar_u32(&r);
++  uint32_t n = ar_u32(&r);
++  EGLint attribs[34];
++  uint32_t i = 0;
++  for (; i < n && i < 32; i++)
++    attribs[i] = ar_i32(&r);
++  attribs[i] = EGL_NONE;
++
++  SYNC_PROC(PFN_CreateSync, create, "eglCreateSyncKHR");
++  EGLSyncKHR s = create ? create(DISP(di), type, attribs) : EGL_NO_SYNC_KHR;
++  if (s != EGL_NO_SYNC_KHR)
++    glFlush(); /* submit the fence so a wait from any context can finish */
++  else
++    log_error("eglCreateSyncKHR(0x%x) failed: 0x%x", type, eglGetError());
++  C->result = (uint64_t)(uintptr_t)s;
++}
++
++void h_eglDestroySyncKHR(BridgeCtrl *C, uint8_t *D)
++{
++  (void)D;
++  AR(r);
++  uint32_t di = ar_u32(&r);
++  EGLSyncKHR s = (EGLSyncKHR)(uintptr_t)ar_u64(&r);
++  SYNC_PROC(PFN_DestroySync, destroy, "eglDestroySyncKHR");
++  C->result = destroy ? destroy(DISP(di), s) : EGL_FALSE;
++}
++
++void h_eglClientWaitSyncKHR(BridgeCtrl *C, uint8_t *D)
++{
++  (void)D;
++  AR(r);
++  uint32_t di = ar_u32(&r);
++  EGLSyncKHR s = (EGLSyncKHR)(uintptr_t)ar_u64(&r);
++  EGLint flags = ar_i32(&r);
++  EGLTimeKHR timeout = ar_u64(&r);
++  SYNC_PROC(PFN_ClientWaitSync, cwait, "eglClientWaitSyncKHR");
++  C->result = (uint64_t)(int64_t)(
++      cwait ? cwait(DISP(di), s, flags | EGL_SYNC_FLUSH_COMMANDS_BIT_KHR, timeout)
++            : EGL_FALSE);
++}
++
++void h_eglWaitSyncKHR(BridgeCtrl *C, uint8_t *D)
++{
++  (void)D;
++  AR(r);
++  uint32_t di = ar_u32(&r);
++  EGLSyncKHR s = (EGLSyncKHR)(uintptr_t)ar_u64(&r);
++  EGLint flags = ar_i32(&r);
++  SYNC_PROC(PFN_WaitSync, swait, "eglWaitSyncKHR");
++  C->result = (uint64_t)(int64_t)(swait ? swait(DISP(di), s, flags) : EGL_FALSE);
++}
++
++void h_eglGetSyncAttribKHR(BridgeCtrl *C, uint8_t *D)
++{
++  (void)D;
++  AR(r);
++  uint32_t di = ar_u32(&r);
++  EGLSyncKHR s = (EGLSyncKHR)(uintptr_t)ar_u64(&r);
++  EGLint attr = ar_i32(&r);
++  EGLint value = 0;
++  SYNC_PROC(PFN_GetSyncAttrib, getattr, "eglGetSyncAttribKHR");
++  EGLBoolean ok = getattr ? getattr(DISP(di), s, attr, &value) : EGL_FALSE;
++  C->result = ((uint64_t)(uint32_t)value) | ((uint64_t)ok << 32);
++}
+diff --git a/proxy/protocol/egl.h b/proxy/protocol/egl.h
+index 1f5800a..d38d2ec 100644
+--- a/proxy/protocol/egl.h
++++ b/proxy/protocol/egl.h
+@@ -68,6 +68,11 @@ void h_eglQueryAPI(BridgeCtrl *C, uint8_t *D);
+ void h_eglGetProcAddress(BridgeCtrl *C, uint8_t *D);
+ void h_eglCreateImageKHR(BridgeCtrl *C, uint8_t *D);
+ void h_eglDestroyImageKHR(BridgeCtrl *C, uint8_t *D);
++void h_eglCreateSyncKHR(BridgeCtrl *C, uint8_t *D);
++void h_eglDestroySyncKHR(BridgeCtrl *C, uint8_t *D);
++void h_eglClientWaitSyncKHR(BridgeCtrl *C, uint8_t *D);
++void h_eglWaitSyncKHR(BridgeCtrl *C, uint8_t *D);
++void h_eglGetSyncAttribKHR(BridgeCtrl *C, uint8_t *D);
+ 
+ /* ── EGL extension handler ──────────────────────────────────────────────── */
+ void h_InvokeDynamic(BridgeCtrl *C, uint8_t *D);
+diff --git a/proxy/proxy.c b/proxy/proxy.c
+index 66ef3bd..42bbe9d 100644
+--- a/proxy/proxy.c
++++ b/proxy/proxy.c
+@@ -420,6 +420,11 @@ static const HandlerFn dispatch_table[OP_MAX] = {
+     ENTRY(OP_glBindImageTexture, h_glBindImageTexture),
+     ENTRY(OP_glDrawRangeElements, h_glDrawRangeElements),
+     ENTRY(OP_bridgeIndexRange, h_bridgeIndexRange),
++    ENTRY(OP_eglCreateSyncKHR, h_eglCreateSyncKHR),
++    ENTRY(OP_eglDestroySyncKHR, h_eglDestroySyncKHR),
++    ENTRY(OP_eglClientWaitSyncKHR, h_eglClientWaitSyncKHR),
++    ENTRY(OP_eglWaitSyncKHR, h_eglWaitSyncKHR),
++    ENTRY(OP_eglGetSyncAttribKHR, h_eglGetSyncAttribKHR),
+     ENTRY(OP_glGetMultisamplefv, h_glGetMultisamplefv),
+     ENTRY(OP_glGetTexLevelParameteriv, h_glGetTexLevelParameteriv),
+     ENTRY(OP_glGetTexLevelParameterfv, h_glGetTexLevelParameterfv),
+diff --git a/stub/egl_stub.c b/stub/egl_stub.c
+index 080dc5d..bc4657a 100644
+--- a/stub/egl_stub.c
++++ b/stub/egl_stub.c
+@@ -1456,6 +1456,108 @@ void *lookup_core_func(const char *procname)
+   return NULL;
+ }
+ 
++/* ── EGL fences (EGL_KHR_fence_sync, EGL_KHR_wait_sync) ─────────────────────
++ * The display goes over as its bridge index and the attribute list is copied;
++ * the sync handle is the proxy's 32-bit EGLSyncKHR, kept opaque here. */
++static EGLSyncKHR EGLAPIENTRY bridge_eglCreateSyncKHR(EGLDisplay dpy,
++                                                      EGLenum type,
++                                                      const EGLint *attrib_list)
++{
++  BRIDGE_BEGIN();
++  BridgeCtrl *C = BRIDGE_CTRL();
++  setup_egl(OP_eglCreateSyncKHR);
++  ArgWriter W = aw_init(C->args, BRIDGE_ARGS_SIZE);
++  aw_u32(&W, H2I(dpy));
++  aw_u32(&W, type);
++  uint32_t n = 0;
++  if (attrib_list)
++    while (attrib_list[n] != EGL_NONE && n < 32)
++      n += 2;
++  aw_u32(&W, n);
++  for (uint32_t i = 0; i < n; i++)
++    aw_i32(&W, attrib_list[i]);
++  C->args_len = W.pos;
++  return (EGLSyncKHR)(uintptr_t)BRIDGE_SEND_CALL();
++}
++
++static EGLBoolean EGLAPIENTRY bridge_eglDestroySyncKHR(EGLDisplay dpy,
++                                                       EGLSyncKHR sync)
++{
++  BRIDGE_BEGIN();
++  BridgeCtrl *C = BRIDGE_CTRL();
++  setup_egl(OP_eglDestroySyncKHR);
++  ArgWriter W = aw_init(C->args, BRIDGE_ARGS_SIZE);
++  aw_u32(&W, H2I(dpy));
++  aw_u64(&W, (uint64_t)(uintptr_t)sync);
++  C->args_len = W.pos;
++  return (EGLBoolean)BRIDGE_SEND_CALL();
++}
++
++static EGLint EGLAPIENTRY bridge_eglClientWaitSyncKHR(EGLDisplay dpy,
++                                                      EGLSyncKHR sync,
++                                                      EGLint flags,
++                                                      EGLTimeKHR timeout)
++{
++  BRIDGE_BEGIN();
++  BridgeCtrl *C = BRIDGE_CTRL();
++  setup_egl(OP_eglClientWaitSyncKHR);
++  ArgWriter W = aw_init(C->args, BRIDGE_ARGS_SIZE);
++  aw_u32(&W, H2I(dpy));
++  aw_u64(&W, (uint64_t)(uintptr_t)sync);
++  aw_i32(&W, flags);
++  aw_u64(&W, timeout);
++  C->args_len = W.pos;
++  return (EGLint)BRIDGE_SEND_CALL();
++}
++
++static EGLint EGLAPIENTRY bridge_eglWaitSyncKHR(EGLDisplay dpy, EGLSyncKHR sync,
++                                                EGLint flags)
++{
++  BRIDGE_BEGIN();
++  BridgeCtrl *C = BRIDGE_CTRL();
++  setup_egl(OP_eglWaitSyncKHR);
++  ArgWriter W = aw_init(C->args, BRIDGE_ARGS_SIZE);
++  aw_u32(&W, H2I(dpy));
++  aw_u64(&W, (uint64_t)(uintptr_t)sync);
++  aw_i32(&W, flags);
++  C->args_len = W.pos;
++  return (EGLint)BRIDGE_SEND_CALL();
++}
++
++static EGLBoolean EGLAPIENTRY bridge_eglGetSyncAttribKHR(EGLDisplay dpy,
++                                                         EGLSyncKHR sync,
++                                                         EGLint attribute,
++                                                         EGLint *value)
++{
++  BRIDGE_BEGIN();
++  BridgeCtrl *C = BRIDGE_CTRL();
++  setup_egl(OP_eglGetSyncAttribKHR);
++  ArgWriter W = aw_init(C->args, BRIDGE_ARGS_SIZE);
++  aw_u32(&W, H2I(dpy));
++  aw_u64(&W, (uint64_t)(uintptr_t)sync);
++  aw_i32(&W, attribute);
++  C->args_len = W.pos;
++  uint64_t r = BRIDGE_SEND_CALL();
++  if (value)
++    *value = (EGLint)(uint32_t)r;
++  return (EGLBoolean)(r >> 32);
++}
++
++static void *bridge_sync_proc(const char *name)
++{
++  if (!strcmp(name, "eglCreateSyncKHR"))
++    return (void *)bridge_eglCreateSyncKHR;
++  if (!strcmp(name, "eglDestroySyncKHR"))
++    return (void *)bridge_eglDestroySyncKHR;
++  if (!strcmp(name, "eglClientWaitSyncKHR"))
++    return (void *)bridge_eglClientWaitSyncKHR;
++  if (!strcmp(name, "eglWaitSyncKHR"))
++    return (void *)bridge_eglWaitSyncKHR;
++  if (!strcmp(name, "eglGetSyncAttribKHR"))
++    return (void *)bridge_eglGetSyncAttribKHR;
++  return NULL;
++}
++
+ EGLAPI __eglMustCastToProperFunctionPointerType EGLAPIENTRY
+ eglGetProcAddress(const char *procname)
+ {
+@@ -1478,6 +1580,13 @@ eglGetProcAddress(const char *procname)
+   if (!strcmp(procname, "eglCreatePlatformWindowSurfaceEXT"))
+     return (void *)eglCreatePlatformWindowSurfaceEXT;
+ 
++  /* EGL fences: forwarded with display translation (not the generic path) */
++  {
++    void *sync = bridge_sync_proc(procname);
++    if (sync)
++      return sync;
++  }
++
+   /* 1. GLES table */
+   ProcEntry *p = find_proc(procname);
+ 

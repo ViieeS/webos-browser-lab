@@ -1,0 +1,14 @@
+MiniBrowser: user agent from MINIBROWSER_USER_AGENT
+
+--- a/Tools/MiniBrowser/wpe/main.cpp	2026-11-12 17:31:01.287724216 +0000
++++ b/Tools/MiniBrowser/wpe/main.cpp	2026-11-12 17:31:01.287724216 +0000
+@@ -569,6 +569,9 @@
+         "enable-webrtc", TRUE,
+         "enable-encrypted-media", TRUE,
+         nullptr);
++    // A/B against our 32-bit host needs the same UA: sites (YouTube) pick their bundles by it.
++    if (const char* userAgent = g_getenv("MINIBROWSER_USER_AGENT"))
++        webkit_settings_set_user_agent(settings, userAgent);
+ 
+     if (featureList) {
+         g_autoptr(WebKitFeatureList) features = webkit_settings_get_all_features();

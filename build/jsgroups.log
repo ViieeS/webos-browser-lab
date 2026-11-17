@@ -1,0 +1,18 @@
+GROUP 0 Air,Basic,ML,Babylon,cdjs,first-inspector-code-load
+jetstream-js #0: load_ms=383 probe_s=149 score=17.48 rss_kb=423120 webprocs=1 crashes=0 peak_rss_kb=633104
+GROUP 1 multi-inspector-code-load,Box2D,octane-code-load,crypto,delta-blue,earley-boyer
+jetstream-js #0: load_ms=721 probe_s=56 score=46.19 rss_kb=486780 webprocs=1 crashes=0 peak_rss_kb=583200
+GROUP 2 gbemu,mandreel,navier-stokes,pdfjs,raytrace,regexp-octane
+jetstream-js #0: load_ms=343 probe_s=284 score=11.36 rss_kb=605688 webprocs=1 crashes=0 peak_rss_kb=714160
+GROUP 3 richards,splay,FlightPlanner,OfflineAssembler,UniPoker,validatorjs
+jetstream-js #0: load_ms=398 rss_kb=705532 webprocs=1 crashes=0 peak_rss_kb=709104 timeout=1
+GROUP 4 hash-map,doxbee-promise,doxbee-async,ai-astar,gaussian-blur,stanford-crypto-aes
+jetstream-js #0: load_ms=329 probe_s=152 score=21.84 rss_kb=486004 webprocs=1 crashes=0 peak_rss_kb=486004
+GROUP 5 stanford-crypto-pbkdf2,stanford-crypto-sha256,json-stringify-inspector,json-parse-inspector,bigint-noble-ed25519,proxy-mobx
+jetstream-js #0: load_ms=357 probe_s=79 score=28.15 rss_kb=491004 webprocs=1 crashes=0 peak_rss_kb=491004
+GROUP 6 proxy-vue,mobx-startup,jsdom-d3-startup,web-ssr,raytrace-public-class-fields,raytrace-private-class-fields
+jetstream-js #0: load_ms=363 rss_kb=168796 webprocs=1 crashes=0 killed=1 peak_rss_kb=815404
+GROUP 7 typescript-lib,async-fs,sync-fs,lazy-collections,js-tokens,threejs
+jetstream-js #0: load_ms=469 probe_s=364 score=3.72 rss_kb=411492 webprocs=1 crashes=0 peak_rss_kb=1014552
+GROUP 8 babylonjs-startup-es6,babylonjs-scene-es6,bomb-workers,segmentation,WSL,Sunspider
+jetstream-js #0: load_ms=492 probe_s=1844 score=1.68 rss_kb=909316 webprocs=1 crashes=0 peak_rss_kb=1078696

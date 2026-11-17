@@ -1,0 +1,50 @@
+# Build outputs, TV copies and third-party trees: rebuilt or fetched, never versioned.
+__pycache__/
+.DS_Store
+
+# Artifacts; the small text evidence (A/B logs, timelines, jsc runs, scripts) stays.
+build/*
+!build/*.txt
+!build/*.log
+!build/*.sh
+!build/*.py
+!build/*.diff
+!build/*.patch
+!build/*.cpp
+!build/*.js
+!build/*.html
+# Compiler output of the builds: no results in them, and full of host paths.
+build/a55-*.log
+build/a9-*.log
+build/br*.log
+build/*-build.log
+build/elfutils.log
+
+# Benchmark suites (Speedometer, JetStream, MotionMark) and generated clips: see docs/BENCHMARKS.md.
+bench/suites/
+bench/media/*
+!bench/media/gen.sh
+
+# Upstream clones kept for reading only; their commits are recorded in the docs.
+ref/
+bridge64/src/
+bridge64/patches-zip/patches.zip
+cr151/upstream/source/
+
+# Chromium 120: binaries, LG proprietary libraries pulled from the TV, build logs.
+cr120/*.so
+cr120/*.gz
+cr120/*.log
+cr120/tvlibs/
+cr120/tools/
+cr120/work/*.log
+cr120/launcher/cr120run
+cr120/launcher/*.ipk
+cr120/probe/*.ipk
+cr120/probe/*.h264
+cr120/probe/lsprobe
+cr120/probe/ndlprobe
+cr120/probe/ndlwin
+cr120/probe/wlglobals
+cr120/probe/wlshell_probe
+cr151/build/tcprelay

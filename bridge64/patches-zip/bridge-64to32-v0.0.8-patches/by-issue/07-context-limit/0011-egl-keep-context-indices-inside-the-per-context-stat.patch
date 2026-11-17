@@ -1,0 +1,67 @@
+From 1ea84b18185b6c3d33373f4bb9efa11ae27adf44 Mon Sep 17 00:00:00 2001
+From: deten <6029514+deten@users.noreply.github.com>
+Date: Tue, 27 Oct 2026 17:25:40 -0700
+Subject: [PATCH 11/12] egl: keep context indices inside the per-context state
+ arrays
+
+The proxy hands out context indices 1..EGL_BRIDGE_MAX_CONTEXTS (8), but
+the stub's and proxy's per-context arrays have MAX_CONTEXTS (8) entries,
+indices 0..7. The eighth context therefore wrote past the end of the
+stub's shadow, VAO and buffer-binding arrays, and the proxy never made it
+current before running its commands (egl_bind_target_ctx ignores indices
+>= MAX_CONTEXTS), so they ran in whichever context was current. A
+browser with a compositor and several painting threads gets there
+quickly.
+
+MAX_CONTEXTS is now 32 and EGL_BRIDGE_MAX_CONTEXTS 31. The per-context
+arrays are in .bss, so contexts that are never created cost no memory.
+---
+ include/gles_bridge_protocol.h | 2 +-
+ include/gles_util_shared.h     | 4 +++-
+ stub/bridge_core.c             | 4 ++--
+ 3 files changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/include/gles_bridge_protocol.h b/include/gles_bridge_protocol.h
+index 1dd7018..602e100 100644
+--- a/include/gles_bridge_protocol.h
++++ b/include/gles_bridge_protocol.h
+@@ -1319,7 +1319,7 @@ static inline char *wl_opcode_to_string(WLBridgeOpcode op)
+  */
+ #define EGL_BRIDGE_MAX_DISPLAYS 4
+ #define EGL_BRIDGE_MAX_CONFIGS 128
+-#define EGL_BRIDGE_MAX_CONTEXTS 8
++#define EGL_BRIDGE_MAX_CONTEXTS 31 /* < MAX_CONTEXTS (gles_util_shared.h) */
+ #define EGL_BRIDGE_MAX_SURFACES 16
+ 
+ #define IDX_MODE_POINTER 0
+diff --git a/include/gles_util_shared.h b/include/gles_util_shared.h
+index bf37628..c4fc98b 100644
+--- a/include/gles_util_shared.h
++++ b/include/gles_util_shared.h
+@@ -29,7 +29,9 @@
+   } while (0)
+ #endif
+ 
+-#define MAX_CONTEXTS 8
++/* context indices from the proxy run 1..EGL_BRIDGE_MAX_CONTEXTS and index
++ * these per-context arrays directly, so this must stay above that limit */
++#define MAX_CONTEXTS 32
+ #define MAX_VAOS 1024
+ #define MAX_VERTEX_ATTRIBS 16
+ 
+diff --git a/stub/bridge_core.c b/stub/bridge_core.c
+index 2485769..3eecd7c 100644
+--- a/stub/bridge_core.c
++++ b/stub/bridge_core.c
+@@ -69,9 +69,9 @@ static WLBridge g_wl;
+ __thread unsigned int g_stub_current_ctx;
+ unsigned int g_stub_new_ctx = 0;
+ /* per context: state must be reset before its next use (set by EGL) */
+-volatile uint8_t g_stub_ctx_reset_pending[8]; /* MAX_CONTEXTS (gles_util_shared.h) */
++volatile uint8_t g_stub_ctx_reset_pending[32]; /* MAX_CONTEXTS (gles_util_shared.h) */
+ /* per context: its share group (the index of the first context of the group) */
+-volatile uint8_t g_stub_ctx_group[8];
++volatile uint8_t g_stub_ctx_group[32];
+ 
+ /* ── Ring state (stub/producer side) ─────────────────────────────────── */
+ static BridgeRing *g_ring = NULL;

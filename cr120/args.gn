@@ -1,0 +1,77 @@
+# chromium120 (webOS OSE) for the LG C1: armv7 softfp userspace, glibc 2.28, Mali-G51 GLES via
+# the TV's own libEGL/libGLESv2, compositor with wl_shell + wl_webos_shell only.
+target_os = "linux"
+target_cpu = "arm"
+arm_version = 7
+arm_arch = "armv7-a"
+arm_float_abi = "softfp"
+arm_use_neon = true
+target_sysroot = "/w/sysroot"
+
+is_clang = true
+clang_base_path = "/usr/lib/llvm-18"
+clang_version = "18"
+clang_use_chrome_plugins = false
+use_lld = true
+use_custom_libcxx = true
+treat_warnings_as_errors = false
+enable_rust = false
+
+is_debug = false
+is_component_build = false
+is_official_build = false
+dcheck_always_on = false
+symbol_level = 0
+blink_symbol_level = 0
+v8_symbol_level = 0
+
+# Display: Intel ozone wayland (src/ozone) has the wl_webos_shell surface the C1 needs.
+use_ozone = true
+use_x11 = false
+ozone_auto_platforms = false
+ozone_platform_wayland = false
+ozone_platform_wayland_external = true
+ozone_platform_headless = true
+ozone_platform = "wayland_external"
+use_xkbcommon = true
+
+# Not on the TV or not needed for benchmarks.
+use_gtk = false
+use_qt = false
+use_cups = false
+use_kerberos = false
+use_gio = false
+use_gnome_keyring = false
+use_vaapi = false
+use_pulseaudio = false
+enable_nacl = false
+enable_remoting = false
+enable_pdf = false
+enable_printing = false
+enable_vr = false
+enable_openxr = false
+
+# neva.gni turns DCHECKs on whenever is_official_build is false; they cost speed.
+neva_dcheck_always_on = false
+# neva media: <video src> goes to uMediaServer (HW decoders) through WebOSMediaClientLuna (patch
+# 0012); MSE stays on Chromium's own ffmpeg pipeline (OSE has no platform MSE path).
+# use_neva_appruntime stays on (default): OSE code does not compile without it
+# (display_damage_tracker.cc defines a method its header declares only under it).
+use_neva_media = true
+
+proprietary_codecs = true
+ffmpeg_branding = "Chrome"
+
+# Pango/cairo only serve native UI text and printing; the TV has neither in a usable version.
+use_pangocairo = false
+enable_plugins = false
+enable_ppapi = false
+rtc_use_pipewire = false
+rtc_use_x11 = false
+use_libinput = false
+# crashpad defaults to libcurl on Linux; the socket transport uses BoringSSL from the tree.
+crashpad_http_transport_impl = "socket"
+
+# The Intel ozone backend (wayland_external) allows only native egl-gles2, no ANGLE, and the
+# passthrough decoder needs ANGLE. Upstream turns the validating decoder off for desktop Linux.
+enable_validating_command_decoder = true

@@ -1,0 +1,71 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Selector check</title>
+<!-- Correctness fingerprint for selector matching (CSS JIT changes): loads the local Wikipedia copy in a
+     same-origin iframe without its scripts, runs querySelectorAll for every selector of its style sheets
+     plus a set of tricky synthetic ones, and hashes the computed style of every element. Two engine
+     builds must report the same fingerprints. Result goes out as GET /beacon (lighttpd access log).
+     usage: selcheck.html?tag=<build>&run=<n> -->
+<style>html, body { margin: 0; height: 100%; } iframe { border: 0; width: 100%; height: 100%; }</style>
+<iframe id="f" sandbox="allow-same-origin"></iframe>
+<script>
+const q = new URLSearchParams(location.search);
+const frame = document.getElementById("f");
+
+function fnv(h, s) {
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+  return h;
+}
+
+const SYNTHETIC = [
+  "li:nth-child(3n+1)", "li:nth-child(odd)", "li:nth-child(even)", "li:nth-last-child(2n+3)", "li:nth-of-type(4n)",
+  "p:first-child", "p:last-child", "p:only-child", "a + a", "h2 ~ p", "div > ul > li > a", "div p a",
+  ":not(div)", "a:not([href])", "a:not(.new):not(.external)", ":is(h1, h2, h3) + p", ":where(ul, ol) li",
+  "[class]", "[class~=\"mw-headline\"]", "[href^=\"#cite\"]", "[href$=\".svg\"]", "[href*=\"wiki/\"]",
+  "[lang|=en]", "[id]", "a[href][title]", "span:empty", "td:nth-child(2n) a", "li:nth-child(5n+2) > a",
+  "body *:last-of-type", ".mw-parser-output > p:nth-of-type(3)", "ul li li", "table tr:nth-child(odd) td",
+  ":root", "html > body", "*", "div:has(> img)", "p:has(+ ul)",
+];
+
+function run() {
+  const d = frame.contentDocument, w = frame.contentWindow;
+  const selectors = [];
+  for (const sheet of d.styleSheets) {
+    let rules;
+    try { rules = sheet.cssRules; } catch (e) { continue; }
+    const walk = list => {
+      for (const r of list) {
+        if (r.selectorText) selectors.push(r.selectorText);
+        if (r.cssRules) walk(r.cssRules);
+      }
+    };
+    walk(rules);
+  }
+  let hSel = 2166136261, matches = 0, errors = 0;
+  for (const s of selectors.concat(SYNTHETIC)) {
+    let n;
+    try { n = d.querySelectorAll(s).length; } catch (e) { errors++; continue; }
+    matches += n;
+    hSel = fnv(hSel, s + "=" + n + ";");
+  }
+  let hSyn = 2166136261;
+  for (const s of SYNTHETIC) {
+    let n = -1;
+    try { n = d.querySelectorAll(s).length; } catch (e) {}
+    hSyn = fnv(hSyn, s + "=" + n + ";");
+  }
+  let hStyle = 2166136261;
+  const els = d.querySelectorAll("*");
+  for (const e of els) {
+    const cs = w.getComputedStyle(e);
+    hStyle = fnv(hStyle, cs.display + cs.color + cs.backgroundColor + cs.fontWeight + cs.fontSize + cs.marginTop +
+                         cs.paddingLeft + cs.position + cs.visibility + cs.textDecorationLine + "|");
+  }
+  new Image().src = "/beacon?" + new URLSearchParams({ tag: q.get("tag") || "?", case: "selcheck", run: q.get("run") || "0",
+    selectors: selectors.length, matches, errors, elements: els.length,
+    hsel: hSel.toString(16), hsyn: hSyn.toString(16), hstyle: hStyle.toString(16) });
+}
+
+frame.onload = () => setTimeout(run, 1500);
+frame.src = "/pages/wiki/en.wikipedia.org/wiki/Television.html";
+</script>

@@ -1,0 +1,56 @@
+micro #0: load_ms=33 micro_total_ms=262 rss_kb=83128 webprocs=1 crashes=0
+load-wiki #0: load_ms=3118 rss_kb=181920 webprocs=1 crashes=0
+wheel-wiki #0: load_ms=3102 rss_kb=205008 webprocs=1 crashes=0 screen_fps=35.0
+raf-wiki #0: load_ms=3051 raf_fps=9.0 rss_kb=199468 webprocs=1 crashes=0
+speedometer #0: load_ms=69 probe_s=105 score=0.733 rss_kb=517324 webprocs=1 crashes=0 peak_rss_kb=517324
+cold-youtube #0: load_ms=10015 rss_kb=442384 webprocs=2 crashes=0
+wheel-youtube #0: load_ms=9775 rss_kb=447168 webprocs=2 crashes=0 screen_fps=4.6
+micro #0: load_ms=35 micro_total_ms=265 rss_kb=82648 webprocs=1 crashes=0
+load-wiki #0: load_ms=3146 rss_kb=181140 webprocs=1 crashes=0
+wheel-wiki #0: load_ms=3009 rss_kb=205708 webprocs=1 crashes=0 screen_fps=37.4
+raf-wiki #0: load_ms=3021 raf_fps=10.3 rss_kb=195376 webprocs=1 crashes=0
+speedometer #0: load_ms=81 probe_s=102 score=0.75 rss_kb=459180 webprocs=1 crashes=0 peak_rss_kb=496084
+cold-youtube #0: load_ms=10135 rss_kb=437944 webprocs=2 crashes=0
+wheel-youtube #0: load_ms=9866 rss_kb=433900 webprocs=2 crashes=0 screen_fps=4.4
+micro #0: load_ms=37 micro_total_ms=262 rss_kb=81788 webprocs=1 crashes=0
+load-wiki #0: load_ms=3184 rss_kb=187376 webprocs=1 crashes=0
+wheel-wiki #0: load_ms=3115 rss_kb=208748 webprocs=1 crashes=0 screen_fps=32.8
+raf-wiki #0: load_ms=3001 raf_fps=7.8 rss_kb=197692 webprocs=1 crashes=0
+speedometer #0: load_ms=74 probe_s=110 score=0.702 rss_kb=425888 webprocs=1 crashes=0 peak_rss_kb=490592
+cold-youtube #0: load_ms=9986 rss_kb=445128 webprocs=2 crashes=0
+wheel-youtube #0: load_ms=10114 rss_kb=444136 webprocs=2 crashes=0 screen_fps=3.9
+micro #0: load_ms=47 micro_total_ms=268 rss_kb=83264 webprocs=1 crashes=0
+load-wiki #0: load_ms=3076 rss_kb=185280 webprocs=1 crashes=0
+wheel-wiki #0: load_ms=3290 rss_kb=207288 webprocs=1 crashes=0 screen_fps=33.1
+raf-wiki #0: load_ms=3116 raf_fps=8.1 rss_kb=199724 webprocs=1 crashes=0
+speedometer #0: load_ms=100 probe_s=102 score=0.744 rss_kb=487968 webprocs=1 crashes=0 peak_rss_kb=487968
+cold-youtube #0: load_ms=10318 rss_kb=448508 webprocs=2 crashes=0
+wheel-youtube #0: load_ms=9142 rss_kb=424340 webprocs=2 crashes=0 screen_fps=4.4
+micro #0: load_ms=38 micro_total_ms=256 rss_kb=83460 webprocs=1 crashes=0
+load-wiki #0: load_ms=3098 rss_kb=186508 webprocs=1 crashes=0
+wheel-wiki #0: load_ms=3077 rss_kb=205332 webprocs=1 crashes=0 screen_fps=35.4
+raf-wiki #0: load_ms=3037 raf_fps=10.1 rss_kb=197336 webprocs=1 crashes=0
+speedometer #0: load_ms=85 probe_s=110 score=0.707 rss_kb=418216 webprocs=1 crashes=0 peak_rss_kb=476148
+cold-youtube #0: load_ms=10181 rss_kb=439236 webprocs=2 crashes=0
+wheel-youtube #0: load_ms=9469 rss_kb=425340 webprocs=2 crashes=0 screen_fps=4.4
+micro #0: load_ms=45 micro_total_ms=258 rss_kb=83084 webprocs=1 crashes=0
+load-wiki #0: load_ms=3196 rss_kb=186424 webprocs=1 crashes=0
+wheel-wiki #0: load_ms=3084 rss_kb=206560 webprocs=1 crashes=0 screen_fps=33.4
+raf-wiki #0: load_ms=2906 raf_fps=8.0 rss_kb=201020 webprocs=1 crashes=0
+speedometer #0: load_ms=69 probe_s=107 score=0.721 rss_kb=371968 webprocs=1 crashes=0 peak_rss_kb=484420
+cold-youtube #0: load_ms=9277 rss_kb=419760 webprocs=2 crashes=0
+wheel-youtube #0: load_ms=9947 rss_kb=432532 webprocs=2 crashes=0 screen_fps=4.6
+micro #0: load_ms=40 micro_total_ms=267 rss_kb=83056 webprocs=1 crashes=0
+load-wiki #0: load_ms=2989 rss_kb=183540 webprocs=1 crashes=0
+wheel-wiki #0: load_ms=3153 rss_kb=209676 webprocs=1 crashes=0 screen_fps=35.1
+raf-wiki #0: load_ms=3114 raf_fps=7.8 rss_kb=195932 webprocs=1 crashes=0
+speedometer #0: load_ms=75 probe_s=108 score=0.738 rss_kb=451836 webprocs=1 crashes=0 peak_rss_kb=515040
+cold-youtube #0: load_ms=9589 rss_kb=417456 webprocs=2 crashes=0
+wheel-youtube #0: load_ms=10056 rss_kb=451684 webprocs=2 crashes=0 screen_fps=5.0
+micro #0: load_ms=44 micro_total_ms=266 rss_kb=83184 webprocs=1 crashes=0
+load-wiki #0: load_ms=3124 rss_kb=183088 webprocs=1 crashes=0
+wheel-wiki #0: load_ms=3074 rss_kb=202892 webprocs=1 crashes=0 screen_fps=37.0
+raf-wiki #0: load_ms=3313 raf_fps=7.6 rss_kb=198384 webprocs=1 crashes=0
+speedometer #0: load_ms=70 probe_s=105 score=0.735 rss_kb=475596 webprocs=1 crashes=0 peak_rss_kb=486352
+cold-youtube #0: load_ms=9873 rss_kb=449048 webprocs=2 crashes=0
+wheel-youtube #0: load_ms=9779 rss_kb=433700 webprocs=2 crashes=0 screen_fps=5.0

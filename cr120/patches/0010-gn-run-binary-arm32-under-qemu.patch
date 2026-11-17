@@ -1,0 +1,18 @@
+Same as 0001 for compiled_action targets (v8_context_snapshot_generator is a target binary).
+--- a/build/gn_run_binary.py
++++ b/build/gn_run_binary.py
+@@ -22,6 +22,14 @@
+
+ # The rest of the arguments are passed directly to the executable.
+ args = [path] + sys.argv[2:]
++try:
++  with open(path, 'rb') as f:
++    head = f.read(20)
++  # ELF, 32-bit class, e_machine EM_ARM (40)
++  if head[:4] == b'\x7fELF' and head[4] == 1 and head[18] == 40:
++    args = ['qemu-arm-static', '-L', '/w/sysroot'] + args
++except OSError:
++  pass
+
+ ret = subprocess.call(args)
+ if ret != 0:

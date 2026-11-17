@@ -1,0 +1,1 @@
+{"label": "default-mi", "case": "speedometer", "iter": 0, "ts": "2026-11-16 18:22:33", "params": {}, "lib_md5": "b5ba850fbfda", "host_md5": "5fa6dfdefa74", "avail_kb_before": 731752, "metrics": {"load_ms": 62, "probe_s": 96, "score": 0.805, "rss_kb": 421512, "webprocs": 1, "crashes": 0, "peak_rss_kb": 538588}}

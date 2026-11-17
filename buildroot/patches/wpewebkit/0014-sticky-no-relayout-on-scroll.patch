@@ -1,0 +1,38 @@
+Scrolling: do not relayout sticky boxes on every layout viewport move
+
+setBaseLayoutViewportOrigin marked every fixed and sticky renderer needsLayout on each scroll. A sticky
+box with its own scrolling inside the page grid (Wikipedia pinned TOC) then cost 15-47 ms of layout per
+frame: rAF-driven scrolling ran at 10-20 fps (61 fps without that box). Sticky offsets come from the
+layer position update after the scroll, so only fixed renderers are marked. Sticky layers get a
+compositing geometry update and a scheduled compositing update instead (without it they scroll away).
+
+--- a/Source/WebCore/page/LocalFrameView.cpp
++++ b/Source/WebCore/page/LocalFrameView.cpp
+@@ -1926,8 +1926,25 @@
+         return;
+ 
+     m_layoutViewportOrigin = origin;
+-    if (layoutTriggering == TriggerLayoutOrNot::Yes)
+-        setViewportConstrainedObjectsNeedLayout();
++    // A scroll moves the layout viewport. Sticky boxes take their offset from the layer position update
++    // after the scroll, so only fixed ones need layout: a sticky box with its own scrolling (Wikipedia's
++    // pinned table of contents) relaid out on every frame held rAF-driven scrolling at 10-20 fps.
++    if (layoutTriggering == TriggerLayoutOrNot::Yes && hasViewportConstrainedObjects()) {
++        bool stickyMoved = false;
++        for (auto& renderer : *m_viewportConstrainedObjects) {
++            if (renderer.isStickilyPositioned())
++                stickyMoved = true;
++            else
++                renderer.setNeedsLayout();
++            if (renderer.hasLayer())
++                downcast<RenderBoxModelObject>(renderer).layer()->setNeedsCompositingGeometryUpdate();
++        }
++        // Without a layout nothing else schedules the compositing update that moves the sticky layers.
++        if (stickyMoved) {
++            if (auto* view = renderView())
++                view->compositor().scheduleCompositingLayerUpdate();
++        }
++    }
+     
+     if (TiledBacking* tiledBacking = this->tiledBacking()) {
+         FloatRect layoutViewport = layoutViewportRect();

@@ -1,0 +1,14 @@
+# Our changes on top of WebOS-Chromium source/args.gn (tag v0.0.66). Everything else stays theirs.
+# Applied by appending to their args.gn: GN takes the last assignment of a variable.
+
+# Speed instead of size: full ThinLTO with cross-module optimisation, -O2 instead of -Os.
+optimize_for_size = false
+thin_lto_enable_optimizations = true
+# No PGO in the first build (their value): an arm32 profile is a separate experiment.
+chrome_pgo_phase = 0
+
+# The C1's Cortex-A55 runs this 32-bit code in AArch32. ARMv8.2-A has SDIV/UDIV in ARM and Thumb
+# (plain armv7-a does not, so every division was a libgcc call). arm_tune and arm_fpu are not GN args
+# in M151: patch 0101 adds -mtune=cortex-a55 and -mfpu=neon-fp-armv8 for arm_version 8.
+arm_version = 8
+arm_arch = "armv8.2-a"

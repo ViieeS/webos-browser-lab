@@ -1,0 +1,651 @@
+From ab90f24093b0e3fb7b9e24e3661d2ac9f3f85e7b Mon Sep 17 00:00:00 2001
+From: deten <6029514+deten@users.noreply.github.com>
+Date: Tue, 27 Oct 2026 15:48:05 -0700
+Subject: [PATCH 03/12] gles: copy client-side vertex arrays for every draw
+ call
+
+Only glDrawArrays, and glDrawElements with client-side indices, copied
+attributes that are enabled with no buffer bound. All other draws sent
+the 64-bit client pointers through unchanged:
+
+- glDrawElements with an element buffer bound,
+- glDrawRangeElements (whose client-side indices were not copied either),
+- glDrawArraysInstanced and glDrawElementsInstanced.
+
+The proxy then gave the driver a pointer truncated to 32 bits, and the
+driver read unrelated proxy memory or crashed in memcpy. Skia hits this
+on Mali, where it prefers client-side arrays for dynamic vertex and index
+data (GrGLCaps: fPreferClientSideDynamicBuffers for ARM GPUs), and draws
+with glDrawRangeElements and the instanced calls.
+
+Every draw now carries a list of the client-side attributes of the
+current VAO, copied into the data arena: per-vertex arrays for the
+vertex range the draw reads, per-instance arrays (divisor > 0) for the
+instances it draws. The vertex range comes from the draw arguments, the
+client index array, a client mapping of the element buffer, or else a new
+bridge-internal call (OP_bridgeIndexRange) that reads the highest index
+from the element buffer in the proxy. The proxy points the attributes at
+the copies before drawing and restores GL_ARRAY_BUFFER afterwards.
+
+Also:
+- glDrawElementsInstanced decided "client indices" from the pointer value
+  and sent no offset otherwise, so draws from an element buffer always
+  started at offset 0; it now follows the element buffer binding and
+  passes the offset.
+- The copies follow the current VAO instead of the global attribute
+  state, which is not updated by glBindVertexArray, and no longer copy
+  one stride past the end of the array.
+---
+ include/gles_bridge_protocol.h |   4 +
+ proxy/protocol/gles2.c         |  63 +++++++++++
+ proxy/protocol/gles3_2.c       |  82 +++++++++++++-
+ proxy/protocol/gles3_2.h       |   1 +
+ proxy/proxy.c                  |   1 +
+ stub/gles2_stub.c              | 193 +++++++++++++++++++++------------
+ stub/gles3_2_stub.c            |  67 ++++++++++--
+ 7 files changed, 327 insertions(+), 84 deletions(-)
+
+diff --git a/include/gles_bridge_protocol.h b/include/gles_bridge_protocol.h
+index e262977..5e74595 100644
+--- a/include/gles_bridge_protocol.h
++++ b/include/gles_bridge_protocol.h
+@@ -476,6 +476,10 @@ typedef enum
+   OP_wl_egl_window_resize,
+ #endif
+ 
++  /* bridge-internal: highest index read from the bound element buffer, for
++   * draws that combine an element buffer with client-side vertex arrays */
++  OP_bridgeIndexRange,
++
+   OP_Sync,
+ 
+   /* should always be last as dynamic functions */
+diff --git a/proxy/protocol/gles2.c b/proxy/protocol/gles2.c
+index e9986c7..4ae96bc 100644
+--- a/proxy/protocol/gles2.c
++++ b/proxy/protocol/gles2.c
+@@ -1650,6 +1650,45 @@ H_VAFV(4, glVertexAttrib4fv)
+ 
+ /* ── Draw ────────────────────────────────────────────────────────────────── */
+ 
++/* Reads the client-side array list a draw call carries ("count, (index,
++ * offset) * count", see stub_write_client_arrays) and points those attributes
++ * of the current VAO at the copies in the data arena. Returns true if
++ * GL_ARRAY_BUFFER was unbound for that and must be restored to
++ * *prev_array_buffer after the draw. */
++bool proxy_apply_client_arrays(ArgReader *r, GLint *prev_array_buffer)
++{
++  uint32_t n = ar_u32(r);
++  if (n == 0)
++    return false;
++
++  GLContextState *ctx = &g_proxy_ctx[g_current_ctx];
++  VAOState *vao = &ctx->vaos[ctx->current_vao];
++
++  glGetIntegerv(GL_ARRAY_BUFFER_BINDING, prev_array_buffer);
++  glBindBuffer(GL_ARRAY_BUFFER, 0);
++
++  for (uint32_t i = 0; i < n; i++)
++  {
++    GLuint index = ar_u32(r);
++    uint32_t off = ar_u32(r);
++    if (index >= MAX_VERTEX_ATTRIBS)
++      continue;
++
++    AttribState *a = &vao->attribs[index];
++    a->pointer = (uintptr_t)dp(off);
++    g_attrib_proxy_state[index].pointer = a->pointer;
++
++    if (a->integer)
++      glVertexAttribIPointer(index, a->size, a->type, a->stride,
++                             (const void *)a->pointer);
++    else
++      glVertexAttribPointer(index, a->size, a->type, a->normalized, a->stride,
++                            (const void *)a->pointer);
++  }
++
++  return true;
++}
++
+ void h_glDrawArrays(BridgeCtrl *C, uint8_t *D)
+ {
+   AR(r);
+@@ -1882,7 +1921,31 @@ void h_glDrawElements(BridgeCtrl *C, uint8_t *D)
+ #ifdef DEBUG_VERBOSE
+     log_console("h_glDrawElements: ebo mode");
+ #endif
++    /* indices in the element buffer, but vertex data may still be in
++     * client-side arrays (copied by the stub, pointers patched above) */
++    GLint prev_ab = 0;
++    bool restore_ab = false;
++    for (int i = 0; i < MAX_VERTEX_ATTRIBS && attrib_count; i++)
++    {
++      AttribState *a = &vao->attribs[i];
++      if (!a->enabled || a->vbo != 0)
++        continue;
++      if (!restore_ab)
++      {
++        glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &prev_ab);
++        glBindBuffer(GL_ARRAY_BUFFER, 0);
++        restore_ab = true;
++      }
++      if (a->integer)
++        glVertexAttribIPointer(i, a->size, a->type, a->stride,
++                               (const void *)a->pointer);
++      else
++        glVertexAttribPointer(i, a->size, a->type, a->normalized, a->stride,
++                              (const void *)a->pointer);
++    }
+     glDrawElements(mode, count, type, (const void *)indices);
++    if (restore_ab)
++      glBindBuffer(GL_ARRAY_BUFFER, prev_ab);
+     return;
+   }
+ 
+diff --git a/proxy/protocol/gles3_2.c b/proxy/protocol/gles3_2.c
+index cd99ad5..462d89f 100644
+--- a/proxy/protocol/gles3_2.c
++++ b/proxy/protocol/gles3_2.c
+@@ -9,6 +9,9 @@
+ #include <unistd.h>
+ #endif
+ 
++/* client-side vertex arrays carried by draw calls (gles2.c) */
++bool proxy_apply_client_arrays(ArgReader *r, GLint *prev_array_buffer);
++
+ /* Dolphin alone keeps 16 fences per stream buffer, across 4 buffers */
+ #define MAX_SYNCS 256
+ MapEntry maps[MAX_MAPS];
+@@ -309,9 +312,66 @@ void h_glDrawArraysInstanced(BridgeCtrl *C, uint8_t *D)
+ {
+   AR(r);
+ 
+-  glDrawArraysInstanced(ar_u32(&r), ar_i32(&r), ar_i32(&r), ar_i32(&r));
++  GLenum mode = ar_u32(&r);
++  GLint first = ar_i32(&r);
++  GLsizei count = ar_i32(&r);
++  GLsizei instances = ar_i32(&r);
++
++  GLint prev_array_buffer = 0;
++  bool restore = proxy_apply_client_arrays(&r, &prev_array_buffer);
++
++  glDrawArraysInstanced(mode, first, count, instances);
++
++  if (restore)
++    glBindBuffer(GL_ARRAY_BUFFER, prev_array_buffer);
++
++  (void)D;
++}
+ 
++/* Highest index (plus base vertex 0) in [offset, offset + count) of the bound
++ * element buffer, read through a temporary read mapping; -1 if unknown. */
++void h_bridgeIndexRange(BridgeCtrl *C, uint8_t *D)
++{
+   (void)D;
++  AR(r);
++  GLenum type = ar_u32(&r);
++  uint64_t offset = ar_u64(&r);
++  GLsizei count = ar_i32(&r);
++  bool restart = ar_u32(&r) != 0;
++
++  size_t isz = type == GL_UNSIGNED_BYTE    ? 1
++               : type == GL_UNSIGNED_SHORT ? 2
++               : type == GL_UNSIGNED_INT   ? 4
++                                           : 0;
++  int64_t max_index = -1;
++
++  if (isz && count > 0)
++  {
++    const uint8_t *p = glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER,
++                                        (GLintptr)offset,
++                                        (GLsizeiptr)(count * isz),
++                                        GL_MAP_READ_BIT);
++    if (p)
++    {
++      uint32_t restart_index = isz == 1 ? 0xFFu : isz == 2 ? 0xFFFFu : 0xFFFFFFFFu;
++      for (GLsizei i = 0; i < count; i++)
++      {
++        uint32_t v = isz == 1 ? p[i]
++                     : isz == 2 ? ((const uint16_t *)p)[i]
++                                : ((const uint32_t *)p)[i];
++        if (restart && v == restart_index)
++          continue;
++        if ((int64_t)v > max_index)
++          max_index = v;
++      }
++      glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
++    }
++    else
++      log_error("h_bridgeIndexRange: cannot map the element buffer (0x%x)",
++                glGetError());
++  }
++
++  C->result = (uint64_t)max_index;
+ }
+ 
+ void h_glVertexAttribDivisor(BridgeCtrl *C, uint8_t *D)
+@@ -2015,12 +2075,20 @@ void h_glDrawElementsInstanced(BridgeCtrl *C, uint8_t *D)
+   GLsizei count = ar_i32(&r);
+   GLenum type = ar_u32(&r);
+   GLsizei inst = ar_u32(&r);
++  /* byte offset into the bound element buffer (client indices come as data) */
++  uintptr_t offset = (uintptr_t)ar_u64(&r);
++
++  GLint prev_array_buffer = 0;
++  bool restore = proxy_apply_client_arrays(&r, &prev_array_buffer);
+ 
+-  const void *indices = NULL;
++  const void *indices = (const void *)offset;
+   if (C->data_size)
+     indices = dp(C->data_offset);
+ 
+   glDrawElementsInstanced(mode, count, type, indices, inst);
++
++  if (restore)
++    glBindBuffer(GL_ARRAY_BUFFER, prev_array_buffer);
+ }
+ 
+ void h_glGetUniformIndices(BridgeCtrl *C, uint8_t *D)
+@@ -2124,10 +2192,20 @@ void h_glDrawRangeElements(BridgeCtrl *C, uint8_t *D)
+   GLuint end = ar_u32(&r);
+   GLsizei count = ar_i32(&r);
+   GLenum type = ar_u32(&r);
++  /* byte offset into the bound element buffer (client indices come as data) */
+   const void *indices = (const void *)(uintptr_t)ar_u64(&r);
+ 
++  GLint prev_array_buffer = 0;
++  bool restore = proxy_apply_client_arrays(&r, &prev_array_buffer);
++
++  if (C->data_size)
++    indices = dp(C->data_offset);
++
+   glDrawRangeElements(mode, start, end, count, type, indices);
+ 
++  if (restore)
++    glBindBuffer(GL_ARRAY_BUFFER, prev_array_buffer);
++
+   C->result = 0;
+   C->result_buf_len = 0;
+ }
+diff --git a/proxy/protocol/gles3_2.h b/proxy/protocol/gles3_2.h
+index d37012c..e9fcc81 100644
+--- a/proxy/protocol/gles3_2.h
++++ b/proxy/protocol/gles3_2.h
+@@ -243,6 +243,7 @@ void h_glDrawArraysIndirect(BridgeCtrl *C, uint8_t *D);
+ void h_glDrawElementsIndirect(BridgeCtrl *C, uint8_t *D);
+ 
+ void h_glDrawRangeElements(BridgeCtrl *C, uint8_t *D);
++void h_bridgeIndexRange(BridgeCtrl *C, uint8_t *D);
+ 
+ void h_glDrawElementsBaseVertex(BridgeCtrl *C, uint8_t *D);
+ void h_glDrawElementsInstancedBaseVertex(BridgeCtrl *C, uint8_t *D);
+diff --git a/proxy/proxy.c b/proxy/proxy.c
+index 06279de..fd6660e 100644
+--- a/proxy/proxy.c
++++ b/proxy/proxy.c
+@@ -419,6 +419,7 @@ static const HandlerFn dispatch_table[OP_MAX] = {
+ 
+     ENTRY(OP_glBindImageTexture, h_glBindImageTexture),
+     ENTRY(OP_glDrawRangeElements, h_glDrawRangeElements),
++    ENTRY(OP_bridgeIndexRange, h_bridgeIndexRange),
+     ENTRY(OP_glSamplerParameterIiv, h_glSamplerParameterIiv),
+     ENTRY(OP_glGetPointerv, h_glGetPointerv),
+     ENTRY(OP_glPopDebugGroup, h_glPopDebugGroup),
+diff --git a/stub/gles2_stub.c b/stub/gles2_stub.c
+index f5241dd..523a337 100644
+--- a/stub/gles2_stub.c
++++ b/stub/gles2_stub.c
+@@ -2228,6 +2228,106 @@ static size_t gl_type_size(GLenum type)
+   }
+ }
+ 
++/* ── Client-side vertex arrays ───────────────────────────────────────────
++ *
++ * An attribute enabled with no buffer bound points into the 64-bit client's
++ * memory; the proxy cannot read it. Every draw call therefore copies the data
++ * of such attributes into the data arena and sends their offsets, and the
++ * proxy re-points the attributes at the copies before drawing. Without this,
++ * the proxy hands the driver a 64-bit pointer truncated to 32 bits and the
++ * driver reads unrelated proxy memory or crashes (Skia does this on Mali: it
++ * prefers client-side arrays for dynamic vertex and index data there).
++ */
++
++/* true if the current VAO has an enabled client-side per-vertex attribute */
++bool stub_has_client_vertex_arrays(void)
++{
++  GLContextState *ctx = &g_stub_ctx[g_stub_current_ctx];
++  VAOState *vao = &ctx->vaos[ctx->current_vao];
++  for (int i = 0; i < MAX_VERTEX_ATTRIBS; i++)
++  {
++    AttribState *a = &vao->attribs[i];
++    if (a->enabled && a->vbo == 0 && a->pointer && a->divisor == 0)
++      return true;
++  }
++  return false;
++}
++
++/* Copies the enabled client-side attributes of the current VAO into the data
++ * arena and appends "count, (index, offset) * count" to W. Per-vertex arrays
++ * cover vertices [0, vertex_end), instanced ones (divisor > 0)
++ * ceil(instances / divisor) elements. */
++void stub_write_client_arrays(ArgWriter *W, GLintptr vertex_end,
++                              GLsizei instances)
++{
++  GLContextState *ctx = &g_stub_ctx[g_stub_current_ctx];
++  VAOState *vao = &ctx->vaos[ctx->current_vao];
++
++  uint32_t count_pos = W->pos;
++  uint32_t n = 0;
++  aw_u32(W, 0);
++
++  for (int i = 0; i < MAX_VERTEX_ATTRIBS; i++)
++  {
++    AttribState *a = &vao->attribs[i];
++    if (!a->enabled || a->vbo || !a->pointer)
++      continue;
++
++    GLintptr elements =
++        a->divisor ? ((GLintptr)instances + a->divisor - 1) / a->divisor
++                   : vertex_end;
++    if (elements <= 0)
++      continue;
++
++    size_t elem = gl_type_size(a->type);
++    size_t stride = a->stride ? (size_t)a->stride : (size_t)(a->size * elem);
++    size_t bytes =
++        (size_t)(elements - 1) * stride + (size_t)a->size * elem;
++
++    aw_u32(W, (uint32_t)i);
++    aw_u32(W, bridge_data_write((const void *)a->pointer, bytes));
++    n++;
++  }
++
++  memcpy(W->buf + count_pos, &n, sizeof(n));
++}
++
++/* One past the highest vertex index a draw from the bound element buffer
++ * reads: computed from a client mapping of the buffer if there is one,
++ * otherwise by the proxy. Returns -1 if it cannot be determined. */
++GLintptr stub_element_buffer_vertex_end(GLenum type, uintptr_t offset,
++                                        GLsizei count, GLint basevertex)
++{
++  GLContextState *ctx = &g_stub_ctx[g_stub_current_ctx];
++  VAOState *vao = &ctx->vaos[ctx->current_vao];
++  size_t isz = index_type_size(type);
++
++  StubMapEntry *m = find_stub_map(vao->ebo, GL_ELEMENT_ARRAY_BUFFER);
++  if (m && isz && (GLintptr)offset >= m->offset &&
++      (GLintptr)(offset + (size_t)count * isz) <= m->offset + m->length)
++  {
++    GLintptr lo = 0, hi = -1;
++    if (mapped_index_bounds((const uint8_t *)m->ptr + (offset - m->offset),
++                            count, type, basevertex, ctx->primitive_restart,
++                            &lo, &hi))
++      return hi + 1;
++  }
++
++  BRIDGE_BEGIN();
++  BridgeCtrl *C = BRIDGE_CTRL();
++  setup_scalar(OP_bridgeIndexRange);
++  ArgWriter W = aw_init(C->args, BRIDGE_ARGS_SIZE);
++  aw_u32(&W, type);
++  aw_u64(&W, (uint64_t)offset);
++  aw_i32(&W, count);
++  aw_u32(&W, ctx->primitive_restart);
++  C->args_len = W.pos;
++  int64_t max_index = (int64_t)BRIDGE_SEND_CALL();
++  if (max_index < 0)
++    return -1;
++  return (GLintptr)max_index + basevertex + 1;
++}
++
+ GL_APICALL void GL_APIENTRY glVertexAttribPointer(GLuint index, GLint size,
+                                                   GLenum type,
+                                                   GLboolean normalized,
+@@ -2491,50 +2591,13 @@ GL_APICALL void GL_APIENTRY glDrawArrays(GLenum mode, GLint first,
+    * count copied attributes
+    */
+ 
+-  uint32_t attrib_count = 0;
+-
+-  uint32_t count_pos = W.pos;
+-  aw_u32(&W, 0);
+-
+ #ifdef DEBUG_VERBOSE
+   log_console("glDrawArrays: tid:%d vao:%d mode:%d first:%d count:%d",
+               syscall(SYS_gettid), g_stub_ctx[g_stub_current_ctx].current_vao, mode, first, count);
+ #endif
+ 
+-  for (int i = 0; i < MAX_VERTEX_ATTRIBS; i++)
+-  {
+-    AttribState *a = &g_attrib_stub_state[i];
+-
+-    if (!a->enabled)
+-      continue;
+-
+-    if (a->vbo) // VBO-backed - DO NOT COPY
+-      continue;
+-
+-    if (!a->pointer) // client array but null pointer - skip
+-      continue;
+-
+-    size_t elem = gl_type_size(a->type);
+-
+-    size_t stride = a->stride ? (size_t)a->stride : (size_t)(a->size * elem);
+-
+-    size_t bytes =
+-        ((size_t)first + (size_t)count - 1) * stride + (size_t)(a->size * elem);
+-
+-    uint32_t off = bridge_data_write((void *)a->pointer, bytes);
+-
+-#ifdef DEBUG_VERBOSE
+-    log_console("[DrawArrays] copy attrib=%d bytes=%u off=%u", i,
+-                (unsigned)bytes, off);
+-#endif
+-
+-    aw_u32(&W, i);
+-    aw_u32(&W, off);
+-
+-    attrib_count++;
+-  }
+-
+-  memcpy(C->args + count_pos, &attrib_count, sizeof(uint32_t));
++  /* client-side arrays of the current VAO, vertices [0, first + count) */
++  stub_write_client_arrays(&W, (GLintptr)first + count, 0);
+ 
+   /* Piggyback the dirty range of any persistently-mapped, unsynchronized
+    * VBO backing an enabled attrib */
+@@ -2585,6 +2648,20 @@ GL_APICALL void GL_APIENTRY glDrawElements(GLenum mode, GLsizei count,
+   GLContextState *ctx = &g_stub_ctx[g_stub_current_ctx];
+   VAOState *vao = &ctx->vaos[ctx->current_vao];
+ 
++  /* indices in an element buffer but vertices in client memory: the vertex
++   * range comes from the element buffer (asked before this draw's slot) */
++  GLintptr ebo_vertex_end = 0;
++  if (vao->ebo != 0 && stub_has_client_vertex_arrays())
++  {
++    ebo_vertex_end = stub_element_buffer_vertex_end(
++        type, (uintptr_t)indices, count, 0);
++    if (ebo_vertex_end < 0)
++    {
++      log_error("glDrawElements: vertex range unknown, draw skipped");
++      return;
++    }
++  }
++
+   BRIDGE_BEGIN();
+   BridgeCtrl *C = BRIDGE_CTRL();
+   C->opcode = OP_glDrawElements;
+@@ -2655,44 +2732,18 @@ GL_APICALL void GL_APIENTRY glDrawElements(GLenum mode, GLsizei count,
+   aw_u64(&W, idx);
+   aw_u32(&W, is_client_ptr);
+ 
+-  uint32_t attrib_count = 0;
+-  uint32_t count_pos = W.pos;
+-  aw_u32(&W, 0); /* placeholder — filled in after the loop */
+-
++  /* Client-side vertex arrays, covering vertices [0, highest index]; the
++   * attributes of the current VAO (not the global attribute state, which
++   * does not follow glBindVertexArray) */
++  GLintptr vertex_end = ebo_vertex_end;
+   if (is_client_ptr && index_bytes)
+   {
+-    /* Compute the vertex index range so we copy exactly the data needed */
+     GLintptr min_vertex = 0, max_vertex = (GLintptr)count - 1;
+     mapped_index_bounds(index_bytes, count, type, 0, ctx->primitive_restart,
+                         &min_vertex, &max_vertex);
+-    GLintptr last_vertex = max_vertex;
+-
+-    for (int i = 0; i < MAX_VERTEX_ATTRIBS; i++)
+-    {
+-      AttribState *a = &g_attrib_stub_state[i];
+-      if (!a->enabled || a->vbo || !a->pointer)
+-        continue;
+-
+-      size_t elem = gl_type_size(a->type);
+-      size_t stride_eff =
+-          a->stride ? (size_t)a->stride : (size_t)(a->size * elem);
+-      /* Cover vertices [0 .. last_vertex] so all referenced indices are valid
+-       */
+-      size_t vbytes =
+-          ((size_t)last_vertex + 1) * stride_eff + (size_t)(a->size * elem);
+-      uint32_t voff = bridge_data_write((void *)a->pointer, vbytes);
+-
+-#ifdef DEBUG_VERBOSE
+-      log_console("[DrawElements] copy attrib=%d bytes=%u off=%u", i,
+-                  (unsigned)vbytes, voff);
+-#endif
+-      aw_u32(&W, (uint32_t)i);
+-      aw_u32(&W, voff);
+-      attrib_count++;
+-    }
++    vertex_end = max_vertex + 1;
+   }
+-
+-  memcpy(C->args + count_pos, &attrib_count, sizeof(uint32_t));
++  stub_write_client_arrays(&W, vertex_end, 0);
+ 
+   aw_u32(&W, ebo_piggyback_buffer);
+   aw_u32(&W, ebo_piggyback_offset);
+diff --git a/stub/gles3_2_stub.c b/stub/gles3_2_stub.c
+index 84dfe39..b5965ae 100644
+--- a/stub/gles3_2_stub.c
++++ b/stub/gles3_2_stub.c
+@@ -31,6 +31,32 @@ static void setup_scalar(GLBridgeOpcode op)
+   C->data2_size = 0;
+ }
+ 
++/* client-side vertex arrays (gles2_stub.c) */
++bool stub_has_client_vertex_arrays(void);
++void stub_write_client_arrays(ArgWriter *W, GLintptr vertex_end,
++                              GLsizei instances);
++GLintptr stub_element_buffer_vertex_end(GLenum type, uintptr_t offset,
++                                        GLsizei count, GLint basevertex);
++
++/* Vertex range of an indexed draw for copying client-side arrays: from the
++ * client index array, or from the bound element buffer. -1: unknown. */
++static GLintptr indexed_vertex_end(const void *indices, bool client_indices,
++                                   GLsizei count, GLenum type)
++{
++  if (!stub_has_client_vertex_arrays())
++    return 0;
++  if (client_indices)
++  {
++    GLContextState *ctx = &g_stub_ctx[g_stub_current_ctx];
++    GLintptr lo = 0, hi = -1;
++    if (!mapped_index_bounds((const uint8_t *)indices, count, type, 0,
++                             ctx->primitive_restart, &lo, &hi))
++      return 0;
++    return hi + 1;
++  }
++  return stub_element_buffer_vertex_end(type, (uintptr_t)indices, count, 0);
++}
++
+ /* ───────── VAOs ───────── */
+ 
+ GL_APICALL void GL_APIENTRY glGenVertexArrays(GLsizei n, GLuint *arrays)
+@@ -262,6 +288,7 @@ GL_APICALL void GL_APIENTRY glDrawArraysInstanced(GLenum mode, GLint first,
+   aw_i32(&W, first);
+   aw_i32(&W, count);
+   aw_i32(&W, instancecount);
++  stub_write_client_arrays(&W, (GLintptr)first + count, instancecount);
+ 
+   C->args_len = W.pos;
+ 
+@@ -2342,6 +2369,17 @@ GL_APICALL void GL_APIENTRY glDrawElementsInstanced(GLenum mode, GLsizei count,
+                                                     const void *indices,
+                                                     GLsizei instanceCount)
+ {
++  /* indices are a client array only when no element buffer is bound; with
++   * one bound they are a byte offset into it, which must reach the proxy */
++  GLContextState *ctx = &g_stub_ctx[g_stub_current_ctx];
++  bool client_indices = ctx->vaos[ctx->current_vao].ebo == 0;
++  GLintptr vertex_end = indexed_vertex_end(indices, client_indices, count, type);
++  if (vertex_end < 0)
++  {
++    log_error("glDrawElementsInstanced: vertex range unknown, draw skipped");
++    return;
++  }
++
+   BRIDGE_BEGIN();
+   BridgeCtrl *C = BRIDGE_CTRL();
+   setup_scalar(OP_glDrawElementsInstanced);
+@@ -2351,22 +2389,16 @@ GL_APICALL void GL_APIENTRY glDrawElementsInstanced(GLenum mode, GLsizei count,
+   aw_i32(&W, count);
+   aw_u32(&W, type);
+   aw_u32(&W, instanceCount);
++  aw_u64(&W, client_indices ? 0 : (uint64_t)(uintptr_t)indices);
++  stub_write_client_arrays(&W, vertex_end, instanceCount);
+   C->args_len = W.pos;
+ 
+-  if (is_client_pointer(indices))
++  if (client_indices && indices)
+   {
+-    size_t elem = (type == GL_UNSIGNED_SHORT ? 2
+-                   : type == GL_UNSIGNED_INT ? 4
+-                                             : 1);
+-    size_t sz = count * elem;
++    size_t sz = (size_t)count * index_type_size(type);
+     C->data_offset = bridge_data_write(indices, sz);
+     C->data_size = sz;
+   }
+-  else
+-  {
+-    C->data_offset = 0;
+-    C->data_size = 0;
+-  }
+ 
+   BRIDGE_SEND_VOID();
+ }
+@@ -2509,6 +2541,9 @@ GL_APICALL void GL_APIENTRY glDrawRangeElements(GLenum mode, GLuint start,
+                                                 GLenum type,
+                                                 const void *indices)
+ {
++  GLContextState *ctx = &g_stub_ctx[g_stub_current_ctx];
++  bool client_indices = ctx->vaos[ctx->current_vao].ebo == 0;
++
+   BRIDGE_BEGIN();
+   BridgeCtrl *C = BRIDGE_CTRL();
+   setup_scalar(OP_glDrawRangeElements);
+@@ -2519,10 +2554,20 @@ GL_APICALL void GL_APIENTRY glDrawRangeElements(GLenum mode, GLuint start,
+   aw_u32(&W, end);
+   aw_i32(&W, count);
+   aw_u32(&W, type);
+-  aw_u64(&W, (uint64_t)(uintptr_t)indices);
++  /* client index array: copied (data); element buffer: byte offset */
++  aw_u64(&W, client_indices ? 0 : (uint64_t)(uintptr_t)indices);
++  /* the range gives the vertices client-side arrays must cover */
++  stub_write_client_arrays(&W, (GLintptr)end + 1, 0);
+ 
+   C->args_len = W.pos;
+ 
++  if (client_indices && indices)
++  {
++    size_t sz = (size_t)count * index_type_size(type);
++    C->data_offset = bridge_data_write(indices, sz);
++    C->data_size = sz;
++  }
++
+   BRIDGE_SEND_VOID();
+ }
+ 

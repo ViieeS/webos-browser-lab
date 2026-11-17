@@ -1,0 +1,20 @@
+The PC (non-webOS) pal factory lags the declarations in pal_platform_factory.h.
+--- a/neva/pal_service/pc/pal_platform_factory_pc.cc
++++ b/neva/pal_service/pc/pal_platform_factory_pc.cc
+@@ -33,13 +33,15 @@
+
+ std::unique_ptr<ApplicationRegistratorDelegate>
+ PlatformFactory::CreateApplicationRegistratorDelegate(
+-    std::string application_name,
++    const std::string& application_id,
++    const std::string& application_name,
+     ApplicationRegistratorDelegate::RepeatingResponse callback) {
+   return std::unique_ptr<ApplicationRegistratorDelegate>();
+ }
+
+ std::unique_ptr<LanguageTrackerDelegate>
+ PlatformFactory::CreateLanguageTrackerDelegate(
++    const std::string& application_name,
+     LanguageTrackerDelegate::RepeatingResponse callback) {
+   return std::unique_ptr<LanguageTrackerDelegate>();
+ }

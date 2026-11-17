@@ -1,0 +1,262 @@
+From 925968920ce051a070a9973ebe282e87491e2736 Mon Sep 17 00:00:00 2001
+From: deten <6029514+deten@users.noreply.github.com>
+Date: Tue, 27 Oct 2026 17:23:59 -0700
+Subject: [PATCH 09/12] stub: keep the binding caches right when other contexts
+ delete objects
+
+The stub skips binds that its per-context cache says are already in
+place. Deletions broke that in several ways when a process has more than
+one context (a browser's compositor and its painting threads):
+
+- Deleting a framebuffer or VAO reset the cached binding of every context
+  holding the same name to 0. Framebuffers and VAOs are per-context
+  objects, so another context could really have its own object of that
+  name bound; its next bind of 0 was then skipped and it kept drawing into
+  that FBO instead of the window. Only the deleting context's cache
+  changes now.
+- Deleting a buffer cleared the element-array binding of every VAO of
+  every context, so later indexed draws from those VAOs treated their
+  index offsets as client memory. Only the current VAO of the deleting
+  context loses it now, as in GL.
+- Buffers, samplers and programs are shared: another context may still
+  have the deleted object bound, and the name can come back as a new
+  object. glBindBuffer is now always sent (bindings are still tracked),
+  and deleted samplers and programs force the next bind in other
+  contexts.
+
+Also build glVertexAttribPointer/glVertexAttribIPointer records locally:
+the process-wide g_attrib_stub_state they went through is written by
+several threads at once, so one thread's pointer could end up in another
+thread's VAO.
+---
+ include/gles_util_stub.h | 44 ++++++++++++++++++++----------------
+ stub/gles2_stub.c        | 48 ++++++++++++----------------------------
+ stub/gles3_2_stub.c      | 19 +++++++++-------
+ 3 files changed, 50 insertions(+), 61 deletions(-)
+
+diff --git a/include/gles_util_stub.h b/include/gles_util_stub.h
+index 4b9886b..3de281e 100644
+--- a/include/gles_util_stub.h
++++ b/include/gles_util_stub.h
+@@ -761,36 +761,42 @@ static inline void stub_gl_state_invalidate_buffer(GLuint buffer)
+   if (stub_gl_state.draw_indirect_buffer == buffer)
+     stub_gl_state.draw_indirect_buffer = 0;
+ 
+-  /* GL_ELEMENT_ARRAY_BUFFER binding lives per-VAO, per-context */
+-  for (int c = 0; c < MAX_CONTEXTS; c++)
+-    for (int v = 0; v < MAX_VAOS; v++)
+-      if (g_stub_ctx[c].vaos[v].ebo == buffer)
+-        g_stub_ctx[c].vaos[v].ebo = 0;
++  /* GL_ELEMENT_ARRAY_BUFFER binding lives in the VAO: deleting the buffer
++   * detaches it only from the current VAO of this context. Other VAOs keep the
++   * deleted buffer, and indices for them are still buffer offsets. */
++  if (g_stub_current_ctx < MAX_CONTEXTS)
++  {
++    VAOState *cur = &g_stub_ctx[g_stub_current_ctx]
++                         .vaos[g_stub_ctx[g_stub_current_ctx].current_vao];
++    if (cur->ebo == buffer)
++      cur->ebo = 0;
++  }
+ 
+   bufrange_cache_invalidate_buffer(buffer);
+ }
+ 
++/* Framebuffers and VAOs are not shared between contexts: deleting one changes only
++ * the deleting context's bindings (they revert to 0). Other contexts may have
++ * their own, unrelated object of the same name bound; their cache must not be
++ * touched, or a later bind of 0 there would be skipped while the real binding
++ * is still their object (drawing into an FBO instead of the window). */
+ static inline void shadow_invalidate_fbo(GLuint fbo)
+ {
+-  if (fbo == 0)
++  if (fbo == 0 || g_stub_current_ctx >= MAX_CONTEXTS)
+     return;
+-  for (int c = 0; c < MAX_CONTEXTS; c++)
+-  {
+-    StubShadowState *s = &g_shadow_ctx[c];
+-    if (s->draw_fb == fbo)
+-      s->draw_fb = 0;
+-    if (s->read_fb == fbo)
+-      s->read_fb = 0;
+-  }
++  StubShadowState *s = &g_shadow_ctx[g_stub_current_ctx];
++  if (s->draw_fb == fbo)
++    s->draw_fb = 0;
++  if (s->read_fb == fbo)
++    s->read_fb = 0;
+ }
+ 
+ static inline void shadow_invalidate_vao(GLuint vao)
+ {
+-  if (vao == 0)
++  if (vao == 0 || g_stub_current_ctx >= MAX_CONTEXTS)
+     return;
+-  for (int c = 0; c < MAX_CONTEXTS; c++)
+-    if (g_shadow_ctx[c].vao == vao)
+-      g_shadow_ctx[c].vao = 0;
++  if (g_shadow_ctx[g_stub_current_ctx].vao == vao)
++    g_shadow_ctx[g_stub_current_ctx].vao = 0;
+ }
+ 
+ static inline void shadow_invalidate_sampler(GLuint sampler)
+@@ -802,6 +808,6 @@ static inline void shadow_invalidate_sampler(GLuint sampler)
+     StubShadowState *s = &g_shadow_ctx[c];
+     for (int u = 0; u < MAX_TEXTURE_UNITS; u++)
+       if (s->sampler[u] == sampler)
+-        s->sampler[u] = 0;
++        s->sampler[u] = c == (int)g_stub_current_ctx ? 0 : SHADOW_TEX_INVALID;
+   }
+ }
+diff --git a/stub/gles2_stub.c b/stub/gles2_stub.c
+index 54750f8..44ae95d 100644
+--- a/stub/gles2_stub.c
++++ b/stub/gles2_stub.c
+@@ -822,75 +822,51 @@ GL_APICALL void GL_APIENTRY glBindBuffer(GLenum target, GLuint buffer)
+               buffer, g_stub_current_ctx);
+ #endif
+ 
++  /* Track the bindings, but always send the bind: another context may have
++   * deleted the buffer and the name may now be a new one. */
+   switch (target)
+   {
+   case GL_ARRAY_BUFFER:
+-    if (stub_gl_state.array_buffer == buffer)
+-      return;
+     stub_gl_state.array_buffer = buffer;
+     break;
+   case GL_ELEMENT_ARRAY_BUFFER:
+   {
+     GLContextState *ctx = &g_stub_ctx[g_stub_current_ctx];
+     VAOState *vao = &ctx->vaos[ctx->current_vao];
+-    if (vao->ebo == buffer)
+-      return;
+     vao->ebo = buffer;
+     break;
+   }
+   case GL_PIXEL_PACK_BUFFER:
+-    if (stub_gl_state.pixel_pack_buffer == buffer)
+-      return;
+     stub_gl_state.pixel_pack_buffer = buffer;
+     break;
+   case GL_PIXEL_UNPACK_BUFFER:
+-    if (stub_gl_state.pixel_unpack_buffer == buffer)
+-      return;
+     stub_gl_state.pixel_unpack_buffer = buffer;
+     break;
+   case GL_UNIFORM_BUFFER:
+-    if (stub_gl_state.uniform_buffer == buffer)
+-      return;
+     stub_gl_state.uniform_buffer = buffer;
+     break;
+   case GL_TEXTURE_BUFFER:
+-    if (stub_gl_state.texture_buffer == buffer)
+-      return;
+     stub_gl_state.texture_buffer = buffer;
+     break;
+   case GL_TRANSFORM_FEEDBACK_BUFFER:
+-    if (stub_gl_state.transform_feedback_buffer == buffer)
+-      return;
+     stub_gl_state.transform_feedback_buffer = buffer;
+     break;
+   case GL_COPY_READ_BUFFER:
+-    if (stub_gl_state.copy_read_buffer == buffer)
+-      return;
+     stub_gl_state.copy_read_buffer = buffer;
+     break;
+   case GL_COPY_WRITE_BUFFER:
+-    if (stub_gl_state.copy_write_buffer == buffer)
+-      return;
+     stub_gl_state.copy_write_buffer = buffer;
+     break;
+   case GL_SHADER_STORAGE_BUFFER:
+-    if (stub_gl_state.shader_storage_buffer == buffer)
+-      return;
+     stub_gl_state.shader_storage_buffer = buffer;
+     break;
+   case GL_ATOMIC_COUNTER_BUFFER:
+-    if (stub_gl_state.atomic_counter_buffer == buffer)
+-      return;
+     stub_gl_state.atomic_counter_buffer = buffer;
+     break;
+   case GL_DISPATCH_INDIRECT_BUFFER:
+-    if (stub_gl_state.dispatch_indirect_buffer == buffer)
+-      return;
+     stub_gl_state.dispatch_indirect_buffer = buffer;
+     break;
+   case GL_DRAW_INDIRECT_BUFFER:
+-    if (stub_gl_state.draw_indirect_buffer == buffer)
+-      return;
+     stub_gl_state.draw_indirect_buffer = buffer;
+     break;
+   default:
+@@ -2336,13 +2312,17 @@ GL_APICALL void GL_APIENTRY glVertexAttribPointer(GLuint index, GLint size,
+ {
+   if (index < MAX_VERTEX_ATTRIBS)
+   {
+-    g_attrib_stub_state[index].size = size;
+-    g_attrib_stub_state[index].type = type;
+-    g_attrib_stub_state[index].normalized = normalized;
+-    g_attrib_stub_state[index].stride = stride;
+-    g_attrib_stub_state[index].pointer = (uintptr_t)pointer;
+-    g_attrib_stub_state[index].integer = GL_FALSE;
+-    g_attrib_stub_state[index].vbo = stub_gl_state.array_buffer;
++    /* the record is built for this call and stored in the current VAO only:
++     * g_attrib_stub_state is shared by every thread and context */
++    AttribState rec = g_attrib_stub_state[index];
++    rec.size = size;
++    rec.type = type;
++    rec.normalized = normalized;
++    rec.stride = stride;
++    rec.pointer = (uintptr_t)pointer;
++    rec.integer = GL_FALSE;
++    rec.vbo = stub_gl_state.array_buffer;
++    g_attrib_stub_state[index] = rec;
+ 
+     GLContextState *ctx = &g_stub_ctx[g_stub_current_ctx];
+     VAOState *vao = &ctx->vaos[ctx->current_vao];
+@@ -2352,7 +2332,7 @@ GL_APICALL void GL_APIENTRY glVertexAttribPointer(GLuint index, GLint size,
+       AttribState *va = &vao->attribs[index];
+       GLboolean en = va->enabled;
+       GLuint div = va->divisor;
+-      *va = g_attrib_stub_state[index];
++      *va = rec;
+       va->enabled = en;
+       va->divisor = div;
+     }
+diff --git a/stub/gles3_2_stub.c b/stub/gles3_2_stub.c
+index bffc61e..fea18e2 100644
+--- a/stub/gles3_2_stub.c
++++ b/stub/gles3_2_stub.c
+@@ -1435,13 +1435,16 @@ GL_APICALL void GL_APIENTRY glVertexAttribIPointer(GLuint index, GLint size,
+ 
+   if (index < MAX_VERTEX_ATTRIBS)
+   {
+-    g_attrib_stub_state[index].size = size;
+-    g_attrib_stub_state[index].type = type;
+-    g_attrib_stub_state[index].normalized = GL_FALSE;
+-    g_attrib_stub_state[index].stride = stride;
+-    g_attrib_stub_state[index].pointer = (uintptr_t)pointer;
+-    g_attrib_stub_state[index].vbo = stub_gl_state.array_buffer;
+-    g_attrib_stub_state[index].integer = GL_TRUE;
++    /* built locally: g_attrib_stub_state is shared by every thread */
++    AttribState rec = g_attrib_stub_state[index];
++    rec.size = size;
++    rec.type = type;
++    rec.normalized = GL_FALSE;
++    rec.stride = stride;
++    rec.pointer = (uintptr_t)pointer;
++    rec.vbo = stub_gl_state.array_buffer;
++    rec.integer = GL_TRUE;
++    g_attrib_stub_state[index] = rec;
+ 
+     GLContextState *ctx = &g_stub_ctx[g_stub_current_ctx];
+     VAOState *vao = &ctx->vaos[ctx->current_vao];
+@@ -1451,7 +1454,7 @@ GL_APICALL void GL_APIENTRY glVertexAttribIPointer(GLuint index, GLint size,
+       AttribState *va = &vao->attribs[index];
+       GLboolean en = va->enabled;
+       GLuint div = va->divisor;
+-      *va = g_attrib_stub_state[index];
++      *va = rec;
+       va->enabled = en;
+       va->divisor = div;
+     }

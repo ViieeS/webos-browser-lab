@@ -1,0 +1,81 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Video check</title>
+<!-- Video playback check for any browser on the TV: reports which codecs, MSE types and DRM key
+     systems the engine claims, then plays one clip (progressive src= or MSE, the way streaming apps
+     and YouTube do) for 15 s and reports progress, dropped frames and stalls. Results go out as
+     GET /beacon (lighttpd access log), so no DevTools is needed.
+     usage: video.html?file=<name in /media/>&mode=src|mse&mime=<MSE type>&tag=<browser>&run=<n>
+            video.html?caps=1&tag=<browser>   (capabilities only) -->
+<style>html, body { margin: 0; background: #000; height: 100%; } video { width: 100%; height: 100%; }</style>
+<video id="v" muted playsinline></video>
+<script>
+const q = new URLSearchParams(location.search);
+const v = document.getElementById("v");
+const base = { tag: q.get("tag") || "?", run: q.get("run") || "0" };
+function report(fields) { new Image().src = "/beacon?" + new URLSearchParams({ ...base, ...fields }); }
+
+const CODECS = {
+  h264: 'video/mp4; codecs="avc1.640028"', hevc: 'video/mp4; codecs="hvc1.1.6.L150.90"',
+  vp9: 'video/webm; codecs="vp9"', vp9p2: 'video/webm; codecs="vp09.02.10.10"', av1: 'video/mp4; codecs="av01.0.08M.08"',
+  aac: 'audio/mp4; codecs="mp4a.40.2"', opus: 'audio/webm; codecs="opus"', eac3: 'audio/mp4; codecs="ec-3"',
+};
+
+async function caps() {
+  const out = { case: "caps", mse: typeof MediaSource !== "undefined" ? 1 : 0, eme: navigator.requestMediaKeySystemAccess ? 1 : 0 };
+  for (const [k, t] of Object.entries(CODECS)) {
+    out["src_" + k] = v.canPlayType(t) || "no";
+    out["mse_" + k] = typeof MediaSource !== "undefined" && MediaSource.isTypeSupported(t) ? 1 : 0;
+  }
+  const systems = { widevine: "com.widevine.alpha", playready: "com.microsoft.playready", playready2: "com.microsoft.playready.recommendation", clearkey: "org.w3.clearkey" };
+  for (const [k, ks] of Object.entries(systems)) {
+    try {
+      await navigator.requestMediaKeySystemAccess(ks, [{ initDataTypes: ["cenc"], videoCapabilities: [{ contentType: CODECS.h264 }] }]);
+      out["drm_" + k] = 1;
+    } catch (e) { out["drm_" + k] = 0; }
+  }
+  report(out);
+}
+
+function measure() {
+  let waits = 0, error = "";
+  v.addEventListener("waiting", () => waits++);
+  v.addEventListener("error", () => { error = (v.error && v.error.code) || "?"; });
+  const t0 = performance.now();
+  let started = 0;
+  v.addEventListener("playing", () => { if (!started) started = performance.now() - t0; }, { once: true });
+  v.play().catch(e => { error = String(e).slice(0, 60); });
+  setTimeout(() => {
+    const pq = v.getVideoPlaybackQuality ? v.getVideoPlaybackQuality() : {};
+    report({ case: "play", file: q.get("file"), mode: q.get("mode"), start_ms: Math.round(started),
+             played_s: v.currentTime.toFixed(1), total: pq.totalVideoFrames ?? -1, dropped: pq.droppedVideoFrames ?? -1,
+             waits, error, w: v.videoWidth, h: v.videoHeight });
+  }, 15000);
+}
+
+async function mse(file, mime) {
+  const ms = new MediaSource();
+  v.src = URL.createObjectURL(ms);
+  await new Promise(r => ms.addEventListener("sourceopen", r, { once: true }));
+  const sb = ms.addSourceBuffer(mime);
+  const data = await (await fetch("/media/" + file)).arrayBuffer();
+  // 2 MB appends, the way players feed segments.
+  for (let off = 0; off < data.byteLength; off += 2 << 20) {
+    sb.appendBuffer(data.slice(off, off + (2 << 20)));
+    await new Promise(r => sb.addEventListener("updateend", r, { once: true }));
+  }
+  ms.endOfStream();
+}
+
+(async () => {
+  if (q.get("caps")) return caps();
+  const file = q.get("file");
+  try {
+    if (q.get("mode") === "mse") await mse(file, q.get("mime"));
+    else v.src = "/media/" + file;
+  } catch (e) {
+    return report({ case: "play", file, mode: q.get("mode"), error: String(e).slice(0, 80) });
+  }
+  measure();
+})();
+</script>

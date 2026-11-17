@@ -1,0 +1,59 @@
+content_shell links content/test and web_test stubs that OSE never builds, so they lag the
+interfaces OSE changed: the 6-argument DisplayPersistentNotification and the appruntime-only
+DisplayPrivate::SetFirstActivateTimeout.
+--- a/content/test/mock_platform_notification_service.h
++++ b/content/test/mock_platform_notification_service.h
+@@ -62,7 +62,8 @@
+       const GURL& service_worker_scope,
+       const GURL& origin,
+       const blink::PlatformNotificationData& notification_data,
+-      const blink::NotificationResources& notification_resources) override;
++      const blink::NotificationResources& notification_resources,
++      const int64_t service_worker_registration_id) override;
+   void CloseNotification(const std::string& notification_id) override;
+   void ClosePersistentNotification(const std::string& notification_id) override;
+   void GetDisplayedNotifications(
+--- a/content/test/mock_platform_notification_service.cc
++++ b/content/test/mock_platform_notification_service.cc
+@@ -50,5 +50,6 @@
+     const GURL& service_worker_scope,
+     const GURL& origin,
+     const blink::PlatformNotificationData& notification_data,
+-    const blink::NotificationResources& notification_resources) {
++    const blink::NotificationResources& notification_resources,
++    const int64_t service_worker_registration_id) {
+   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+--- a/ui/compositor/test/in_process_context_factory.cc
++++ b/ui/compositor/test/in_process_context_factory.cc
+@@ -112,6 +112,9 @@
+   void PreserveChildSurfaceControls() override {}
+   void SetSwapCompletionCallbackEnabled(bool enabled) override {}
+ #endif
++#if defined(USE_NEVA_APPRUNTIME)
++  void SetFirstActivateTimeout(base::TimeDelta timeout) override {}
++#endif
+   void SetDelegatedInkPointRenderer(
+       mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer> receiver)
+       override {}
+--- a/content/shell/BUILD.gn
++++ b/content/shell/BUILD.gn
+@@ -196,5 +196,8 @@
+ static_library("content_shell_lib") {
+   testonly = true
+-  defines = []
++  defines = [
++    "CONTENT_SHELL_VERSION=\"$content_shell_version\"",
++    "CONTENT_SHELL_MAJOR_VERSION=\"$content_shell_major_version\"",
++  ]
+   sources = [
+     "browser/shell_browser_main_parts.cc",
+--- a/neva/pal_service/pc/BUILD.gn
++++ b/neva/pal_service/pc/BUILD.gn
+@@ -27,6 +27,7 @@
+   deps = [
+     "//base",
+     "//neva/pal_service/dummy:pal_service_dummy",
+     "//neva/pal_service/public/mojom",
++    "//skia",
+   ]
+ }
