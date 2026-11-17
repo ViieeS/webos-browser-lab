@@ -2,7 +2,9 @@
 
 Open work in priority order. The status of each item is current as of 2026-11-17.
 
-## 1. Own WebOS-Chromium 151 build: in progress
+## 1. Own WebOS-Chromium 151 build: built and measured
+
+Result 2026-11-17 (`cr151/RESULTS.md`): installed as `com.viiees.cr151`. Speedometer +14 % and wiki load -20 to -30 % against 0.0.66. micro unchanged, still behind cr120. Open: a second build with their exact args for a byte-level trust check (needs the owner's go), PGO.
 
 - **Build.** Build WebOS-Chromium from source at commit `1499d397`:
   - natively on the arm64 host;

@@ -1,0 +1,6 @@
+# YouTube home, cdpnav.py over temporary DevTools relay, own build com.viiees.cr151, 2026-11-17
+cold 1: dcl 11262 load 11434 fcp 2040
+cold 2: dcl 10147 load 10165 fcp 1540
+warm 1: dcl 5370 load 5390 fcp 1356
+warm 2: dcl 6170 load 6200 fcp 2324
+warm 3: dcl 6284 load 6310 fcp 2204

@@ -1,0 +1,11 @@
+# Build-host toolchain for an arm64 Linux host (Chromium 151 ships clang and Rust for x64 hosts only).
+# Appended after args.delta.gn by incontainer.sh. Not a change to the browser itself.
+# clang 23 from apt.llvm.org. A non-default clang_base_path also skips the check against Chromium's pinned
+# llvmorg-23-init revision (compiler/BUILD.gn). incontainer.sh links the same directory at the default path for the
+# upstream scripts, so the softfp builtins land in <clang_base_path>/lib/clang/23/lib/.
+clang_base_path = "/usr/lib/llvm-23"
+clang_version = "23"
+# Rust: the image's nightly with prebuilt std for armv7-unknown-linux-gnueabi (rustup target).
+rust_sysroot_absolute = "/opt/rust-sysroot"
+rustc_version = "1.98.0-nightly-9e2abe0c6-2026-06-16"
+rust_bindgen_root = "/opt/bindgen"

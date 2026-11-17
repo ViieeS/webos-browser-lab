@@ -1,0 +1,28 @@
+cr151own micro #42627-0: micro_total_ms=370 wall_s=2
+cr151 micro #42627-0: micro_total_ms=434 wall_s=2
+cr151own load-wiki #42627-0: load_ms=3135
+cr151 load-wiki #42627-0: load_ms=4008
+cr151own raf-wiki #42627-0: load_ms=2906 raf_fps=63.3
+cr151 raf-wiki #42627-0: load_ms=3480 raf_fps=63.8
+cr151own raf-wiki-nojs #42627-0: load_ms=5148 raf_fps=63.5
+cr151 raf-wiki-nojs #42627-0: load_ms=4932 raf_fps=64.9
+cr151own micro #42627-1: micro_total_ms=348 wall_s=2
+cr151 micro #42627-1: micro_total_ms=346 wall_s=2
+cr151own load-wiki #42627-1: load_ms=2893
+cr151 load-wiki #42627-1: load_ms=3290
+cr151own raf-wiki #42627-1: load_ms=2632 raf_fps=62.9
+cr151 raf-wiki #42627-1: load_ms=3709 raf_fps=63.9
+cr151own raf-wiki-nojs #42627-1: load_ms=4397 raf_fps=63.5
+cr151 raf-wiki-nojs #42627-1: load_ms=5085 raf_fps=64.4
+cr151own micro #42627-2: micro_total_ms=306 wall_s=2
+cr151 micro #42627-2: micro_total_ms=355 wall_s=2
+cr151own load-wiki #42627-2: load_ms=2723
+cr151 load-wiki #42627-2: load_ms=4380
+cr151own raf-wiki #42627-2: load_ms=2769 raf_fps=63.5
+cr151 raf-wiki #42627-2: load_ms=3608 raf_fps=63.8
+cr151own raf-wiki-nojs #42627-2: load_ms=4980 raf_fps=64.1
+cr151 raf-wiki-nojs #42627-2: load_ms=4735 raf_fps=64.6
+cr151own speedometer #43867-0: score=0.825 wall_s=100
+cr151 speedometer #43867-0: score=0.721 wall_s=111
+cr151own speedometer #43867-1: score=0.852 wall_s=94
+cr151 speedometer #43867-1: score=0.744 wall_s=106

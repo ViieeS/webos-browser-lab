@@ -564,10 +564,34 @@ It lacks DRM, HEVC and a sandbox. DevTools needs a flag file and a relay.
   - `thin_lto_enable_optimizations = true`
   - `chrome_pgo_phase = 0` (an arm32 profile is a separate experiment)
   - `arm_version = 8`, `arm_arch = "armv8.2-a"` (ARMv8.2-A has SDIV/UDIV in ARM and Thumb. Plain armv7-a makes every division a libgcc call)
-- Planned patch 0101: `-mtune=cortex-a55` and `-mfpu=neon-fp-armv8` for `arm_version` 8, because `arm_tune` and `arm_fpu` are not GN args in M151. Named in `args.delta.gn`. No patch file exists yet.
+- Patch 0101: `-mtune=cortex-a55` and `-mfpu=neon-fp-armv8` for `arm_version` 8 (`arm_tune` and `arm_fpu` are not GN args in M151), and the armv7 Rust triple for `arm_version` 8 (otherwise rust.gni picks `arm-unknown-linux-gnueabi`, ARMv6).
+- Their patch 0012 adds `-mfpu=$arm_fpu`, but `compiler_arm_fpu` appends `-mfpu=neon` after it. Their release runs with plain NEON (2026-11-17, from the ninja command lines). Patch 0101 sets the FPU inside `compiler_arm_fpu`.
 - Patch 0100 `webos-no-caption-buttons` (exists): under `OS_WEBOS`, `OpaqueBrowserFrameViewLayout` keeps both button lists empty and ignores `SetButtonOrdering`. The window is always fullscreen, and a minimised window has no taskbar to return from.
 - Dead end behind 0100: "Use system title bar and borders" (`browser.custom_chrome_frame=false`) does NOT remove the minimise, maximise and close buttons on webOS, live or after a restart.
-- Their build runs on a 64-CPU, 288 GB Modal machine. That is much larger than the local colima VM.
+- Their build runs on a 64-CPU, 288 GB Modal machine. Ours ran natively in the colima aarch64 VM (12 cores, 24 GB).
+
+### Own speed build: result (2026-11-17)
+
+Dev app `com.viiees.cr151`, details and raw files in `browser/cr151/RESULTS.md`. Against their 0.0.66, interleaved on the same day:
+
+| Case | Own build | Their 0.0.66 | cr120 |
+|---|---|---|---|
+| micro | 306-370 ms | 346-434 ms | 259-309 ms |
+| load-wiki | 2.72-3.14 s | 3.29-4.38 s | 3.1-3.3 s |
+| Speedometer 3.1 | 0.825-0.852 | 0.721-0.744 | 0.58-0.60 |
+| YouTube warm | 5.4-6.3 s | 5.3-6.1 s | 7.6-8.3 s |
+
+- The size flags were the cause of the load and Speedometer gap, not of the micro gap: micro stays within noise of theirs and behind cr120.
+- rAF, YouTube and NDL video do not change. Window caption buttons are gone (patch 0100).
+- Cost: chrome 204 MB stripped against 154 MB, 233 MB installed.
+- Trust check (`browser/cr151/compare.sh`): NEEDED, exported symbols, URL hosts and version strings match their binary. Not a byte-level proof.
+
+Build traps on an arm64 host (each one cost a rebuild):
+
+- The CIPD gperf in the tree is x86-64. Without binfmt it fails silently and leaves header-only `.cc` outputs, so the link fails much later with undefined `blink::FindProperty` and friends. Use the system gperf and delete the empty outputs (`browser/cr151/clean_gperf.sh`).
+- arm32 V8 host tools (mksnapshot, torque) run under `qemu-arm-static`. The sysroot's stub libgcc_s needs GLIBC_2.34 at run time, so qemu needs the real armel runtime: `-L /usr/arm-linux-gnueabi` (patch 0102).
+- devtools-frontend ships an x86 esbuild and needs a rollup native addon for arm64 (`prep.sh` replaces both).
+- A custom Rust toolchain still needs `third_party/rust-toolchain` linked: some std rules name `rust-toolchain/bin/rustc` directly.
 
 ### Operating notes
 
@@ -632,7 +656,7 @@ It lacks DRM, HEVC and a sandbox. DevTools needs a flag file and a relay.
 - `docker pause` frees CPU but not RAM. `colima stop` frees RAM and kills the build, which resumes with `build.sh all`.
 
 - The WPE host logs one `START pid=<pid> params=<json>` line per launch (`host/main.c`). `bench.py` turns a second START into `killed=N`. That is how to tell a memchute autoReload from a manual relaunch.
-- State of the TV after 2026-11-17: WPE runs the final library (`a55cssjit` = a55 + 0013 v2 + 0014 v2 + 0015) with mimalloc preloaded by default. cr120, cr151 0.0.66 and the benchmark set stay installed. The leftovers of earlier experiments were removed, see [ARTIFACTS.md](ARTIFACTS.md).
+- State of the TV after 2026-11-17: WPE runs the final library (`a55cssjit` = a55 + 0013 v2 + 0014 v2 + 0015) with mimalloc preloaded by default. cr120, cr151 0.0.66, the own cr151 build (`com.viiees.cr151`) and the benchmark set stay installed. The leftovers of earlier experiments were removed, see [ARTIFACTS.md](ARTIFACTS.md).
 
 ## 8. Upstream candidates
 
@@ -656,6 +680,6 @@ None of these has been submitted.
 | cr120 0009 pal-pc-factory-signatures | [webosose/chromium120](https://github.com/webosose/chromium120) | PC pal factory drift | not submitted |
 | cr120 0013 neva-media-position-non-webos | [webosose/chromium120](https://github.com/webosose/chromium120) | Non-webOS build of media/neva | not submitted |
 | cr151 0100 webos-no-caption-buttons | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) | Removes minimise/maximise/close on webOS | not submitted |
-| cr151 0101 (planned) Cortex-A55 tuning | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) | Only after a measured speed build | not submitted |
+| cr151 0101 arm-cortex-a55-tune-and-fpu | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) | Fixes the overridden `-mfpu` of their 0012; measured with the speed build | not submitted |
 | Platform notes: quoted screensaver timestamp, NDL main-ELF requirement, Mali EGL display | [webosbrew](https://github.com/webosbrew) (documentation) | Knowledge for homebrew authors, not a code patch | not submitted |
 

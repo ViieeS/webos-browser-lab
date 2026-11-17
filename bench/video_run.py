@@ -19,7 +19,8 @@ import bench  # noqa: E402
 TAG = sys.argv[1] if len(sys.argv) > 1 else "wpe"
 CR120APP = TAG == "cr120app"
 CR120 = TAG == "cr120" or CR120APP
-CR151 = TAG == "cr151"
+CR151_APP = {"cr151": "org.nativechromium.browser", "cr151own": "com.viiees.cr151"}.get(TAG)
+CR151 = CR151_APP is not None
 T = ("/media/developer/temp/cr120/threads_cr120.sh" if CR120 else
      "sh /media/developer/temp/threads_cr151.sh" if CR151 else "/media/developer/temp/threads.sh")
 CLIPS = [  # file, mode, MSE type
@@ -36,7 +37,7 @@ if CR120APP:
 elif CR120:
     CLOSE += "sh /media/developer/temp/cr120/run_tv.sh stop; "
 elif CR151:
-    CLOSE += "luna-send -n 1 luna://com.webos.applicationManager/closeByAppId '{\"id\":\"org.nativechromium.browser\"}' >/dev/null; "
+    CLOSE += "luna-send -n 1 luna://com.webos.applicationManager/closeByAppId '{\"id\":\"%s\"}' >/dev/null; " % CR151_APP
 
 
 def launch(query):
@@ -49,7 +50,7 @@ def launch(query):
         bench.tv(f"{CLOSE}sleep 3; sh /media/developer/temp/cr120/run_tv.sh '{url}'")
         return
     if CR151:
-        payload = '{"id":"org.nativechromium.browser","params":{"target":"%s"}}' % url
+        payload = '{"id":"%s","params":{"target":"%s"}}' % (CR151_APP, url)
         try:
             bench.tv(f"{CLOSE}sleep 3; luna-send -n 1 luna://com.webos.applicationManager/launch '{payload}' >/dev/null", timeout=20)
         except subprocess.TimeoutExpired:

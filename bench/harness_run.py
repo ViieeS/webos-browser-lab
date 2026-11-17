@@ -18,13 +18,15 @@ import bench  # noqa: E402
 
 ACCESS = "/tmp/bench-access.log"
 CEILING = {"micro": 60, "load-wiki": 40, "raf-wiki": 50, "raf-wiki-nojs": 50, "settle-wiki": 50, "settle-wiki-nojs": 50, "speedometer": 1200}
-# cr151: WebOS-Chromium (github.com/sarahahzub/WebOS-Chromium) release IPK; its run.sh opens params.target (http/https only)
+# cr151: WebOS-Chromium (github.com/sarahahzub/WebOS-Chromium) release IPK; cr151own: our build of its source
+# (browser/cr151, package.sh). Both run.sh open params.target (http/https only).
 CR151 = "org.nativechromium.browser"
+CR151OWN = "com.viiees.cr151"
 BROWSERS = {"stock": ("com.webos.app.browser", "target"), "ours": (bench.APP, "url"), "cr120": None,
-            "cr151": (CR151, "target")}
+            "cr151": (CR151, "target"), "cr151own": (CR151OWN, "target")}
 CR120 = "sh /media/developer/temp/cr120/run_tv.sh"
 CLOSE = "".join(f"luna-send -n 1 luna://com.webos.applicationManager/closeByAppId '{{\"id\":\"{a}\"}}' >/dev/null; "
-                for a in ("com.webos.app.browser", bench.APP, CR151, "youtube.leanback.v4")) + f"{CR120} stop; "
+                for a in ("com.webos.app.browser", bench.APP, CR151, CR151OWN, "youtube.leanback.v4")) + f"{CR120} stop; "
 
 
 def fire(cmd):

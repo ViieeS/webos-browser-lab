@@ -1,0 +1,30 @@
+# why: on an arm64 build host the V8 snapshot and generator tools are 32-bit ARM binaries of the target
+# toolchain, which arm64 cannot execute. Run them under qemu-arm-static with an armel runtime from the build image.
+--- a/src/build/gn_run_binary.py
++++ b/src/build/gn_run_binary.py
+@@ -24,6 +24,11 @@
+     return []
+   if h[:4] == b"\x7fELF" and h[4] == 1 and h[18:20] == b"\x03\x00":
+     return ["qemu-i386-static"]
++  # viiees: on an arm64 build host V8 builds these tools with the 32-bit ARM
++  # target toolchain (snapshot_toolchain.gni), and arm64 cannot exec AArch32.
++  if h[:4] == b"\x7fELF" and h[4] == 1 and h[18:20] == b"\x28\x00":
++    # The target sysroot holds code-free stubs; /usr/arm-linux-gnueabi is a real armel runtime (image).
++    return ["qemu-arm-static", "-L", "/usr/arm-linux-gnueabi"]
+   return []
+ 
+ # This script is designed to run binaries produced by the current build. We
+--- a/src/v8/tools/run.py
++++ b/src/v8/tools/run.py
+@@ -22,6 +22,11 @@
+     return []
+   if h[:4] == b"\x7fELF" and h[4] == 1 and h[18:20] == b"\x03\x00":
+     return ["qemu-i386-static"]
++  # viiees: on an arm64 build host V8 builds these tools with the 32-bit ARM
++  # target toolchain (snapshot_toolchain.gni), and arm64 cannot exec AArch32.
++  if h[:4] == b"\x7fELF" and h[4] == 1 and h[18:20] == b"\x28\x00":
++    # The target sysroot holds code-free stubs; /usr/arm-linux-gnueabi is a real armel runtime (image).
++    return ["qemu-arm-static", "-L", "/usr/arm-linux-gnueabi"]
+   return []
+ 
+ # The first two arguments can be used to specify a file to redirect the

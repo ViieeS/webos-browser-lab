@@ -21,6 +21,7 @@ Ranges are min-max over 2-4 runs. WPE is the final build: a55 + patches 0013-001
 
 | Engine | Page cases (micro, load-wiki, raf-wiki, Speedometer) | YouTube | Video |
 |---|---|---|---|
+| cr151 own build | `cr151/harness_cr151own.txt` (interleaved with 0.0.66) | `cr151/youtube_cr151own.txt` | `cr151/video_cr151own.txt` |
 | cr151 | `cr151/harness_cr151.txt` | `cr151/RESULTS.md` (cdpnav.py runs, the raw console output was not kept) | `cr151/video_cr151.txt` |
 | cr120 | `cr120/harness_cr120_swraster.txt`. GPU-raster runs: `cr120/harness_cr120.txt` | `cr120/RESULTS.md` (cdpnav.py, raw output not kept) | `cr120/video_cr120.txt` (software), `cr120/video_neva.log` (uMediaServer), `cr120/video_ndl.log` (NDL) |
 | WPE | `bench/results/mi-mimalloc-clean.jsonl` (4 rounds), `bench/results/default-mi.jsonl` | `cold-youtube` in the same file: the host's load event, not CDP | Video was run in WPE on 2026-11-16, but its raw output was not kept. The summary is in [FINDINGS.md](FINDINGS.md) |
@@ -43,7 +44,7 @@ cr151 renders with GPU raster.
   - WPE renders full screen.
 - **cr151 is a size-optimised build:** `optimize_for_size`, LTO without optimisation, no PGO.
   - Overriding `--js-flags` changed nothing in micro (332-357 ms).
-  - The build flags are the leading suspect for the micro and load gap. That is an assumption, not tested yet. See `cr151/args.delta.gn`.
+  - Tested 2026-11-17 with an own speed build (`cr151/args.delta.gn`): load-wiki 2.7-3.1 s, Speedometer 0.83-0.85, micro 306-370 ms. The flags explain the load and JS gap, not micro. See `cr151/RESULTS.md`.
 - **YouTube sends different user agents.**
   - WPE: a desktop Safari UA.
   - cr120: Chrome 120.

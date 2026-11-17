@@ -1,0 +1,46 @@
+# why: the C1 is a Cortex-A55 running this 32-bit code in AArch32. With arm_version 8 (args), use the ARMv8 FPU
+# (VFPv4/NEON with the v8 extensions) and A55 scheduling. arm_fpu and arm_tune are not GN args in M151, and
+# compiler_arm_fpu's -mfpu=neon comes after the cpu_abi flags, so the FPU is set there.
+--- a/src/build/config/compiler_cpu_abi.gn
++++ b/src/build/config/compiler_cpu_abi.gn
+@@ -82,7 +82,10 @@
+       cpu_abi_cflags += [ "-mfloat-abi=$arm_float_abi" ]
+       cpu_abi_ldflags += [ "-mfloat-abi=$arm_float_abi" ]
+     }
+-    if (arm_fpu != "") {
++    if (arm_version == 8) {
++      # viiees: Cortex-A55 (LG C1) in AArch32. The FPU is in compiler_arm_fpu.
++      cpu_abi_cflags += [ "-mtune=cortex-a55" ]
++    } else if (arm_fpu != "") {
+       cpu_abi_cflags += [ "-mfpu=$arm_fpu" ]
+     }
+   }
+--- a/src/build/config/compiler/BUILD.gn
++++ b/src/build/config/compiler/BUILD.gn
+@@ -1611,7 +1611,12 @@
+
+ config("compiler_arm_fpu") {
+   if (current_cpu == "arm" && !is_ios) {
+-    cflags = [ "-mfpu=neon" ]
++    if (arm_version == 8) {
++      # viiees: Cortex-A55 (LG C1) in AArch32, see compiler_cpu_abi.gn.
++      cflags = [ "-mfpu=neon-fp-armv8" ]
++    } else {
++      cflags = [ "-mfpu=neon" ]
++    }
+     if (!arm_use_thumb) {
+       cflags += [ "-marm" ]
+     }
+--- a/src/build/config/rust.gni
++++ b/src/build/config/rust.gni
+@@ -255,7 +255,9 @@
+     } else {
+       float_suffix = ""
+     }
+-    if (arm_arch == "armv7-a" || arm_arch == "armv7") {
++    # viiees: ARMv8 AArch32 (arm_version 8) has no Linux Rust target of its own;
++    # armv7 is the closest, not the ARMv6 baseline of "arm-".
++    if (arm_arch == "armv7-a" || arm_arch == "armv7" || arm_version == 8) {
+       rust_abi_target = "armv7" + vendor + "-linux-gnueabi" + float_suffix
+     } else {
+       rust_abi_target = "arm" + vendor + "-linux-gnueabi" + float_suffix
