@@ -600,6 +600,26 @@ Build traps on an arm64 host (each one cost a rebuild):
 - The profile on flash keeps cookies of every site visited during tests.
 - The screensaver came on during CDP YouTube runs. Close `com.webos.app.screensaver` before each run.
 
+### UI latency (2026-11-17)
+
+Details: `browser/cr151/UI_LATENCY.md`. Own build against 0.0.66, means over 3 interleaved rounds:
+
+| Chromium metric | Own build | 0.0.66 |
+|---|---|---|
+| Omnibox.CharTypedToRepaintLatency | 158 ms (ToPaint 72, PaintToPresent 62) | 190 ms (87, 74) |
+| Browser.Tabs.TotalSwitchDuration3 | 113 ms | 131 ms |
+| EventLatency.KeyPressed.TotalLatency, Down in a page | 162 ms | 215 ms |
+| EventLatency.KeyPressed.TotalLatency, Tab in a page (median) | 52-61 ms | 61-170 ms |
+
+- The flags help by 14-25 %, but do not fix the UI.
+- Key injection: writing `struct input_event` into `/dev/input/event10` ("LGE Network Input") gives real keys
+  through the compositor (`bench/evkeys.c`). `event1` ("LGE RCU") is not read by the compositor, so keys written
+  there are lost without an error. Ctrl combos work. F6 focuses the omnibox, Ctrl+L right after launch went to the page.
+- `Browser.getHistograms` returns browser-process histograms only. Renderer ones (`EventLatency.*`) appear after
+  the browser fetches them from children, which `chrome://histograms` in a background tab triggers.
+- `Event.Latency.OS2.KEY_PRESSED` is always 0 on webOS, so the time from the remote to Chromium is not visible.
+- zig cc for small TV tools needs `-fPIE -pie`. Without it the binary segfaults before main.
+
 ## 7. Tooling gotchas
 
 ### Moving files

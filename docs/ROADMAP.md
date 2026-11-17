@@ -22,6 +22,11 @@ Result 2026-11-17 (`cr151/RESULTS.md`): installed as `com.viiees.cr151`. Speedom
 
 ## 2. Browser UI responsiveness
 
+Measured 2026-11-17 (`cr151/UI_LATENCY.md`, Chromium's own histograms): the speed build is 14-25 % faster than
+0.0.66, but a key in the omnibox still takes about 160 ms to the screen (about 60 ms of it after paint), and a Down
+press in a page about 160 ms. The flags do not fix it. Next: split the present path (Perfetto `chrome_event_latencies`,
+A/B with `--disable-smooth-scrolling` and software compositing), then pick an option below.
+
 - **The problem.** The Chrome UI in cr151 feels slow with the remote.
 - **What to measure:**
   - cold start to first paint;
