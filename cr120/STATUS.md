@@ -15,7 +15,7 @@
 
 ## Build and run
 
-- `sysroot.sh`, `build.sh` and `bundle.sh` run in the docker volume `cr120`. The tree is a `git clone --depth 1`.
+- `sysroot.sh`, `build.sh` and `bundle.sh` run in the docker volume `cr120`. The volume was deleted on 2026-11-17, so a rebuild starts with a fresh clone. The tree is a `git clone --depth 1`.
 - Patches 0001-0015 apply on top. The arm32 V8 and GN tools run under qemu on the arm64 host.
 - `run_tv.sh` starts content_shell from a telnet root shell. Use it for non-video benchmarks.
   - DevTools binds to `$DEVTOOLS_ADDR`, 127.0.0.1 by default.

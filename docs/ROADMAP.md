@@ -45,5 +45,5 @@ Result 2026-11-17 (`cr151/RESULTS.md`): installed as `com.viiees.cr151`. Speedom
 
 ## 4. Housekeeping
 
-- Delete the `cr120` volume after item 1 is verified.
+- The `cr120` volume and image were deleted on 2026-11-17, after item 1 was measured. See [ARTIFACTS.md](ARTIFACTS.md).
 - When a newer WebOS-Chromium release appears, rerun the harness and the video test on it.

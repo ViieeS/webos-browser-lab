@@ -23,6 +23,7 @@ Results and conclusions from these artifacts are kept in the text files of this 
 | `build/tvlib/`, `build/gdbtv*` | small | TV system libraries for symbolization, gdb 16.3 for the TV | Copy from the TV with `host/tvfetch.py`. gdb notes are in FINDINGS (its breakpoints never fired in WebKit, so prefer perf) |
 | `build/media/`, `build/suites.tgz`, `build/pages.tgz` | ~0.4 GB | Copies of the test clips and suites for upload | `bench/media/gen.sh`, and the suites from [SOURCES.md](SOURCES.md#benchmark-suites) |
 | Compiler logs `build/br*.log`, `build/a55-*.log`, `build/a9-*.log` | — | Build output | Produced by every build |
+| Docker volume and image `cr120` (deleted after the own cr151 build was measured) | 19 GB | chromium120 tree (webosose/chromium120 @e6a73fff), Debian buster sysroot, `out/` | `docker build -t cr120 cr120/`, then `cr120/sysroot.sh`, `cr120/build.sh`, `cr120/bundle.sh`. The last build is kept as `cr120/content_shell.gz` and `cr120/cr120.tar.gz` |
 
 ### TV
 
@@ -37,7 +38,6 @@ Results and conclusions from these artifacts are kept in the text files of this 
 
 | Where | Item | Why |
 |---|---|---|
-| Build host | Docker volume and image `cr120` (19 GB) | Fallback engine. Delete it once the own cr151 build is verified |
 | Build host | Docker volume `cr151work`, image `cr151` | Active work |
 | Build host | `cr120/content_shell.gz`, `cr120/cr120.tar.gz` | Last cr120 build, ready to deploy |
 | Build host | `perf/bin/perf` | Static perf for the TV. Rebuilding it needs the deleted `wpe-br` toolchain |
