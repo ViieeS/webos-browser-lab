@@ -1,0 +1,11 @@
+caps: mse=1 eme=1 src_h264=probably mse_h264=1 src_hevc=no mse_hevc=0 src_vp9=probably mse_vp9=1 src_vp9p2=no mse_vp9p2=0 src_av1=probably mse_av1=1 src_aac=probably mse_aac=1 src_opus=probably mse_opus=1 src_eac3=no mse_eac3=0 drm_widevine=0 drm_playready=0 drm_playready2=0 drm_clearkey=1
+h264aac-1080p30.mp4 src: file=h264aac-1080p30.mp4 mode=src start_ms=308 played_s=14.7 total=447 dropped=0 waits=1 w=1920 h=1080 | cpu 8s: 40 browser Media; 13 browser content_shell; 10 browser ThreadPoolForeg;
+h264-1080p30.mp4 src: file=h264-1080p30.mp4 mode=src start_ms=201 played_s=14.8 total=449 dropped=0 waits=1 w=1920 h=1080 | cpu 8s: 22 browser Media; 9 browser content_shell; 6 browser ThreadPoolForeg;
+h264-1080p60.mp4 src: file=h264-1080p60.mp4 mode=src start_ms=245 played_s=14.8 total=895 dropped=0 waits=1 w=1920 h=1080 | cpu 8s: 27 browser Media; 11 browser content_shell; 9 browser ThreadPoolForeg;
+hevc-2160p30.mp4 src: file=hevc-2160p30.mp4 mode=src start_ms=0 played_s=0.0 total=0 dropped=0 waits=1 error=NotSupportedError: Failed to load because no supported sourc w=0 h=0 | cpu 8s: 
+vp9-1080p60.webm src: file=vp9-1080p60.webm mode=src start_ms=170 played_s=14.8 total=900 dropped=0 waits=1 w=1920 h=1080 | cpu 8s: 27 browser Media; 10 browser content_shell; 9 browser ThreadPoolForeg;
+vp9-2160p30.webm src: file=vp9-2160p30.webm mode=src start_ms=94 played_s=14.9 total=452 dropped=0 waits=1 w=3840 h=2160 | cpu 8s: 23 browser Media; 13 browser content_shell; 7 browser ThreadPoolForeg;
+av1-1080p30.mp4 src: file=av1-1080p30.mp4 mode=src start_ms=125 played_s=14.9 total=452 dropped=0 waits=1 w=1920 h=1080 | cpu 8s: 21 browser Media; 8 browser content_shell;
+h264-1080p30-frag.mp4 mse: file=h264-1080p30-frag.mp4 mode=mse start_ms=4 played_s=15.0 total=453 dropped=0 waits=0 w=1920 h=1080 | cpu 8s: 17 browser Media; 6 browser content_shell;
+vp9-1080p60.webm mse: file=vp9-1080p60.webm mode=mse start_ms=9 played_s=15.0 total=909 dropped=0 waits=0 w=1920 h=1080 | cpu 8s: 21 browser Media; 7 browser content_shell;
+vp9-2160p30.webm mse: file=vp9-2160p30.webm mode=mse start_ms=6 played_s=15.0 total=455 dropped=0 waits=0 w=3840 h=2160 | cpu 8s: 19 browser Media; 8 browser content_shell;

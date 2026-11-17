@@ -35,6 +35,7 @@ cr151/upstream/source/
 cr120/*.so
 cr120/*.gz
 cr120/*.log
+!cr120/video_*.log
 cr120/tvlibs/
 cr120/tools/
 cr120/work/*.log
@@ -48,3 +49,6 @@ cr120/probe/ndlwin
 cr120/probe/wlglobals
 cr120/probe/wlshell_probe
 cr151/build/tcprelay
+
+# Prebuilt static perf for the TV (built by perf/build_perf.sh).
+perf/bin/

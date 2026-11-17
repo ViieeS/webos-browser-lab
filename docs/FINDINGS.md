@@ -1,6 +1,6 @@
 # Findings: a modern web browser on the LG OLED C1
 
-Knowledge base for building a fast, modern web browser for a rooted LG OLED C1 (webOS 6.4).
+Knowledge base for building a fast, modern web browser for a rooted LG OLED C1 (OLED55C1RLA, webOS TV 6.5.3, see [SOURCES.md](SOURCES.md)).
 It collects platform facts, measurements, patches and dead ends from 2026-10-27 to 2026-11-17.
 Read it before you start, so you do not repeat work that already failed.
 
@@ -24,7 +24,7 @@ Conventions:
 
 - System web engine on webOS 6.0 is Chromium 79 (signageOS table). webOS 22 uses 87. The stock browser on the C1 reports Chrome/87.0.3945.79 (see section 5). All web apps use the system engine. It cannot be replaced without firmware.
 - Cobalt (YouTube) implements a subset of HTML/CSS/Web APIs for full-screen D-pad apps. It cannot open arbitrary sites.
-- Browser shells over the system WAM exist: astra-webos-browser (listed as [Yukikaze1945/astra-webos-browser](https://github.com/Yukikaze1945/astra-webos-browser) and as atlet99/astra-webos-browser, reuses the TV's Chromium 120 on webOS 25) and [jsong1230/webosbrowser](https://github.com/jsong1230/webosbrowser) (Enact PoC, cannot load external sites). On a C1 such a shell gets the system engine.
+- Browser shells over the system WAM exist: [atlet99/astra-webos-browser](https://github.com/atlet99/astra-webos-browser) (reuses the TV's Chromium 120 on webOS 25) and [jsong1230/webosbrowser](https://github.com/jsong1230/webosbrowser) (Enact PoC, cannot load external sites). On a C1 such a shell gets the system engine.
 - [kimjione1206/tv-wpe-build](https://github.com/kimjione1206/tv-wpe-build): buildroot-nc4 `webos_tv_defconfig` plus `wpe.fragment`. CI green since 2026-10-20. Pins [openlgtv/buildroot-nc4](https://github.com/openlgtv/buildroot-nc4) @322ff04 (wpewebkit 2.50.5, wpebackend-fdo 1.16.1, cog 0.18.5). About 58 min on GitHub Actions. JIT off (CLoop), no multimedia (`BR2_PACKAGE_WPEWEBKIT_MULTIMEDIA` unset), cog headless only because there is no xdg-shell. Its patches seeded our WPE 0001-0004 and the libgcrypt and memfd patches.
 - [webosbrew/webos-bridge-64to32](https://github.com/webosbrew/webos-bridge-64to32) issue #1 (2026-10-28, OLED65C1, webOS 6.4): WPE 2.54.2 arm64 from Debian sid through the GL bridge, 55-58 fps with single-threaded painting plus multi-threaded GPU compositing, after 12 bridge patches attached to the issue. Multi-threaded Skia GPU painting gives a black window. The reporter says `wl_shm` buffer attach "does nothing" through the bridge (natively unverified). No maintainer reply as of 2026-11-09.
 - [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) (BSD-3, source in `source/`): Chromium 151 from [webOS-ports/chromium151](https://github.com/webOS-ports/chromium151) (LuneOS, derived from OSE chromium120). armv7 softfp, `is_webos=true`, EGL/GLES2 without ANGLE, `--no-sandbox`, NDL video for every `<video>`. Releases 0.0.42 (2026-11-01, webOS 9+ only, glibc 2.35) to 0.0.65 (2026-11-15, webOS 4.4+) and 0.0.66 (2026-11-16). Issue #2 reports a C1 on webOS 6.5.3 working. The fork danzig666/WebOS-Chromium is the same project.
@@ -128,7 +128,7 @@ Probed 2026-11-09 with a 32-bit native wayland/EGL probe:
 
 - `libplayreadycdm.so` exports the Chrome library-CDM C API (`InitializeCdmModule_10`, `CreateCdmInstance`, `GetCdmVersion`). OSE's neva CDM looks for `InitializeCdmModule`. Plausible, untested.
 - `libwidevine_ce_cdm_shared.so.16` is the Widevine CE CDM (`widevine::Cdm::create`), not the Chrome CDM API. It needs a shim. Untested.
-- LG's YouTube app (Cobalt 23.lts, `eg_gold`, soc `lm21u`) calls StarfishMediaAPIs directly plus `wvcdm` for Widevine.
+- The homebrew "YouTube webOS Cobalt AdFree" 1.2.5 (a repackaged build of LG's Cobalt 23.lts, `eg_gold`, soc `lm21u`) calls StarfishMediaAPIs directly plus `wvcdm` for Widevine.
 
 ### Runtime libraries Chromium `is_webos` code expects
 
@@ -147,7 +147,7 @@ Present on the TV: `libluna-service2.so.3` (3.21.2), `libPmLogLib.so.3`, `libweb
 - perf: static build from linux-4.4.302 `tools/perf` with the 32-bit toolchain (`browser/perf/build_perf.sh`). Flags `NO_LIBELF` etc., `-Wno-implicit-int -std=gnu11 -fcommon`, strip `@GLIBC` versions from `libtraceevent-dynamic-list` between two links. `armv8_pmuv3` counters work, `perf_event_paranoid=1`. `browser/perf/perfsym.py` records a process and symbolizes with addr2line. perf has no inspector distortion.
 - gdb 16.3 with its libs under `/media/developer/temp/gdbtv`, run with `LD_LIBRARY_PATH`. Attach takes more than 3 s. Symbols need the unstripped library installed.
 - Dead end: gdb breakpoints inside libWPEWebKit never fired, not even on `performLayout` during scroll. Thumb mode is suspected, not resolved. Use env-gated debug prints instead.
-- gdb cannot unwind through the TV's libc. Workaround: dump the stack (`x/3000xw $sp`), keep odd words inside the library mapping (Thumb return addresses), `addr2line` at `addr - base - 1`. Copies of the TV's libc, ld and libpthread help (`browser/build/tvlib`). Script: `browser/host/corestack.py`.
+- gdb cannot unwind through the TV's libc. Workaround: dump the stack (`x/3000xw $sp`), keep odd words inside the library mapping (Thumb return addresses), `addr2line` at `addr - base - 1`. Copies of the TV's libc, ld and libpthread help: fetch them with `host/tvfetch.py` (not versioned). Script: `browser/host/corestack.py`.
 - gdb often reports an idle futex thread as current in a core. Find the faulting thread yourself.
 - Core files land in the app's cwd. Crashing web processes left 300-580 MB cores that filled `/media/developer` to 100%.
 - Screen capture as root: `luna-send -n 1 luna://com.webos.service.capture/executeOneShot '{"path":"/tmp/x.png","method":"DISPLAY","format":"PNG","width":480,"height":270}'`. It captures the graphics plane only. `"method":"VIDEO"` is refused (`REFUSED_PERMISSION_DENIED`) while a pipeline plays.
@@ -156,7 +156,7 @@ Present on the TV: `libluna-service2.so.3` (3.21.2), `libPmLogLib.so.3`, `libweb
 
 ## 2. Video on webOS
 
-Three hardware paths exist. All of them clock video by audio.
+Hardware paths are below. NDL and uMediaServer clock video by audio and stall on video-only streams. SMP plays video-only with `needAudio:false`.
 
 | Path | Entry | Who may use it | Controls | Result on the C1 |
 |---|---|---|---|---|
@@ -194,7 +194,7 @@ Three hardware paths exist. All of them clock video by audio.
 
 ### StarfishMediaAPIs buffer feed
 
-Tested 2026-11-10 with a standalone app (`smptest.cpp`, clips in `/media/developer/temp`):
+Tested 2026-11-10 with a standalone test app (its source was not kept, clips in `/media/developer/temp`):
 
 - H.264 1080p, HEVC 4K 10-bit, VP9 4K, AV1 4K: Load, Play, Pause, Play and Seek back all work. Smooth 4K HEVC, VP9 and AV1 confirmed on screen. The freeze at clip end is the expected hold on the last frame.
 - The shown PTS follows the feeder clock about 300 ms behind.
@@ -221,10 +221,13 @@ Tested 2026-11-10 with a standalone app (`smptest.cpp`, clips in `/media/develop
 
 ### What is still missing
 
-- DRM: no Widevine, no PlayReady in any engine. ClearKey only.
+- DRM: no Widevine and no PlayReady in any engine. cr120 and cr151 offer ClearKey only. WPE has no EME at all.
 - HEVC: Chromium's mime check rejects it before it reaches the renderer, though the TV decodes it.
 - HDR, Dolby Vision: not attempted.
 - Video plane visibility cannot be checked by screen capture. A human must look.
+
+- uMediaServer video was never confirmed on screen: luna capture sees only the graphics plane. Only the NDL path was checked by eye (2026-11-17).
+- The cr120 uMediaServer client spawns `luna-send` instead of linking luna-service2. Without system role files (deliberately left untouched) `base::LunaServiceClient` cannot register from content_shell.
 
 ## 3. WPE WebKit 2.52.6 (frozen)
 
@@ -246,7 +249,7 @@ Design: native 32-bit WPE, own SDL host window (`browser/host/main.c`). The host
 - WebKit 2.50.5 with JIT on fails CMake configure under cmake 4.4: an unquoted empty `${_linked_into}` in `_WEBKIT_TARGET_LINK_FRAMEWORK` gives "Unknown arguments specified" at the LLIntSettingsExtractor target. CLoop builds never hit it. That was patch 0005. It is fixed upstream in 2.52, so 0005 does not exist in the 2.52.6 set.
 - HTTPS needs glib-networking and ca-certificates.
 - Packaging: `browser/host/bundle.sh` in the container, `browser/host/make_ipk.py`. ipk 63 MB, 133 MB installed, 78 libraries. `browser/host/deploy_host.sh` swaps only the host binary.
-- Keep each installed ipk under `browser/build/ipk-<version>/`. A same-hour A/B against an older build otherwise needs a rebuild.
+- Keep each installed ipk locally (it was kept under `build/ipk-<version>/`, not versioned and since deleted). A same-hour A/B against an older build otherwise needs a rebuild.
 - Docker in colima sees `/Users`, not `/private/tmp`. Keep container inputs under the project (`browser/build/`).
 
 ### Why 2.52.x and not 2.54
@@ -302,7 +305,7 @@ Patch notes:
 - The GIO and GST fixes from section 1.
 - User agent: desktop Safari. With `Mozilla/5.0 (Web0S; Linux/SmartTV) ... Safari` Google serves its legacy basic-HTML page.
 - Launch param `view=1280x720` renders at 720p and stretches in the host. Trade-off: blurrier text, bigger layout.
-- Cache (`XDG_CACHE_HOME`) sits in jail `/tmp`, which is RAM and dies on reboot. The persistent partition had only about 155 MB free.
+- Cache (`XDG_CACHE_HOME`) sits in jail `/tmp`, which is RAM and dies on reboot. Free space on `/media/developer` varies: 155 MB before the 2026-11-11 cleanup, 527 MB before cr151 went in, 1.6 GB after the 2026-11-17 cleanup ([ARTIFACTS.md](ARTIFACTS.md)).
 - On-screen keyboard: a `WebKitInputMethodContext` subclass whose `focus_in` calls `SDL_StartTextInput`, and `SDL_TEXTINPUT` emits "committed". The 4-byte SDL ABI shift first delivered garbage text.
 
 ### Measured effect
@@ -341,7 +344,7 @@ Final comparison with the other engines: see the table in section 6.
 
 - YouTube desktop cold load: main thread 14.9 s CPU of 15 s (saturated), JITWorker 5.0 s, SkiaGPUWorker 2.1 s. Timeline: JS 13.7 s of 15.7 s self time (87%), mostly the `kevlar_base` bundle. YouTube is JS-bound.
 - Wikipedia cold load (perf): style 33%, other 17%, layout 15%, JS 11%, alloc/libc 9%, gpu+kernel 6%, DOM 5%, paint 5%. Style/layout-bound.
-- Post-load busy time on Wikipedia: WPE fires load before the first full style and layout. Load 3.2 s, then 5.6 s busy (stock Chrome 87: load 4.7-5.7 s, then 1.2-1.3 s). Without page JS WPE fires load at 0.8 s and settles at about 5.5 s. `load_ms` alone flatters WPE.
+- Post-load busy time on Wikipedia: WPE fires load before the first full style and layout. Load 3.2 s, then it settles 5.6-5.7 s later with 5.5 s busy (stock Chrome 87: load 4.7-5.7 s, then 1.2-1.3 s). Without page JS WPE fires load at 0.8 s and settles 4.5-4.9 s later (about 5.7 s from start, stock 5.5 s). `load_ms` alone flatters WPE.
 - YouTube wheel scroll at about 5 fps is a start-up artefact: YouTube keeps the main thread about 100% busy with timers and MutationObserver for 20 s after load. After settling: 35-40 frames/s. YouTube wheel scrolling runs on the main thread, not on "Core: Scrolling".
 - Wikipedia wheel scroll: 60 fps after the page settles (case `wheel-wiki-settled`), 32 fps 2 s after load.
 - Reddit (new UI): web process grows to about 550 MB RSS, main thread about 93% for 20+ s, one load took 42 s. old.reddit.com redirects logged-out users to `/login`.
@@ -365,7 +368,7 @@ Final comparison with the other engines: see the table in section 6.
 - The aarch64 kernel runs aarch64 binaries that bring their own loader: `$J/lib/ld-linux-aarch64.so.1 --library-path $J/lib $J/jsc bench.js`. One harmless warning about the 32-bit `/lib/libSegFault.so` preload.
 - Debian trixie `jsc` 2.54.0 arm64 (22 libs, 81 MB) on micro: 126-142 ms vs 227 ms for the 32-bit JIT in the browser (different versions).
 - Same-version A/B on 28 JetStream-lite tests (2026-11-12, `browser/bench/jsall.sh`, each test its own process, `--no-prefetch` because 32-bit jsc has no Wasm): own aarch64 jsc 2.52.6 (DFG+FTL) vs own 32-bit 2.52.6 (DFG, RegExp JIT, Malloc=1): geomean 1.62x (0.88 octane-code-load to 2.99 hash-map). Median peak RSS 90 MB (64) vs 120 MB (32). 64-bit costs no memory here.
-- Before the RegExp JIT fix the geomean was 1.79x, with regexp-octane at 7.8x. richards: 90.7 (64) vs 40.4 (32).
+- An earlier cross-version run (Debian jsc 2.54.0 64-bit against our 32-bit 2.52.6, before the RegExp JIT fix) gave geomean 1.79x (1.72x with Malloc=1 on both), regexp-octane 7.8x. richards: 90.7 (64) vs 40.4 (32).
 - `json-*-inspector` tests fail in the shell in every mode.
 - WPE composites with GL (TextureMapper) even with CPU painting. A 64-bit WPE therefore needs GL: the bridge or Mesa llvmpipe.
 - The bridge: GPL-3, aarch64 libEGL/libGLESv2/libwayland shims that forward every call over shared memory to a 32-bit `gles_proxy`. It bundles glibc and ld-linux-aarch64 via patchelf. v0.0.1-0.0.8 (2026-06 to 2026-10), aimed at RetroArch and Kodi, tested on webOS 10/11, "roughly" webOS 6+.
@@ -373,10 +376,12 @@ Final comparison with the other engines: see the table in section 6.
 - buildroot-nc4 ships only 32-bit target toolchains. aarch64 needs upstream buildroot (`browser/buildroot64`).
 - aarch64 WebKit with WPEPlatform and MiniBrowser needs `-DENABLE_WPE_PLATFORM_DRM=OFF` (DRM wants libinput) and `-DUSE_GSTREAMER=OFF` when multimedia is off (ANGLE code includes gst headers).
 - Headless engine on the TV (2026-11-12): MiniBrowser `--headless`, WPEPlatform headless, Mesa llvmpipe, Release -O2, FTL on. JIT works in the web process. mathfold 0/71 wrong.
-- Results: YouTube cold load 15.5 s vs 10.1 s on 32-bit. Speedometer 0.356 (0.632 with CPU rendering) vs 0.744.
+- Results: YouTube cold load 15.5 s vs 10.1 s on 32-bit. Speedometer 0.356 against 0.725 on 32-bit, and 0.632 with CPU rendering against 0.744 on 32-bit.
 - Why: SkiaGPUWorker used 19 s CPU in 17 s (Skia GPU raster on llvmpipe). `WEBKIT_SKIA_ENABLE_CPU_RENDERING=1` brings YouTube to 13.3 s. `LP_NUM_THREADS=0` gives 14.1 s. In the Timeline both builds spend about 14 s of main-thread JS. EvaluateScript was 7.2 s on 64-bit vs 6.2 s on 32-bit. The 1.6x shell advantage does not show in the page.
 - Blockers: Mali EGL/GLES and StarfishMediaAPIs are 32-bit only. Display needs the bridge or CPU raster plus a 32-bit presenter. Hardware video needs a 32-bit helper over IPC. CSS selector JIT would come for free on ARM64.
 - Status: frozen. Headless llvmpipe numbers understate the engine, but no path to a 64-bit display was built.
+
+- Running the 64-bit headless WPE: `buildroot64/bundle64.sh`, then `run64.sh <url>` on the TV. The inspector listens on :9223 (`$DEVTOOLS_ADDR`). Drive it with `bench/probe.py`, `bench/eval.py` and `bench/timeline.py`.
 
 ## 5. Chromium 120 from webOS OSE (cr120, frozen fallback)
 
@@ -438,7 +443,7 @@ Source: [webosose/chromium120](https://github.com/webosose/chromium120). Built f
 - Foreground policy: `src/ozone` `window.cc` sets the `wl_webos_shell` appId property to `com.webos.app.<n>` (first window = `com.webos.app.1`). With content_shell on screen `getForegroundAppInfo` returns that id, and uMediaServer gives it HW decoders (HEVC 4K on HEVCP1_HEVC at about 0.5% of a core).
 - content_shell's window defaults to 800x600 and LSM stretches it. Pass `--content-shell-host-window-size=1920x1080`.
 
-### Results (2026-11-16, 3 rounds, `browser/cr120/RESULTS.md`)
+### Results (2026-11-16, GPU raster 3 rounds, SW raster 2 rounds + 2 YouTube runs, `browser/cr120/RESULTS.md`)
 
 | Case | cr120 GPU raster | cr120 SW raster | WPE 2.52.6 | Stock Chrome 87 |
 |---|---|---|---|---|
@@ -523,7 +528,7 @@ Structural risks: `--no-sandbox`. TV Tools runs a MAIN-world content script on e
 - WPE numbers here include 0014, 0015 and mimalloc. Earlier WPE numbers in section 5 predate them.
 - cr151 renders in its own UI at device scale 1.5 (1280x720 DIP minus the toolbar). content_shell renders 1920x1080 at scale 1. Load and rAF compare different viewports.
 - Overriding `--js-flags` without `--optimize-for-size` gave micro 332-357 ms. That flag is not the cause of the slower micro. The size build (`optimize_for_size`, LTO without optimisation, no PGO) is the remaining suspect, untested.
-- Video: same NDL path as cr120. 0 dropped up to VP9 4K in src and MSE. HEVC NotSupported. EME ClearKey only. LG threads `lxvideodec0:src` and `video-src:src` run in the launcher.
+- Video: same NDL path as cr120. 0 dropped up to VP9 4K in src and MSE, but about 50-100 jiffies per 8 s against cr120's 24-56 on the same clips. HEVC NotSupported. VP9 profile 2 (YouTube HDR) and E-AC3 unsupported, as in cr120. EME ClearKey only. LG threads `lxvideodec0:src` and `video-src:src` run in the launcher.
 
 ### GPU
 
@@ -625,6 +630,9 @@ It lacks DRM, HEVC and a sandbox. DevTools needs a flag file and a relay.
 
 - Docker on colima (aarch64). After a host reboot the colima VM and its volumes may be gone. Keep build scripts reproducible from scratch.
 - `docker pause` frees CPU but not RAM. `colima stop` frees RAM and kills the build, which resumes with `build.sh all`.
+
+- The WPE host logs one `START pid=<pid> params=<json>` line per launch (`host/main.c`). `bench.py` turns a second START into `killed=N`. That is how to tell a memchute autoReload from a manual relaunch.
+- State of the TV after 2026-11-17: WPE runs the final library (`a55cssjit` = a55 + 0013 v2 + 0014 v2 + 0015) with mimalloc preloaded by default. cr120, cr151 0.0.66 and the benchmark set stay installed. The leftovers of earlier experiments were removed, see [ARTIFACTS.md](ARTIFACTS.md).
 
 ## 8. Upstream candidates
 

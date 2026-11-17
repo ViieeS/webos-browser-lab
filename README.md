@@ -1,6 +1,6 @@
 # webOS browser lab
 
-This project looks for the fastest modern web browser on an LG OLED C1 TV running webOS 6.
+This project looks for the fastest modern web browser on an LG OLED C1 TV running webOS TV 6.5.3.
 The TV is rooted. It has 4x Cortex-A55, a Mali-G51 GPU, 32-bit armv7 softfp userspace and an aarch64 kernel 4.4.
 
 Three engines were built, patched and measured against the stock browser (Chromium 87) with the same harness:
@@ -18,16 +18,22 @@ The goal of this repository is that the next person does not start from scratch.
 
 | | WebOS-Chromium 151 | Chromium 120 OSE | WPE WebKit 2.52.6 | Stock (Chromium 87) |
 |---|---|---|---|---|
-| Speedometer 3.1 | 0.73-0.76 | 0.58-0.60 | **0.80-0.83** | does not start |
-| micro JS (ms) | 340-345 | 259-309 | **~230** | 334-372 |
-| Local Wikipedia load | 3.5-3.7 s | 3.1-3.3 s | **2.9-3.0 s** | 4.8-5.1 s |
-| rAF scroll | **62-63 fps** | 61 fps | 26-28 fps | 57-59 fps |
-| YouTube load (warm) | **5.3-6.1 s** | 7.6-8.3 s | ~9.9 s | — |
+| Speedometer 3.1 | 0.73-0.76 | 0.58-0.60 | **0.80-0.84** | does not start |
+| micro JS (ms) | 340-345 | 259-309 | **225-245** | 334-372 |
+| Local Wikipedia load | 3.5-3.7 s | 3.1-3.3 s | **2.9-3.1 s** | 4.8-5.1 s |
+| rAF scroll | **62-63 fps** | 61 fps | 21-28 fps | 57-59 fps |
+| YouTube load | **5.3-6.1 s** | 7.6-8.3 s | 9.5-10.2 s | — |
 | Video | **hardware, up to VP9 4K, 0 dropped** | hardware (same code) | software, ~14 fps at 1080p | — |
 | Browser UI | **Chrome UI, remote, on-screen keyboard** | none (content_shell) | minimal host | LG's |
 
-Method, caveats and every number: [docs/BENCHMARKS.md](docs/BENCHMARKS.md).
-Everything learned along the way: [docs/FINDINGS.md](docs/FINDINGS.md).
+| Document | What it holds |
+|---|---|
+| [docs/BENCHMARKS.md](docs/BENCHMARKS.md) | Method, caveats, and the raw file behind every number |
+| [docs/FINDINGS.md](docs/FINDINGS.md) | Everything learned, dead ends included |
+| [docs/SOURCES.md](docs/SOURCES.md) | Test device, pinned versions, and every upstream and prior-art project with what was taken from it |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Open work in priority order |
+| [docs/ARTIFACTS.md](docs/ARTIFACTS.md) | What was built, what was deleted, and how to recreate it |
+| [AGENTS.md](AGENTS.md) | Working rules for an engineer or an LLM agent picking this up |
 
 **Direction: [WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) 151.**
 - It wins on scrolling, YouTube and video, has a real browser UI, and the GPU works on the C1.
@@ -58,7 +64,7 @@ Each frozen directory has a `STATUS.md`: what works, what was measured, and wher
 |---|---|
 | [WPE WebKit](https://wpewebkit.org) 2.52.6 | WPE engine. Patches in `buildroot/patches/wpewebkit` |
 | [openlgtv/buildroot-nc4](https://github.com/openlgtv/buildroot-nc4) @ `322ff04e` | Toolchain and WPE build for webOS (`buildroot/build.sh`) |
-| [webosose/chromium120](https://github.com/webosose/chromium120) | cr120 source tree (`git clone --depth 1`) |
+| [webosose/chromium120](https://github.com/webosose/chromium120) @ `e6a73fff` | cr120 source tree (`git clone --depth 1`) |
 | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) (BSD-3) | cr151, and the NDL video path ported into cr120 (`cr120/extra`, patches 0014-0015) |
 | [webosbrew/webos-bridge-64to32](https://github.com/webosbrew/webos-bridge-64to32) v0.0.8 (GPL-3) | 64-bit EGL bridge. A fork's patch series is in `bridge64/patches-zip` |
 | [microsoft/mimalloc](https://github.com/microsoft/mimalloc) v2.1.7 | Allocator preloaded into WPE (`mimalloc/build_mimalloc.sh`) |
@@ -66,6 +72,9 @@ Each frozen directory has a `STATUS.md`: what works, what was measured, and wher
 | [webosbrew/SDL-webOS](https://github.com/webosbrew/SDL-webOS) 2.30.12 | Window and input for the WPE host. buildroot's SDL2 has no Wayland driver. Set `SDL_PKG` to a build (lib/ + include/). [mytvlauncher](https://github.com/ViieeS/mytvlauncher)'s `tools/fetch_deps.sh` fetches one |
 | [ViieeS/mytvlauncher](https://github.com/ViieeS/mytvlauncher) | Origin of `bench/tvtelnet.py`. `host/make_ipk.py` uses its packaging helpers (`$MYTVLAUNCHER`) |
 | Speedometer 3.1, JetStream 3.0, MotionMark 1.3.2 | Benchmark suites, not vendored |
+
+Pinned commits, the prior art and what was taken from each project are listed in [docs/SOURCES.md](docs/SOURCES.md).
+Licenses of included third-party material are listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). This repository's own code is under the [MIT license](LICENSE).
 
 None of the patches have been sent upstream yet. The candidates are listed in [docs/FINDINGS.md](docs/FINDINGS.md#8-upstream-candidates).
 
@@ -78,7 +87,7 @@ None of the patches have been sent upstream yet. The candidates are listed in [d
   - `cr120` for Chromium 120;
   - `cr151work` for Chromium 151.
 
-  Volume sizes are 19-23 GB each.
+  Volume sizes are 19-23 GB each. The frozen volumes were deleted, see [docs/ARTIFACTS.md](docs/ARTIFACTS.md).
 - **Python 3 and ffmpeg** for the tools.
 
 ## Security notes

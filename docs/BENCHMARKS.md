@@ -1,22 +1,37 @@
 # Benchmarks: method and results
 
-All numbers come from one TV: an LG OLED65C1, webOS 6.4, rooted. It has 4x Cortex-A55 at 1.686 GHz, a Mali-G51 GPU, 32-bit armv7 softfp userspace and an aarch64 kernel 4.4.
+All numbers come from one TV. The device and every pinned version are listed in [SOURCES.md](SOURCES.md): an LG OLED55C1RLA on webOS TV 6.5.3, rooted, with 4x Cortex-A55, a Mali-G51, 32-bit armv7 softfp userspace and an aarch64 kernel 4.4.
 They were measured on 2026-11-11 .. 2026-11-17 with the tools in [`bench/`](../bench).
-Raw outputs sit next to each engine: `bench/results/*.jsonl`, `build/*.log`, `cr120/harness_cr120*.txt`, `cr120/video_*.txt`, `cr151/harness_cr151.txt` and `cr151/video_cr151.txt`.
 
 ## Final comparison
 
 | Case | WebOS-Chromium 151 (0.0.66) | Chromium 120 OSE (cr120) | WPE WebKit 2.52.6 | Stock LG browser (Chromium 87) |
 |---|---|---|---|---|
-| micro (JS loop, math, objects, strings; ms, lower is better) | 340-345 | 259-309 | ~230 | 334-372 |
-| load-wiki (local Wikipedia page, loadEventEnd) | 3.5-3.7 s | 3.1-3.3 s | 2.9-3.0 s | 4.8-5.1 s |
-| raf-wiki (rAF-driven scroll, fps) | 62-63 | 61 | 26-28 | 57-59 |
-| Speedometer 3.1 | 0.73-0.76 | 0.58-0.60 | 0.80-0.83 | does not start |
-| YouTube home, warm cache (loadEventEnd) | 5.3-6.1 s | 7.6-8.3 s | ~9.9 s | not measurable |
+| micro (JS loop, math, objects, strings; ms, lower is better) | 340-345 | 259-309 | 225-245 | 334-372 |
+| load-wiki (local Wikipedia page, loadEventEnd) | 3.5-3.7 s | 3.1-3.3 s | 2.9-3.1 s | 4.8-5.1 s |
+| raf-wiki (rAF-driven scroll, fps) | 62-63 | 61 | 21-28 | 57-59 |
+| Speedometer 3.1 | 0.73-0.76 | 0.58-0.60 | 0.80-0.84 | does not start |
+| YouTube home load | 5.3-6.1 s (CDP, warm cache) | 7.6-8.3 s (CDP, warm cache) | 9.5-10.2 s (host load event) | not measurable |
 | Video | hardware (NDL), up to VP9 2160p, 0 dropped frames | hardware (NDL, same code) | software only, ~14 fps at H.264 1080p30 | — |
 | DRM (EME key systems) | ClearKey | ClearKey | none | not measured |
 
-Ranges are min-max over 2-3 runs.
+Ranges are min-max over 2-4 runs. WPE is the final build: a55 + patches 0013-0015 + mimalloc.
+
+### Where each number comes from
+
+| Engine | Page cases (micro, load-wiki, raf-wiki, Speedometer) | YouTube | Video |
+|---|---|---|---|
+| cr151 | `cr151/harness_cr151.txt` | `cr151/RESULTS.md` (cdpnav.py runs, the raw console output was not kept) | `cr151/video_cr151.txt` |
+| cr120 | `cr120/harness_cr120_swraster.txt`. GPU-raster runs: `cr120/harness_cr120.txt` | `cr120/RESULTS.md` (cdpnav.py, raw output not kept) | `cr120/video_cr120.txt` (software), `cr120/video_neva.log` (uMediaServer), `cr120/video_ndl.log` (NDL) |
+| WPE | `bench/results/mi-mimalloc-clean.jsonl` (4 rounds), `bench/results/default-mi.jsonl` | `cold-youtube` in the same file: the host's load event, not CDP | Video was run in WPE on 2026-11-16, but its raw output was not kept. The summary is in [FINDINGS.md](FINDINGS.md) |
+| Stock | `cr151/harness_cr151.txt` (control rows), `build/harness-stock.log`, `build/stock-speedo.log` | — | — |
+
+The decisions per WPE patch were based on these files:
+- `build/ab-*.sh` (the command lines run);
+- `build/ab-*.log` (their output);
+- the matching `bench/results/<label>.jsonl` records.
+
+Every jsonl record carries the library and host md5 and a timestamp.
 cr120 uses software raster (`--disable-gpu-rasterization`), because GPU raster drew images as green boxes on Mali.
 cr151 renders with GPU raster.
 
