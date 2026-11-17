@@ -50,6 +50,7 @@ cr120/probe/wlglobals
 cr120/probe/wlshell_probe
 cr151/build/tcprelay
 cr151/build/evkeys
+cr151/traces/
 
 # Prebuilt static perf for the TV (built by perf/build_perf.sh).
 perf/bin/

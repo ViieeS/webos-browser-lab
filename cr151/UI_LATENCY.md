@@ -59,6 +59,42 @@ median buckets (lower bounds; Chromium buckets are exponential).
 - crossbench and the typing-input-latency web test were not tried. Whether they run on the TV without a WebDriver
   was not checked.
 
+## Stage split (trace) and A/B (2026-11-17, own build)
+
+Traces: `bench/uilat.py trace <tag> <scenario> <out.json>` (CDP Tracing, JSON). `bench/uilat_trace.py` prints
+Chromium's own stages of `EventLatency` and `PipelineReporter`. The traces (~200 MB) are not versioned
+(`cr151/traces/`). Tracing adds overhead, so the trace numbers show where time goes, the histograms show how much.
+
+**Down in a page (keyscroll).** EventLatency median 170 ms, of it `RendererMainProcessing` 130 ms. Everything
+after the renderer (submit, draw, swap, present) is about 16 ms. With `blink` and `toplevel` categories, the renderer
+main thread spends 219 ms per key inside `EventDispatch`, with about 3750 `Document::UpdateStyleAndLayout` calls
+per key and almost no real layout. The cause is `--enable-spatial-navigation` from their run.sh. On every arrow,
+spatial navigation walks the candidates of the page (`SpatialNavigationController`, `DocumentUpdateReason::
+kSpatialNavigation`), and the Wikipedia page has thousands of them. `--blink-settings=spatialNavigationEnabled=false`
+in browser.flags turns it off: main thread 2.3 ms per key, EventLatency 39 ms.
+
+**Omnibox.** The frame pipeline is not the problem: browser `PipelineReporter` median 20 ms per frame. The browser
+main thread is busy about 215 ms per typed character under the trace. The time goes to Views layout
+(`View::LayoutImmediately`, about 10 000 calls in 27 characters), Views paint and autocomplete result updates
+(`AutocompleteController::UpdateResult` → `OmniboxController::OnResultChanged` → a popup relayout). These sums
+overlap, so they are not added up.
+
+**A/B with histograms.** `uilat.py -b cr151own,cr151own+nospatnav,cr151own+nogpu 2 ...`, interleaved. Raw:
+`uilat_ab.txt`. The run was stopped before the last tabs round, because the owner needed the TV.
+
+| Metric | Scenario | Own build | + spatial navigation off | + `--disable-gpu` |
+|---|---|---|---|---|
+| EventLatency.KeyPressed.TotalLatency | keyscroll (Down) | 162 ms (p50 147) | **36 ms** (p50 34) | 258 ms (p50 228) |
+| EventLatency.KeyPressed.TotalLatency | keyfocus (Tab) | 192 ms (p50 61) | **91 ms** (p50 45) | 342 ms (p50 170-228) |
+| Omnibox.CharTypedToRepaintLatency | omnibox | 161 ms | 167 ms | 230 ms |
+| … .ToPaint | omnibox | 78 ms | 85 ms | 68 ms |
+| … .PaintToPresent | omnibox | 58 ms | 56 ms | 150 ms |
+| Browser.Tabs.TotalSwitchDuration3 | tabs | 116 ms (1 run) | 114 ms (1 run) | 265 ms (1 run) |
+
+- Spatial navigation costs 75-80 % of a Down press in a page, and half of a Tab press. It does not touch the browser UI.
+- Software rendering is worse everywhere. The GPU path helps, it is not the bottleneck.
+- The omnibox does not change with either flag. Its cost is browser main-thread work in Views and autocomplete.
+
 ## Verdict
 
 - The build flags help everywhere by 14-25 %, but do not fix the UI. One key in the omnibox still takes about
@@ -66,10 +102,17 @@ median buckets (lower bounds; Chromium buckets are exponential).
   desktop the same metrics are tens of milliseconds.
 - About 60 ms of the omnibox time is PaintToPresent: raster, GPU and display after Views has painted. Trimming UI
   features would mostly shorten ToPaint (about 70 ms). It would not shorten PaintToPresent.
-- So the flags alone are not enough. Before picking a ROADMAP item 2 option, the next cheap step is to split the
-  present path. These are both Chromium's own tools, not tried yet:
-  - a Perfetto trace with the `latencyInfo`/`input` categories, read through `chrome_event_latencies`, gives the
-    stages per key;
-  - an A/B run of `uilat.py` with `--disable-smooth-scrolling` (keyscroll) and with software compositing.
+- So the flags alone are not enough. The stage split (above) names two separate causes:
+  1. **In pages: spatial navigation.** It is why the remote's arrows move between links, so turning it off is a
+     trade-off, not a fix: arrows would only scroll. Options:
+     - the owner's choice, today: `--blink-settings=spatialNavigationEnabled=false` in browser.flags, if the Magic
+       Remote pointer is enough for links;
+     - a Blink patch that stops the per-candidate style and layout update in the candidate walk (with an upstream
+       bug), which keeps arrow navigation.
+  2. **In the omnibox and tab strip: browser main-thread work** in Views layout, paint and autocomplete. This is the
+     "trim the UI" option of ROADMAP item 2 (fewer suggestion sources and popup rows), or a lighter own UI. Not GPU,
+     not the build flags.
+- `--disable-smooth-scrolling` was planned, but not run: the stage split showed that scrolling itself is about 16 ms
+  after the renderer, so smooth scrolling is not the cause.
 - A camera measurement (phone slow motion) is not needed to confirm the slowness, because Chromium's own numbers
   already show it. It would add the input path that the metrics leave out.

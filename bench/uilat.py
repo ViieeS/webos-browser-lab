@@ -3,6 +3,8 @@
 Keys go in as the remote's own events (evkeys on /dev/input/event10, "LGE Network Input", which the compositor reads; event1 it does not), so the LG input -> compositor -> Wayland path is
 exercised, but Chromium's metrics start at its event timestamp and do not include that path.
 usage: uilat.py -b cr151own,cr151 <rounds> <scenario>...      scenarios: omnibox tabs keyscroll keyfocus
+         a build tag may carry a variant: cr151own+nosmooth, cr151own+nogpu (extra flag in browser.flags, VARIANTS)
+       uilat.py trace <tag> <scenario> <out.json>   (one run under Chromium tracing, categories TRACE_CATEGORIES)
        uilat.py probe <evkeys args...>     (app already running with DevTools: press keys, print every changed histogram)
 Needs, per app: --remote-debugging-port=9225 in /tmp/<appid>/browser.flags, tcprelay <TV LAN ip> 9226 -> 9225,
 /media/developer/temp/evkeys. Every launch is a fresh process, so Startup.* is read once per run.
@@ -40,6 +42,11 @@ SCENARIOS = {   # evkeys arguments; each press is spaced GAP_MS so one paint end
     # 20 Down presses in the page (keyboard scroll), the content key path
     "keyscroll": ["w300"] + [str(DOWN)] * 20,
 }
+VARIANTS = {"nosmooth": "--disable-smooth-scrolling",
+            "nospatnav": "--blink-settings=spatialNavigationEnabled=false",
+            "nogpu": "--disable-gpu"}   # the launcher's own fallback when its GPU probe fails: software raster+compositing
+# EventLatency and PipelineReporter (cc,input / cc,benchmark) carry Chromium's own stage split of each latency
+TRACE_CATEGORIES = os.environ.get("UILAT_CATS", "cc,benchmark,input,latencyInfo").split(",")   # UILAT_CATS: more
 SHOW = ("",) if os.environ.get("UILAT_ALL") else PREFIXES   # UILAT_ALL=1: every changed histogram
 PAGE = f"{bench.HTTP}/pages/wiki/en.wikipedia.org/wiki/Television.html"
 
@@ -68,6 +75,26 @@ class Browser:
         tid = self.call("Target.createTarget", {"url": "chrome://histograms", "background": True})["targetId"]
         time.sleep(3)
         self.call("Target.closeTarget", {"targetId": tid})
+
+    def event(self, method, timeout=120):
+        deadline = time.time() + timeout
+        while time.time() < deadline:
+            msg = json.loads(self.ws.recv())
+            if msg.get("method") == method:
+                return msg["params"]
+        raise TimeoutError(method)
+
+    def trace_to(self, path):
+        """Ends tracing started with Tracing.start and saves the JSON trace."""
+        self.call("Tracing.end")
+        stream = self.event("Tracing.tracingComplete")["stream"]
+        with open(path, "w") as f:
+            while True:
+                chunk = self.call("IO.read", {"handle": stream, "size": 1 << 20})
+                f.write(chunk["data"])
+                if chunk.get("eof"):
+                    break
+        self.call("IO.close", {"handle": stream})
 
     def histograms(self, delta):
         return {h["name"]: h for h in self.call("Browser.getHistograms", {"delta": delta})["histograms"]}
@@ -116,11 +143,21 @@ def wait_cdp(seconds=40):
             time.sleep(1)
 
 
-def run(tag, scenario, rnd):
-    launch = json.dumps({"id": APPS[tag], "params": {"target": PAGE}})
-    fire(f"{close_all()}sleep 4; luna-send -n 1 luna://com.webos.applicationManager/launch '{launch}' >/dev/null")
+def start(tag):
+    """Fresh launch of the build in tag ("cr151own" or "cr151own+nosmooth") with DevTools and the variant's flag."""
+    base, _, variant = tag.partition("+")
+    app = APPS[base]
+    flags = " ".join(["--remote-debugging-port=9225", VARIANTS[variant] if variant else ""])
+    launch = json.dumps({"id": app, "params": {"target": PAGE}})
+    fire(f"{close_all()}sleep 4; printf '%s\\n' {flags} > /tmp/{app}/browser.flags; "
+         f"luna-send -n 1 luna://com.webos.applicationManager/launch '{launch}' >/dev/null")
     br = wait_cdp()
     time.sleep(10)   # page load and the after-startup tasks
+    return br
+
+
+def run(tag, scenario, rnd):
+    br = start(tag)
     print(f"{tag} {scenario} #{rnd} startup: {show(br.histograms(False), ('Startup.',))}", flush=True)
     br.sync_children()
     br.histograms(True)   # reset the delta
@@ -132,6 +169,16 @@ def run(tag, scenario, rnd):
     fire(close_all())
 
 
+if sys.argv[1] == "trace":
+    tag, scenario, out = sys.argv[2:5]
+    br = start(tag)
+    br.call("Tracing.start", {"traceConfig": {"includedCategories": TRACE_CATEGORIES, "recordMode": "recordUntilFull"},
+                              "transferMode": "ReturnAsStream", "streamFormat": "json"})
+    press(SCENARIOS[scenario])
+    time.sleep(2)
+    br.trace_to(out)
+    fire(close_all())
+    sys.exit()
 if sys.argv[1] == "probe":
     br = Browser()
     br.histograms(True)

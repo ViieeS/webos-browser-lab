@@ -612,6 +612,14 @@ Details: `browser/cr151/UI_LATENCY.md`. Own build against 0.0.66, means over 3 i
 | EventLatency.KeyPressed.TotalLatency, Tab in a page (median) | 52-61 ms | 61-170 ms |
 
 - The flags help by 14-25 %, but do not fix the UI.
+- Stage split (traces): a Down press in a page spends 130 of 170 ms in the renderer main thread. The cause is
+  `--enable-spatial-navigation` in their run.sh: each arrow walks all candidates, about 3750 forced
+  `Document::UpdateStyleAndLayout` calls per key on a Wikipedia page. `--blink-settings=spatialNavigationEnabled=false`
+  in browser.flags turns it off (it survives `ApplyWebPreferences`): Down 162 → 36 ms, Tab 192 → 91 ms (mean). Arrows then
+  only scroll.
+- `--disable-gpu` makes everything slower (omnibox PaintToPresent 58 → 150 ms). The omnibox cost is browser main-thread
+  work (Views layout, paint, autocomplete updates). Spatial navigation and GPU do not change it.
+- A second `--disable-features` in browser.flags would replace run.sh's whole list, because the last switch wins.
 - Key injection: writing `struct input_event` into `/dev/input/event10` ("LGE Network Input") gives real keys
   through the compositor (`bench/evkeys.c`). `event1` ("LGE RCU") is not read by the compositor, so keys written
   there are lost without an error. Ctrl combos work. F6 focuses the omnibox, Ctrl+L right after launch went to the page.
