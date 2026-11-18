@@ -30,7 +30,8 @@ press in a page about 160 ms. The flags do not fix it. The stage split and A/B f
   links. Patch 0103 (2026-11-18) removes the per-element update: Down 167 → 115 ms, same focus moves. Left: the walk
   over all elements (about 80 ms on a long page). Next step, if wanted: skip offscreen locked sections (changes candidates).
 - In the omnibox, the cost is the browser main thread (Views layout and paint, autocomplete), not GPU or flags.
-  Software rendering is worse everywhere. Next: the "trim the UI" option below.
+  Software rendering is worse everywhere. The runtime trim (2026-11-18: fewer providers and rows, suggest after a pause,
+  no ML scoring or AI Mode) takes a key from 160 to 87 ms. Next: ship it in run.sh if the owner agrees.
 
 - **The problem.** The Chrome UI in cr151 feels slow with the remote.
 - **What to measure:**

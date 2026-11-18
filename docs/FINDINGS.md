@@ -736,3 +736,17 @@ None of these has been submitted.
   `package.sh` ships it as `browser/fonts.conf` and adds `export FONTCONFIG_FILE=$D/browser/fonts.conf` to run.sh.
   Screenshots: `cr151/cap_font_omnibox_{before,after}.png`, `cr151/cap_font_page_{before,after}.png`.
 - `fc-match` exists on the TV (`/usr/bin/fc-match`), handy for checking a fonts.conf before a browser run.
+
+### cr151 omnibox trim (2026-11-18)
+
+- The omnibox cost per key is real work, not repeated work: popup relayout (about 8 rows) and a whole-window relayout
+  from `LocationBarView::OnChanged`, after each synchronous and asynchronous autocomplete result.
+- M151 switches that need no patch: the `DisableProviders` bitmask of field trial `OmniboxBundledExperimentV1`
+  (`--force-fieldtrials` / `--force-fieldtrial-params`), `SuggestPollingDelayMs` with
+  `MeasureSuggestPollingDelayFromLastKeystroke`, `OmniboxUIExperimentMaxAutocompleteMatches:UIMaxAutocompleteMatches/N`,
+  and disabling `OmniboxDynamicMaxAutocomplete`, `OmniboxRichAutocompletion`, `MlUrlScoring`, `UrlScoringModel`,
+  `MlUrlScoreCaching`, `AimEnabled`, `AllowAiModeMatches`, `OmniboxMiaZPS`, `PreconnectNonSearchOmniboxSuggestions`.
+- Together: omnibox key-to-screen 160 → 87 ms, ToPaint 72 → 36 ms, PaintToPresent 60 → 28 ms. Details:
+  `browser/cr151/UI_LATENCY.md`.
+- `--enable-low-end-device-mode` does nothing for the desktop omnibox.
+- A telnet command line of about 1 000 characters resets the session on the TV. Write long files in pieces.

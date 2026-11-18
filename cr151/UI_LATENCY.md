@@ -170,3 +170,66 @@ Patch-free fix: our `fonts.conf` plus `FONTCONFIG_FILE` in run.sh (`package.sh`)
 `cap_font_page_before.png` / `cap_font_page_after.png` (page text in Droid Sans, bold now bold). Details in FINDINGS.
 The fix is in `com.viiees.cr151p` only. `com.viiees.cr151` stays as built for A/B runs against the old state.
 Omnibox latency runs after this point use the fixed font.
+
+## Omnibox trimmed for a TV (2026-11-18)
+
+**Cause** (trace `own_omnibox_top.json`, 27 typed characters). 10 529 `View::LayoutImmediately` calls are 651 root
+layouts. The cost is in two kinds of `Widget::LayoutRootViewIfNecessary`:
+- the popup widget, 37 times (median 8.9 ms under trace): each lays out about 8 result rows with about 5
+  `OmniboxTextView` each;
+- the whole browser window (`BrowserRootView`), 32 times (median 6.1 ms): `LocationBarView::OnChanged` invalidates
+  layout on every keystroke, and each pass touches 17 hidden `ContentSettingImageView`s, about 29 `FocusRing`s and
+  27 ink drops.
+These layouts follow real result changes (the synchronous pass, then the asynchronous SearchProvider wave). They are
+not redundant like the spatial navigation walk, so the lever is fewer rows, fewer providers and fewer passes. The
+popup is the Views one: run.sh already disables `WebUIOmniboxPopup`.
+
+**What M151 can switch off at runtime** (all names checked against the M151 source):
+
+| Item | Mechanism |
+|---|---|
+| Providers Document, OnDeviceHead, HistoryFuzzy (typo search on every key), HistoryCluster, Calculator, FeaturedSearch, HistoryEmbeddings, EnterpriseSearchAggregator, ContextualSearch, OpenTab | `--force-fieldtrials=OmniboxBundledExperimentV1/TV/` + `--force-fieldtrial-params=OmniboxBundledExperimentV1.TV:DisableProviders/201287168` (provider type bits; never Search 32 or HistoryURL 8) |
+| Search suggest on every key | same trial: `SuggestPollingDelayMs/400/MeasureSuggestPollingDelayFromLastKeystroke/true` (a request after a typing pause). Or pref `search.suggest_enabled` / policy `SearchSuggestEnabled` to drop it |
+| Popup rows (8, dynamic up to 10) | `--enable-features=OmniboxUIExperimentMaxAutocompleteMatches:UIMaxAutocompleteMatches/5`, disable `OmniboxDynamicMaxAutocomplete` |
+| Rich autocompletion | disable `OmniboxRichAutocompletion` |
+| ML URL scoring annotators on every result update (the model never loads here) | disable `MlUrlScoring`, `UrlScoringModel`, `MlUrlScoreCaching` |
+| AI Mode button and matches | disable `AimEnabled`, `AllowAiModeMatches`, `OmniboxMiaZPS` (or policy `AIModeSettings`=1) |
+| Preconnect on every text change | disable `PreconnectNonSearchOmniboxSuggestions` |
+
+Not switchable at runtime: the 200 ms notify debounce (`autocomplete_controller.h:596`), the per-row thumbs/remove
+buttons, the creation of the content-setting icons, the location bar's relayout per key. `--enable-low-end-device-mode`
+changes nothing in the desktop omnibox.
+
+A second `--disable-features` replaces run.sh's list, so the variant repeats run.sh's whole list and adds these
+(`VARIANTS["trim"]` in `bench/uilat.py`). The flags file is written in pieces: a ~1 000-character telnet command line
+reset the session.
+
+**Prior art** (from a web survey, links not re-checked one by one): TV browsers that are fast with a remote do not
+use the desktop omnibox at all. webOS OSE Enact Browser and the LuneOS browser have their own URL field with
+history-only matching (github.com/webosose/com.webos.app.enactbrowser, github.com/webos-ports/org.webosports.app.browser),
+TV Bro and Amazon Silk navigate on OK from the system keyboard (github.com/truefedex/tv-bro,
+docs.aws.amazon.com/silk/latest/developerguide/what-is-silk.html), Cobalt has no browser UI
+(developers.google.com/youtube/cobalt/docs/overview). Among Chromium forks, ungoogled-chromium and Bromite carry a
+provider allowlist patch (`add-flag-for-omnibox-autocomplete-filtering.patch` in ungoogled-chromium); the upstream
+`DisableProviders` mask above does the same without a patch. Thorium trims menus, not the omnibox
+(github.com/Alex313031/thorium/blob/main/docs/PATCHES.md). Samsung, Vewd and Puffin are closed source.
+
+**Measured** (`uilat.py -b cr151p,cr151p+trim 3 omnibox tabs`, interleaved, raw `uilat_omnibox_trim.txt`; both with
+patch 0103 and the font fix):
+
+| Metric | As shipped | Trimmed | Change |
+|---|---|---|---|
+| Omnibox.CharTypedToRepaintLatency | 160 ms (p50 135-160, n=81) | **87 ms** (p50 68-81, n=81) | -46 % |
+| … .ToPaint | 72 ms | 36 ms | -50 % |
+| … .PaintToPresent | 60 ms | 28 ms | -53 % |
+| Omnibox.Views.PopupFirstPaint | 116 ms | 79 ms | -32 % |
+| Omnibox.SuggestRequestsSent (one probe run, 27 keys) | 27 | 3 | |
+| Browser.Tabs.TotalSwitchDuration3 | 116 ms | 110 ms | within noise |
+
+- The trim hits ToPaint as expected, and PaintToPresent halves as well. My reading (not measured): with less
+  main-thread work per key, the frame is not queued behind the next result update. PaintToPresent is not a separate
+  output-path problem at this level.
+- What the user loses: 5 rows instead of 8-10, search suggestions only after a typing pause, no calculator, typo
+  matching, document, AI Mode or on-device suggestions.
+- Next, if the owner agrees: ship the trim in run.sh (package.sh can add it). Beyond that, a smaller toolbar
+  (`ToolbarView::DisplayMode::kLocation`) or a remote-first URL field like the Enact browser would need patches.

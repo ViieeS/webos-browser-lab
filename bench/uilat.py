@@ -46,7 +46,10 @@ SCENARIOS = {   # evkeys arguments; each press is spaced GAP_MS so one paint end
 }
 VARIANTS = {"nosmooth": "--disable-smooth-scrolling",
             "nospatnav": "--blink-settings=spatialNavigationEnabled=false",
-            "nogpu": "--disable-gpu"}   # the launcher's own fallback when its GPU probe fails: software raster+compositing
+            "nogpu": "--disable-gpu",
+            # omnibox trimmed for a TV (cr151/UI_LATENCY.md): run.sh's --disable-features list repeated (the last
+            # switch wins) plus ours, 5 popup rows, providers off by the DisableProviders mask, suggest after a pause
+            "trim": "--disable-features=Translate,OptimizationHints,MediaRouter,BackForwardCache,Vulkan,ContextualTasks,ContextualTasksContext,ContextualTasksSidePanel,PreloadTopChromeWebUI,SpareRendererForSitePerProcess,SpareRenderer,OptimizationGuideModelDownloading,IsolateOrigins,site-per-process,WebUIToolbar,WebUIToolbarWebView,WebUIToolbarInternalWebView,WebUIReloadButton,WebUILocationBar,AudioServiceOutOfProcess,WebUIOmniboxPopup,WebUIOmniboxAimPopup,WebUIOmniboxFullPopup,DisableLoadExtensionCommandLineSwitch,HardwareMediaKeyHandling,WebGPUService,WebGPUBlobCache,OmniboxDynamicMaxAutocomplete,OmniboxRichAutocompletion,MlUrlScoring,UrlScoringModel,MlUrlScoreCaching,AimEnabled,AllowAiModeMatches,OmniboxMiaZPS,PreconnectNonSearchOmniboxSuggestions --enable-features=NetworkServiceInProcess2,OmniboxUIExperimentMaxAutocompleteMatches:UIMaxAutocompleteMatches/5 --force-fieldtrials=OmniboxBundledExperimentV1/TV/ --force-fieldtrial-params=OmniboxBundledExperimentV1.TV:DisableProviders/201287168/SuggestPollingDelayMs/400/MeasureSuggestPollingDelayFromLastKeystroke/true"}   # the launcher's own fallback when its GPU probe fails: software raster+compositing
 # EventLatency and PipelineReporter (cc,input / cc,benchmark) carry Chromium's own stage split of each latency
 TRACE_CATEGORIES = os.environ.get("UILAT_CATS", "cc,benchmark,input,latencyInfo").split(",")   # UILAT_CATS: more
 SHOW = ("",) if os.environ.get("UILAT_ALL") else PREFIXES   # UILAT_ALL=1: every changed histogram
@@ -149,10 +152,17 @@ def start(tag, page=PAGE):
     """Fresh launch of the build in tag ("cr151own" or "cr151own+nosmooth") with DevTools and the variant's flag."""
     base, _, variant = tag.partition("+")
     app = APPS[base]
-    flags = " ".join(["--remote-debugging-port=9225", VARIANTS[variant] if variant else ""])
+    flags = ["--remote-debugging-port=9225", *(VARIANTS[variant].split() if variant else [])]
     launch = json.dumps({"id": app, "params": {"target": page}})
-    fire(f"{close_all()}sleep 4; printf '%s\\n' {flags} > /tmp/{app}/browser.flags; "
-         f"luna-send -n 1 luna://com.webos.applicationManager/launch '{launch}' >/dev/null")
+    fire(f"{close_all()}sleep 4")
+    # one flag per line; a long telnet command line resets the session, so the file is written in short pieces
+    path = f"/tmp/{app}/browser.flags"
+    bench.tv(f": > {path}")
+    for flag in flags:
+        for i in range(0, len(flag), 300):
+            bench.tv(f"printf '%s' '{flag[i:i + 300]}' >> {path}")
+        bench.tv(f"echo >> {path}")
+    fire(f"luna-send -n 1 luna://com.webos.applicationManager/launch '{launch}' >/dev/null")
     br = wait_cdp()
     time.sleep(10)   # page load and the after-startup tasks
     return br
