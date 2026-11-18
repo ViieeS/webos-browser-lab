@@ -14,6 +14,12 @@ The material below keeps its original license.
 | `bench/pages/wiki/` | Snapshot of [en.wikipedia.org/wiki/Television](https://en.wikipedia.org/wiki/Television) with its styles and images, used as a test page | Text CC BY-SA 4.0, Wikipedia contributors. Images under the licenses on their Wikimedia Commons pages. Wikipedia and Wikimedia marks belong to the Wikimedia Foundation |
 | `bench/tvtelnet.py` | From [ViieeS/mytvlauncher](https://github.com/ViieeS/mytvlauncher) | MIT |
 
+Shipped in the cr151 IPK built by `cr151/package.sh`, not stored in the repository:
+
+| IPK path | Origin | License |
+|---|---|---|
+| `browser/ext/ubol/` | [uBlock Origin Lite](https://github.com/uBlockOrigin/uBOL-home) 2026.1116.1650, official release `uBOLite_2026.1116.1650.chromium.zip`, unpacked. One change: `js/mode-manager.js` defaults to complete filtering mode instead of optimal (`package.sh`) | GPL-3.0, Raymond Hill and contributors. The license text ships in the folder (`LICENSE.txt`). The source is at the origin link, and the change is the `sed` line in `package.sh` |
+
 Not included and fetched separately:
 - benchmark suites (Speedometer, JetStream, MotionMark: BSD-2-Clause, Apple and the WebKit contributors);
 - upstream source trees;

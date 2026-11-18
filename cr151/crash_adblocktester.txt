@@ -1,0 +1,16 @@
+# adblock-tester.com without a blocker, bench/crashrepro.py (fresh launch, page in the start tab, 60 s watch)
+# before patch 0105: installed cr151p (no uBO Lite) and the release app 0.0.66
+cr151p https://adblock-tester.com/: crashed at +2s
+cr151p new dumps: ['20:59:57 b9e65907-37fe-4b69-9c67-8c70063ad062.dmp']
+cr151 https://adblock-tester.com/: crashed at +5s
+cr151 new dumps: ['21:00:58 65d6447c-5ae4-441b-b8a6-cf16b4747856.dmp']
+# the cr151p dump, symbolized against the unstripped out/tv/chrome of that build:
+#   SIGSEGV (code 0xb) at 0x1ec, pc chrome+0x3029140 cc::SwapPromiseManager::QueueSwapPromise, this = 0x1e8
+#   lr blink::PaintTiming::Mark; stack scan: ChromeClientImpl::NotifyVizFMPSwap, PaintTiming::SetFirstContentfulPaint,
+#   PaintTiming::NotifyPaint, FramePainter::Paint, LocalFrameView::PaintTree / RunPaintLifecyclePhase /
+#   UpdateLifecyclePhases, WebFrameWidgetImpl::UpdateLifecycle
+# blocking only *yastatic.net* + *an.yandex.ru*, or only *googlesyndication*, over CDP: still crashed (3.1 s, 4.3 s)
+# after patch 0105 (cr151p with uBO Lite turned off: --load-extension=<data>/ext/tvtools only)
+cr151p+noubol https://adblock-tester.com/: ok
+cr151p+noubol new dumps: []
+cr151p_noubol_0105 adblock-tester: '46 points out of 100 (11 services, 22 checks) | failed: close'

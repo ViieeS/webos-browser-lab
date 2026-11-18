@@ -159,6 +159,29 @@ What it means for a native blocker:
 - **The engine alone does not block YouTube ads.** YouTube needs scriptlets and cosmetic rules that adblock-rust
   only returns. The browser has to inject them, as Brave does. Judgement from Brave's design, not tested here.
 
+## Built into the cr151 package
+
+`package.sh` ships uBO Lite with the browser, in complete mode on a fresh profile.
+
+- **Source.** The official release zip, `uBOLite_2026.1116.1650.chromium.zip` from
+  <https://github.com/uBlockOrigin/uBOL-home/releases>, in a `.adblock/ubol/` folder next to the repository. The
+  package step mounts it read-only (`-v "$PWD/../.adblock:/adblock:ro"`) and fails on a sha256 mismatch.
+- **Loading.** The zip is unpacked to `browser/ext/ubol`. At launch run.sh copies it to the data folder
+  (`$S/ext/ubol`, refreshed when the uBO Lite version changes) and `--load-extension="$EXT"` becomes
+  `"$EXT,$UBOL"`. Chrome keeps only the last `--load-extension`, so the list must stay one. The build fails if the
+  edit does not apply.
+  - Why the copy: Chrome writes the indexed declarativeNetRequest rulesets into an unpacked extension's own
+    `_metadata/`. From the read-only app folder it dropped uBO Lite without an error: no service worker, and its
+    pages showed `ERR_BLOCKED_BY_CLIENT`. TV Tools runs from a data-folder copy for the same reason.
+- **Complete mode.** `js/mode-manager.js` ships `defaultFilteringModes` with `all-urls` under `complete` instead
+  of `optimal`.
+  - Why this way: uBOL's own switch is the managed-storage policy `defaultFiltering`. Chrome on Linux reads it
+    only from a policy file under `/etc`, which is read-only on the TV. A policy would also lock the choice.
+  - The changed default applies only until the user picks a mode in uBOL's settings.
+  - uBOL drops to basic only when it lacks broad host permissions. Its manifest asks for `<all_urls>`, and an
+    unpacked extension gets them.
+
 ## Licenses
 
-uBlock Origin and uBO Lite are GPLv3, adblock-rust is MPL-2.0. None of them is shipped in the repository.
+uBlock Origin and uBO Lite are GPLv3, adblock-rust is MPL-2.0. uBO Lite ships in the cr151 IPK (see
+THIRD_PARTY_NOTICES.md). None of them is stored in the repository.

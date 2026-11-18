@@ -53,6 +53,43 @@ grep -q OmniboxBundledExperimentV1 "$CN/package/run.sh" ||
 [ "$(grep -c -e "$OMNI_OFF\\\$WEBGPU_OFF" -e 'DisableProviders/201221632' "$CN/package/run.sh")" = 2 ] ||
 	die "run.sh: omnibox trim not added"
 
+# uBlock Origin Lite (ADBLOCK.md: complete mode blocks as well as full uBO here, MV3, no patch). The official release
+# zip comes from /adblock (a .adblock/ folder next to the repository, mounted read-only; ADBLOCK.md says where to
+# download it), checked against its sha256. It ships as
+# browser/ext/ubol and loads next to TV Tools: Chrome keeps only the last --load-extension, so one comma list.
+UBOL_ZIP=/adblock/ubol/uBOLite_2026.1116.1650.chromium.zip
+UBOL_SHA=67e084b34470c51c08fa9314b118b8cb73df3a72e90c6a3b536d041c92e61bbc
+[ -f "$UBOL_ZIP" ] || die "no $UBOL_ZIP: add -v \"\$PWD/../.adblock:/adblock:ro\" to docker run"
+echo "$UBOL_SHA  $UBOL_ZIP" | sha256sum -c --quiet - || die "uBO Lite zip: sha256 mismatch"
+rm -rf "$B/ext/ubol" && mkdir -p "$B/ext/ubol"
+python3 -c 'import sys, zipfile; zipfile.ZipFile(sys.argv[1]).extractall(sys.argv[2])' "$UBOL_ZIP" "$B/ext/ubol"
+# Complete mode on a fresh profile. The managed-storage policy ("defaultFiltering") would need a policy file under
+# /etc, which is read-only on the TV, so the shipped default changes instead. A mode the user picks still wins.
+sed -i "s|optimal: \[ 'all-urls' \],|optimal: [],|; s|complete: \[\],|complete: [ 'all-urls' ],|" "$B/ext/ubol/js/mode-manager.js"
+grep -q "complete: \[ 'all-urls' \]," "$B/ext/ubol/js/mode-manager.js" && ! grep -q "optimal: \[ 'all-urls' \]," "$B/ext/ubol/js/mode-manager.js" ||
+	die "uBO Lite: default mode not set to complete"
+# uBO Lite runs from a copy in the data folder, as TV Tools does: Chrome writes the indexed declarativeNetRequest
+# rulesets into an unpacked extension's own _metadata/, and the installed app folder is read-only (from there Chrome
+# drops the extension without a word). The copy is refreshed when the shipped uBO Lite version changes.
+python3 - "$CN/package/run.sh" <<'PY'
+import sys
+path = sys.argv[1]
+s = open(path).read()
+if "ext/ubol" not in s:
+    anchor = "\t# GPU check: the launcher sets CN_GPU=off"
+    copy = ('\tUBOL=$S/ext/ubol\n'
+            '\tUV=$(sed -n \'s/.*"version": *"\\([^"]*\\)".*/\\1/p\' "$B/ext/ubol/manifest.json")\n'
+            '\tif [ "$(cat "$S/ext/.ubol" 2>/dev/null)" != "$UV" ] || [ ! -f "$UBOL/manifest.json" ]; then\n'
+            '\t\trm -rf "$UBOL" && mkdir -p "$S/ext" && cp -r "$B/ext/ubol" "$UBOL" && echo "$UV" > "$S/ext/.ubol" ||\n'
+            '\t\t\tUBOL=$B/ext/ubol\n'
+            '\tfi\n')
+    assert s.count(anchor) == 1 and s.count('--load-extension="$EXT" ') == 1, "run.sh anchors changed"
+    s = s.replace(anchor, copy + anchor).replace('--load-extension="$EXT" ', '--load-extension="$EXT,$UBOL" ')
+    open(path, "w").write(s)
+PY
+grep -q -- '--load-extension="\$EXT,\$UBOL"' "$CN/package/run.sh" && grep -q '^	UBOL=\$S/ext/ubol$' "$CN/package/run.sh" ||
+	die "run.sh: uBO Lite not added to --load-extension"
+
 tar --format=posix -C "$D" -cf - browser | zstd -T0 -10 -q -o "$D/browser.tar.zst"
 sed -i "s/^APP_ID=.*/APP_ID=$APP_ID/; s/^APP_TITLE=.*/APP_TITLE=$APP_TITLE/" "$CN/config.env"
 python3 "$CN/package/mkipk.py" --browser "$D/browser.tar.zst" --version "$VERSION" --launcher "$D/cnrun" \

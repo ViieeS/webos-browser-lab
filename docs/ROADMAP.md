@@ -47,7 +47,8 @@ press in a page about 160 ms. The flags do not fix it. The stage split and A/B f
 
 ## 3. Smaller gaps
 
-- **HEVC.** The TV decodes it through NDL, but Chromium's mime check rejects it before the renderer.
+- **HEVC.** Done in cr151 with patch 0106 (2026-11-18): HEVC Main and Main 10 go to NDL, 4K plays. HDR colours are
+  not checked.
 - **Upstream the fixes** listed in [FINDINGS.md](FINDINGS.md#8-upstream-candidates):
   - the WebKit ARMv7 RegExp JIT fixes (0010-0012);
   - SystemHeap alignment (0013);

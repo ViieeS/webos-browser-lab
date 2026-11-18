@@ -628,6 +628,70 @@ Details: `browser/cr151/UI_LATENCY.md`. Own build against 0.0.66, means over 3 i
 - `Event.Latency.OS2.KEY_PRESSED` is always 0 on webOS, so the time from the remote to Chromium is not visible.
 - zig cc for small TV tools needs `-fPIE -pie`. Without it the binary segfaults before main.
 
+### Renderer crash on adblock-tester.com: patch 0105 (2026-11-18)
+
+Raw: `browser/cr151/crash_adblocktester.txt`. Script: `bench/crashrepro.py`.
+
+- **Upstream bug, not ours.** Without a blocker the tab dies 2–5 s after load ("Aw, Snap!", SIGSEGV) in cr151p and
+  in the release app 0.0.66 alike.
+- **Stack** (crashpad dump from `data/chromium/Crash Reports/pending/`, symbolized with `llvm-symbolizer` against
+  the unstripped `out/tv/chrome`; `symbol_level = 0` still keeps function names):
+  `PaintTiming::SetFirstContentfulPaint → ChromeClientImpl::NotifyVizFMPSwap → WebFrameWidgetImpl::NotifyVizFMPSwap
+  → cc::SwapPromiseManager::QueueSwapPromise` with `this = 0x1e8`. The neva code calls
+  `widget_base_->LayerTreeHost()->QueueSwapPromise()` without a check, and a WebView that does not composite has no
+  LayerTreeHost. Every other LayerTreeHost user in `web_frame_widget_impl.cc` returns on `!View()->does_composite()`.
+- **Origin:** the base tree [webOS-ports/chromium151](https://github.com/webOS-ports/chromium151), not a
+  WebOS-Chromium patch. Still the same code there on 2026-11-18.
+- **Trigger:** the first contentful paint of such a WebView, right after the page's scripts attach iframes. Blocking
+  only Yandex's ad bundles or only Google's ad script did not stop it, so it is not one ad script. Which page script
+  creates the non-compositing WebView was not narrowed further. With a blocker it never happened.
+- **The Dawn/WebGPU warnings in browser.log are not the cause.** The crashing thread has no Dawn or WebGPU frame,
+  and run.sh keeps WebGPUService off. Whether the page asks for WebGPU was not checked. WebOS-Chromium issue #6
+  was a different crash: the GPU process on a C9.
+- **Fix:** `patches/0105-vizfmp-swap-needs-compositor.patch` adds the same `does_composite()` / NULL guard. With
+  it, adblock-tester runs to the end without a blocker (46/100) and writes no dump.
+
+### HEVC through NDL: patch 0106 (2026-11-18)
+
+Raw: `browser/cr151/video_cr151p_0106.txt`.
+
+- `enable_platform_hevc` and `enable_hevc_parser_and_hw_decoder` are already on in their args.gn, and their NDL
+  renderer (patch 0023) maps HEVC to NDL codec 2.
+- The only block was `media::IsDecoderHevcProfileSupported()`. With `PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT` it
+  asks the supplemental profile cache, which the GPU process fills from hardware decoders (VAAPI). The TV has none.
+- `patches/0106-webos-hevc-through-ndl.patch`: on webOS, when `$CN_MEDIA_SOCK` is set (the same condition as
+  `CnNdlRendererFactory::Enabled()`), HEVC Main and Main 10 are supported.
+- Result in cr151p: `canPlayType` and `isTypeSupported` say yes for HEVC. `hevc-2160p30.mp4` plays 14.8 s of 15 at
+  3840×2160, 0 dropped, on LG's decoder. Other clips are unchanged.
+- Not checked: HEVC in MSE with a real site, and HDR (Main 10 with PQ) colours on screen.
+
+### uBO Lite built into cr151p (2026-11-18)
+
+Raw: `browser/cr151/ubol_builtin_check.txt`. Details: `browser/cr151/ADBLOCK.md`, "Built into the cr151 package".
+
+- **An unpacked MV3 extension in the read-only app folder is dropped without an error:** no service worker, and its
+  pages show `ERR_BLOCKED_BY_CLIENT`. Chrome writes the indexed declarativeNetRequest rulesets into the extension's
+  own `_metadata/`. run.sh now runs it from a copy in the data folder, as it already did for TV Tools.
+- On a fresh profile: uBO Lite starts in complete mode (3, broad host permissions, 6 rulesets). adblock-tester gives
+  96/100. Two YouTube videos had no ad sample and played at 1×.
+- uBO Lite opens no first-run tab: its background script has no `tabs.create`.
+
+### Open items in cr151 before a final browser (2026-11-18)
+
+The tab limit and DRM are left out: the owner set the first aside, and the second is a separate project.
+
+| Item | Before the final? | Why |
+|---|---|---|
+| YouTube 4K60 not watched on screen (RESULTS.md) | Yes, cheap | One minute of the owner's eyes. Counters show 0 dropped, but stutter can hide from them (WebOS-Chromium issue #12) |
+| VP9 profile 2 (YouTube HDR) unsupported | No | Same kind of type check as HEVC, but HDR output through NDL is untested. YouTube falls back to SDR VP9, so nothing breaks now |
+| HDR colours of HEVC Main 10 (0106) | No | Same unknown as VP9 profile 2. SDR HEVC is checked |
+| E-AC3 unsupported | No | Few web players need it. Stereo AAC and Opus work |
+| `--no-sandbox` | No, but record it | Real security cost for a daily browser. The sandbox on this kernel and jail is a project, not a fix |
+| TV Tools runs a MAIN-world content script on every page | No | Known structural risk. It also sets the TV user agent that YouTube relies on |
+| PGO (`chrome_pgo_phase = 2`) not tried | No | Speed only, a long build experiment. No arm32 profile is known |
+| crossbench and the typing-latency web test not tried | No | Tooling only. Chromium's own histograms already measure UI latency |
+| Higher NDL CPU than cr120 (50–100 against 24–56 jiffies per 8 s) | No | No user-visible effect: 0 dropped up to 4K |
+
 ### YouTube playback (2026-11-18)
 
 Question: is YouTube slow in our builds? The adblock runs showed an ad advancing about 14 s per minute and the
@@ -762,6 +826,11 @@ None of these has been submitted.
 | cr120 0013 neva-media-position-non-webos | [webosose/chromium120](https://github.com/webosose/chromium120) | Non-webOS build of media/neva | not submitted |
 | cr151 0100 webos-no-caption-buttons | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) | Removes minimise/maximise/close on webOS | not submitted |
 | cr151 0101 arm-cortex-a55-tune-and-fpu | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) | Fixes the overridden `-mfpu` of their 0012; measured with the speed build | not submitted |
+| cr151 0103 spatnav-one-layout-update-per-walk | [Chromium](https://issues.chromium.org) (Blink spatial navigation), copy to WebOS-Chromium | Platform-independent: Down 167 → 115 ms on a Wikipedia article. The same code is in Chromium main on 2026-11-18. The Chromium tracker was not searched | not submitted |
+| cr151 0105 vizfmp-swap-needs-compositor | [webOS-ports/chromium151](https://github.com/webOS-ports/chromium151) (the neva code is in its base tree), report to WebOS-Chromium | Renderer NULL dereference on adblock-tester.com in 0.0.66 too. No issue or PR in either repository (checked 2026-11-18). PR #17 there touches FCP waiting in viz, not this | not submitted |
+| cr151 0106 webos-hevc-through-ndl | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) | Depends on their NDL renderer (0023) and `$CN_MEDIA_SOCK`. HEVC 4K plays on the C1. No HEVC issue there | not submitted |
+| cr151 fonts.conf | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) (package: run.sh + a shipped fonts.conf) | Every family came out as LG Display with full hinting. No issue there | not submitted |
+| cr151 omnibox trim (run.sh flags) | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) (run.sh) | Omnibox key to screen 160 → 87 ms, flags only. A TV product choice (fewer providers, 5 rows), so offer it as an option. No issue there | not submitted |
 | Platform notes: quoted screensaver timestamp, NDL main-ELF requirement, Mali EGL display | [webosbrew](https://github.com/webosbrew) (documentation) | Knowledge for homebrew authors, not a code patch | not submitted |
 
 ### Spatial navigation patch 0103 (2026-11-18)
