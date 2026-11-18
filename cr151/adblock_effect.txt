@@ -1,0 +1,12 @@
+ubo warm: rss_browser_kb=91364 rss_ext_kb=118652 rss_total_kb=243752
+ubolopt adblock-tester: 'd, Ghostery, uBlock Origin, AdBlocker Ultimate and others. RECOMMENDED IF YOUR SCORE IS UNDER 90/100: Total Adblock blocked the most ads + tracking scripts in our tests. It’s currently up to 80% off (limited-time discount). 👉 Improve your score with Total Adblock BEST RATED AD BLOCKERS 2026 We pu'
+ubolcomp adblock-tester: 'd, Ghostery, uBlock Origin, AdBlocker Ultimate and others. RECOMMENDED IF YOUR SCORE IS UNDER 90/100: Total Adblock blocked the most ads + tracking scripts in our tests. It’s currently up to 80% off (limited-time discount). 👉 Improve your score with Total Adblock BEST RATED AD BLOCKERS 2026 We pu'
+ubo adblock-tester: 'd, Ghostery, uBlock Origin, AdBlocker Ultimate and others. RECOMMENDED IF YOUR SCORE IS UNDER 90/100: Total Adblock blocked the most ads + tracking scripts in our tests. It’s currently up to 80% off (limited-time discount). 👉 Improve your score with Total Adblock BEST RATED AD BLOCKERS 2026 We pu'
+none youtube dQw4w9WgXcQ: ad_samples=20/20 video_played_s=0 errors=0 first=[True, 4, False, 20, False] last=[True, 18, True, 20, False]
+none youtube kJQP7kiw5Fk: ad_samples=20/20 video_played_s=0 errors=0 first=[True, 4, False, 20, False] last=[True, 18, True, 20, False]
+ubolopt youtube dQw4w9WgXcQ: ad_samples=0/20 video_played_s=3 errors=0 first=[False, 0, False, 213, False] last=[False, 3, True, 213, False]
+ubolopt youtube kJQP7kiw5Fk: ad_samples=0/20 video_played_s=2 errors=0 first=[False, 0, False, 282, False] last=[False, 2, False, 282, False]
+ubolcomp youtube dQw4w9WgXcQ: ad_samples=0/20 video_played_s=3 errors=0 first=[False, 0, False, 213, False] last=[False, 3, False, 213, False]
+ubolcomp youtube kJQP7kiw5Fk: ad_samples=0/20 video_played_s=3 errors=0 first=[False, 0, False, 282, False] last=[False, 3, False, 282, False]
+ubo youtube dQw4w9WgXcQ: ad_samples=3/20 video_played_s=3 errors=0 first=[True, 3, False, 6, False] last=[False, 3, False, 213, False]
+ubo youtube kJQP7kiw5Fk: ad_samples=0/20 video_played_s=4 errors=0 first=[False, 0, False, 282, False] last=[False, 4, False, 282, False]

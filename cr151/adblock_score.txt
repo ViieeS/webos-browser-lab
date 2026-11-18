@@ -1,0 +1,4 @@
+none adblock-tester: 'no answer from the page (TimeoutError), see /tmp/abt_none.png'
+ubolopt adblock-tester: '91 points out of 100 (11 services, 22 checks) | failed:'
+ubolcomp adblock-tester: '96 points out of 100 (11 services, 22 checks) | failed:'
+ubo adblock-tester: '96 points out of 100 (11 services, 22 checks) | failed:'

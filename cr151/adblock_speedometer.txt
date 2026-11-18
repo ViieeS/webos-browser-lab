@@ -1,0 +1,8 @@
+none speedometer #19026-0: score=0.753 wall_s=104 rss_browser_kb=170220 rss_ext_kb=0 rss_total_kb=396916
+ubolopt speedometer #19026-0: score=0.760 wall_s=104 rss_browser_kb=187516 rss_ext_kb=40284 rss_total_kb=440832
+ubolcomp speedometer #19026-0: score=0.724 wall_s=113 rss_browser_kb=166228 rss_ext_kb=107408 rss_total_kb=493876
+ubo speedometer #19026-0: score=0.741 wall_s=111 rss_browser_kb=164180 rss_ext_kb=141396 rss_total_kb=528260
+none speedometer #19026-1: score=0.764 wall_s=102 rss_browser_kb=143972 rss_ext_kb=0 rss_total_kb=354764
+ubolopt speedometer #19026-1: score=0.751 wall_s=104 rss_browser_kb=190624 rss_ext_kb=40160 rss_total_kb=450056
+ubolcomp speedometer #19026-1: score=0.732 wall_s=113 rss_browser_kb=192016 rss_ext_kb=107968 rss_total_kb=527800
+ubo speedometer #19026-1: score=0.738 wall_s=110 rss_browser_kb=163484 rss_ext_kb=141184 rss_total_kb=538116

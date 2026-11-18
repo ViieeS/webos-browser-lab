@@ -1,0 +1,52 @@
+none tabs n=1 pages=2 ok=0 busy=2 bad=0 pid_same=1 MemAvailable: 546044 kB SwapTotal: 614396 kB SwapFree: 188728 kB rss_browser_kb=146528 rss_ext_kb=0 rss_total_kb=414208
+none tabs n=2 pages=3 ok=0 busy=3 bad=0 pid_same=1 MemAvailable: 544508 kB SwapTotal: 614396 kB SwapFree: 189020 kB rss_browser_kb=152564 rss_ext_kb=0 rss_total_kb=420680
+none tabs n=3 pages=4 ok=4 busy=0 bad=0 pid_same=1 MemAvailable: 413868 kB SwapTotal: 614396 kB SwapFree: 122240 kB rss_browser_kb=155532 rss_ext_kb=0 rss_total_kb=647128
+none tabs n=4 pages=5 ok=5 busy=0 bad=0 pid_same=1 MemAvailable: 273368 kB SwapTotal: 614396 kB SwapFree: 45700 kB rss_browser_kb=159152 rss_ext_kb=40164 rss_total_kb=800720
+none tabs n=5 pages=6 ok=6 busy=0 bad=0 pid_same=1 MemAvailable: 261212 kB SwapTotal: 614396 kB SwapFree: 35020 kB rss_browser_kb=162212 rss_ext_kb=40152 rss_total_kb=813480
+none tabs n=6 pages=7 ok=7 busy=0 bad=0 pid_same=1 MemAvailable: 211436 kB SwapTotal: 614396 kB SwapFree: 3232 kB rss_browser_kb=163348 rss_ext_kb=0 rss_total_kb=796308
+none tabs n=7 pages=8 ok=8 busy=0 bad=0 pid_same=1 MemAvailable: 288240 kB SwapTotal: 614396 kB SwapFree: 66660 kB rss_browser_kb=158572 rss_ext_kb=0 rss_total_kb=809432
+none tabs n=8 pages=9 ok=9 busy=0 bad=0 pid_same=1 MemAvailable: 241304 kB SwapTotal: 614396 kB SwapFree: 69308 kB rss_browser_kb=185120 rss_ext_kb=0 rss_total_kb=885312
+none tabs n=9 pages=10 ok=10 busy=0 bad=0 pid_same=1 MemAvailable: 348448 kB SwapTotal: 614396 kB SwapFree: 103524 kB rss_browser_kb=198000 rss_ext_kb=0 rss_total_kb=974616
+none tabs n=10 pages=11 ok=11 busy=0 bad=0 pid_same=1 MemAvailable: 324684 kB SwapTotal: 614396 kB SwapFree: 98952 kB rss_browser_kb=208920 rss_ext_kb=0 rss_total_kb=1001636
+none tabs n=11 pages=12 ok=5 busy=7 bad=0 pid_same=1 MemAvailable: 212704 kB SwapTotal: 614396 kB SwapFree: 53812 kB rss_browser_kb=194228 rss_ext_kb=40168 rss_total_kb=1094160
+none tabs n=12 pages=13 ok=13 busy=0 bad=0 pid_same=1 MemAvailable: 229100 kB SwapTotal: 614396 kB SwapFree: 48868 kB rss_browser_kb=205236 rss_ext_kb=33220 rss_total_kb=1138892
+none tabs n=13 pages=14 ok=14 busy=0 bad=0 pid_same=1 MemAvailable: 218168 kB SwapTotal: 614396 kB SwapFree: 102604 kB rss_browser_kb=154028 rss_ext_kb=40220 rss_total_kb=1129764
+none tabs n=14 pages=15 ok=15 busy=0 bad=0 pid_same=1 MemAvailable: 171916 kB SwapTotal: 614396 kB SwapFree: 13856 kB rss_browser_kb=179648 rss_ext_kb=24260 rss_total_kb=1159660
+none tabs n=15 pages=16 ok=16 busy=0 bad=0 pid_same=1 MemAvailable: 174136 kB SwapTotal: 614396 kB SwapFree: 33344 kB rss_browser_kb=182304 rss_ext_kb=0 rss_total_kb=1152668
+none tabs n=16 pages=0 ok=0 busy=0 bad=0 pid_same=0 MemAvailable: 1019412 kB SwapTotal: 614396 kB SwapFree: 322996 kB rss_browser_kb=125000 rss_ext_kb=40288 rss_total_kb=331112
+none tabs: first failure at tab 16: []
+ubolcomp tabs n=1 pages=2 ok=0 busy=2 bad=0 pid_same=1 MemAvailable: 694692 kB SwapTotal: 614396 kB SwapFree: 328232 kB rss_browser_kb=177944 rss_ext_kb=0 rss_total_kb=423304
+ubolcomp tabs n=2 pages=3 ok=0 busy=3 bad=0 pid_same=1 MemAvailable: 670328 kB SwapTotal: 614396 kB SwapFree: 328340 kB rss_browser_kb=181852 rss_ext_kb=0 rss_total_kb=434732
+ubolcomp tabs n=3 pages=4 ok=4 busy=0 bad=0 pid_same=1 MemAvailable: 561908 kB SwapTotal: 614396 kB SwapFree: 325776 kB rss_browser_kb=211632 rss_ext_kb=40864 rss_total_kb=648608
+ubolcomp tabs n=4 pages=5 ok=5 busy=0 bad=0 pid_same=1 MemAvailable: 475632 kB SwapTotal: 614396 kB SwapFree: 237440 kB rss_browser_kb=222424 rss_ext_kb=40364 rss_total_kb=778328
+ubolcomp tabs n=5 pages=6 ok=6 busy=0 bad=0 pid_same=1 MemAvailable: 518740 kB SwapTotal: 614396 kB SwapFree: 229148 kB rss_browser_kb=230408 rss_ext_kb=0 rss_total_kb=745856
+ubolcomp tabs n=6 pages=7 ok=7 busy=0 bad=0 pid_same=1 MemAvailable: 427748 kB SwapTotal: 614396 kB SwapFree: 207468 kB rss_browser_kb=253812 rss_ext_kb=40880 rss_total_kb=883700
+ubolcomp tabs n=7 pages=8 ok=8 busy=0 bad=0 pid_same=1 MemAvailable: 394120 kB SwapTotal: 614396 kB SwapFree: 186968 kB rss_browser_kb=255992 rss_ext_kb=0 rss_total_kb=888176
+ubolcomp tabs n=8 pages=9 ok=9 busy=0 bad=0 pid_same=1 MemAvailable: 252552 kB SwapTotal: 614396 kB SwapFree: 125656 kB rss_browser_kb=261896 rss_ext_kb=38628 rss_total_kb=1050984
+ubolcomp tabs n=9 pages=10 ok=10 busy=0 bad=0 pid_same=1 MemAvailable: 207000 kB SwapTotal: 614396 kB SwapFree: 91464 kB rss_browser_kb=250184 rss_ext_kb=37596 rss_total_kb=1114772
+ubolcomp tabs n=10 pages=11 ok=11 busy=0 bad=0 pid_same=1 MemAvailable: 278564 kB SwapTotal: 614396 kB SwapFree: 104060 kB rss_browser_kb=222300 rss_ext_kb=0 rss_total_kb=974264
+ubolcomp tabs n=11 pages=12 ok=3 busy=9 bad=0 pid_same=1 MemAvailable: 179840 kB SwapTotal: 614396 kB SwapFree: 33144 kB rss_browser_kb=200004 rss_ext_kb=43540 rss_total_kb=1051820
+ubolcomp tabs n=12 pages=13 ok=13 busy=0 bad=0 pid_same=1 MemAvailable: 207632 kB SwapTotal: 614396 kB SwapFree: 32032 kB rss_browser_kb=178928 rss_ext_kb=47648 rss_total_kb=1018192
+ubolcomp tabs n=13 pages=14 ok=14 busy=0 bad=0 pid_same=1 MemAvailable: 234808 kB SwapTotal: 614396 kB SwapFree: 88684 kB rss_browser_kb=173280 rss_ext_kb=61712 rss_total_kb=1068556
+ubolcomp tabs n=14 pages=15 ok=15 busy=0 bad=0 pid_same=1 MemAvailable: 174284 kB SwapTotal: 614396 kB SwapFree: 100120 kB rss_browser_kb=193400 rss_ext_kb=31716 rss_total_kb=1165404
+ubolcomp tabs n=15 pages=16 ok=16 busy=0 bad=0 pid_same=1 MemAvailable: 194872 kB SwapTotal: 614396 kB SwapFree: 77532 kB rss_browser_kb=193004 rss_ext_kb=30080 rss_total_kb=1122360
+ubolcomp tabs n=16 pages=17 ok=17 busy=0 bad=0 pid_same=1 MemAvailable: 168144 kB SwapTotal: 614396 kB SwapFree: 66632 kB rss_browser_kb=225988 rss_ext_kb=19560 rss_total_kb=1215600
+ubolcomp tabs n=17 pages=18 ok=18 busy=0 bad=0 pid_same=1 MemAvailable: 159372 kB SwapTotal: 614396 kB SwapFree: 61800 kB rss_browser_kb=190988 rss_ext_kb=69648 rss_total_kb=1198556
+ubolcomp tabs n=18 pages=19 ok=19 busy=0 bad=0 pid_same=1 MemAvailable: 115784 kB SwapTotal: 614396 kB SwapFree: 0 kB rss_browser_kb=210888 rss_ext_kb=15664 rss_total_kb=1205272
+ubolcomp tabs n=19 pages=0 ok=0 busy=0 bad=0 pid_same=0 MemAvailable: 956328 kB SwapTotal: 614396 kB SwapFree: 317048 kB rss_browser_kb=158212 rss_ext_kb=98300 rss_total_kb=422268
+ubolcomp tabs: first failure at tab 19: []
+ubo tabs n=1 pages=2 ok=0 busy=2 bad=0 pid_same=1 MemAvailable: 656144 kB SwapTotal: 614396 kB SwapFree: 318032 kB rss_browser_kb=181448 rss_ext_kb=101384 rss_total_kb=526720
+ubo tabs n=2 pages=3 ok=0 busy=3 bad=0 pid_same=1 MemAvailable: 659596 kB SwapTotal: 614396 kB SwapFree: 318372 kB rss_browser_kb=185904 rss_ext_kb=101424 rss_total_kb=531048
+ubo tabs n=3 pages=4 ok=4 busy=0 bad=0 pid_same=1 MemAvailable: 545540 kB SwapTotal: 614396 kB SwapFree: 265520 kB rss_browser_kb=200220 rss_ext_kb=103232 rss_total_kb=743008
+ubo tabs n=4 pages=5 ok=5 busy=0 bad=0 pid_same=1 MemAvailable: 445288 kB SwapTotal: 614396 kB SwapFree: 171252 kB rss_browser_kb=225028 rss_ext_kb=89664 rss_total_kb=879268
+ubo tabs n=5 pages=6 ok=6 busy=0 bad=0 pid_same=1 MemAvailable: 474740 kB SwapTotal: 614396 kB SwapFree: 160504 kB rss_browser_kb=235564 rss_ext_kb=90444 rss_total_kb=897592
+ubo tabs n=6 pages=7 ok=7 busy=0 bad=0 pid_same=1 MemAvailable: 416968 kB SwapTotal: 614396 kB SwapFree: 154668 kB rss_browser_kb=245368 rss_ext_kb=92292 rss_total_kb=950336
+ubo tabs n=7 pages=8 ok=8 busy=0 bad=0 pid_same=1 MemAvailable: 394828 kB SwapTotal: 614396 kB SwapFree: 128212 kB rss_browser_kb=234836 rss_ext_kb=87772 rss_total_kb=962820
+ubo tabs n=8 pages=9 ok=9 busy=0 bad=0 pid_same=1 MemAvailable: 252524 kB SwapTotal: 614396 kB SwapFree: 88328 kB rss_browser_kb=253872 rss_ext_kb=87236 rss_total_kb=1083164
+ubo tabs n=9 pages=10 ok=10 busy=0 bad=0 pid_same=1 MemAvailable: 203364 kB SwapTotal: 614396 kB SwapFree: 43668 kB rss_browser_kb=235200 rss_ext_kb=76936 rss_total_kb=1105548
+ubo tabs n=10 pages=11 ok=11 busy=0 bad=0 pid_same=1 MemAvailable: 317336 kB SwapTotal: 614396 kB SwapFree: 121548 kB rss_browser_kb=218752 rss_ext_kb=69440 rss_total_kb=1027384
+ubo tabs n=11 pages=12 ok=2 busy=10 bad=0 pid_same=1 MemAvailable: 193872 kB SwapTotal: 614396 kB SwapFree: 90676 kB rss_browser_kb=223348 rss_ext_kb=98564 rss_total_kb=1148388
+ubo tabs n=12 pages=13 ok=13 busy=0 bad=0 pid_same=1 MemAvailable: 187884 kB SwapTotal: 614396 kB SwapFree: 55940 kB rss_browser_kb=174548 rss_ext_kb=95664 rss_total_kb=1130444
+ubo tabs n=13 pages=14 ok=14 busy=0 bad=0 pid_same=1 MemAvailable: 243152 kB SwapTotal: 614396 kB SwapFree: 117512 kB rss_browser_kb=152168 rss_ext_kb=85544 rss_total_kb=1090832
+ubo tabs n=14 pages=0 ok=0 busy=0 bad=0 pid_same=0  rss_browser_kb=0 rss_ext_kb=0 rss_total_kb=0
+ubo tabs: first failure at tab 14: []

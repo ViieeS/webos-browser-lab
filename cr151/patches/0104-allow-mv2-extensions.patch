@@ -1,0 +1,23 @@
+Allow Manifest V2 extensions again (full uBlock Origin).
+
+M151 still ships the whole MV2 runtime: MV2 manifests parse, webRequestBlocking and persistent background pages are
+there. The only gate is ShouldDisableLegacyExtensions() in manifest_v2_handler.cc, which returns true outside tests.
+Its three callers (install check, enable check, disabling already installed MV2 extensions at startup) all go through
+it, so returning false restores MV2 everywhere. Unpacked MV2 extensions still get a deprecation warning.
+
+diff -ru a/src/extensions/browser/manifest_v2_handler.cc b/src/extensions/browser/manifest_v2_handler.cc
+--- a/src/extensions/browser/manifest_v2_handler.cc	2026-11-18 08:00:00
++++ b/src/extensions/browser/manifest_v2_handler.cc	2026-11-18 08:00:00
+@@ -109,10 +109,6 @@
+ // Returns true if legacy extensions should be disabled.
+ bool ShouldDisableLegacyExtensions() {
+-  if (g_allow_mv2_for_testing) {
+-    // We allow legacy MV2 extensions for testing purposes.
+-    return false;
+-  }
+-
+-  return true;
++  // Our build keeps MV2 (0104-allow-mv2-extensions.patch).
++  return false;
+ }
+

@@ -1,0 +1,12 @@
+none news #20469-0: window_s=60 dcl_ms=1805 load_ms=1813 requests=231 finished=217 kb=1941 failed=2 blocked=0 rss_browser_kb=144644 rss_ext_kb=40244 rss_total_kb=435728
+ubolopt news #20469-0: window_s=60 dcl_ms=37099 load_ms=0 requests=207 finished=193 kb=341 failed=10 blocked=9 rss_browser_kb=162892 rss_ext_kb=40096 rss_total_kb=444656
+ubolcomp news #20469-0: window_s=60 dcl_ms=37718 load_ms=0 requests=207 finished=193 kb=341 failed=10 blocked=9 rss_browser_kb=164000 rss_ext_kb=40716 rss_total_kb=449052
+ubo news #20469-0: window_s=60 dcl_ms=39390 load_ms=0 requests=210 finished=194 kb=341 failed=12 blocked=11 rss_browser_kb=144028 rss_ext_kb=141076 rss_total_kb=527388
+none news #20469-1: window_s=60 dcl_ms=47081 load_ms=0 requests=224 finished=211 kb=379 failed=1 blocked=0 rss_browser_kb=140696 rss_ext_kb=40368 rss_total_kb=428956
+ubolopt news #20469-1: window_s=60 dcl_ms=36326 load_ms=0 requests=207 finished=193 kb=341 failed=10 blocked=9 rss_browser_kb=165644 rss_ext_kb=40256 rss_total_kb=443316
+ubolcomp news #20469-1: window_s=60 dcl_ms=37928 load_ms=0 requests=207 finished=193 kb=341 failed=10 blocked=9 rss_browser_kb=164900 rss_ext_kb=40544 rss_total_kb=450660
+ubo news #20469-1: window_s=60 dcl_ms=39615 load_ms=0 requests=210 finished=194 kb=354 failed=12 blocked=11 rss_browser_kb=139700 rss_ext_kb=140972 rss_total_kb=520804
+none news #20469-2: window_s=60 dcl_ms=49866 load_ms=0 requests=226 finished=213 kb=719 failed=1 blocked=0 rss_browser_kb=139912 rss_ext_kb=40164 rss_total_kb=432108
+ubolopt news #20469-2: window_s=60 dcl_ms=38822 load_ms=0 requests=207 finished=193 kb=343 failed=10 blocked=9 rss_browser_kb=157956 rss_ext_kb=40092 rss_total_kb=435732
+ubolcomp news #20469-2: window_s=60 dcl_ms=39291 load_ms=0 requests=208 finished=194 kb=365 failed=9 blocked=9 rss_browser_kb=163464 rss_ext_kb=40364 rss_total_kb=449288
+ubo news #20469-2: window_s=60 dcl_ms=40094 load_ms=0 requests=211 finished=195 kb=341 failed=12 blocked=11 rss_browser_kb=142232 rss_ext_kb=141852 rss_total_kb=525436

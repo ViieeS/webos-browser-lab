@@ -1,0 +1,24 @@
+none load-wiki #16091-0: load_ms=5007 rss_browser_kb=136444 rss_ext_kb=40252 rss_total_kb=333892
+ubolopt load-wiki #16091-0: load_ms=3275 rss_browser_kb=174076 rss_ext_kb=126284 rss_total_kb=469488
+ubolcomp load-wiki #16091-0: load_ms=3594 rss_browser_kb=171016 rss_ext_kb=125696 rss_total_kb=471048
+ubo load-wiki #16091-0: load_ms=4130 rss_browser_kb=170656 rss_ext_kb=184032 rss_total_kb=520920
+none news #16091-0: dcl=1769 load=1797 resources=1 kb=178 rss_browser_kb=143264 rss_ext_kb=40436 rss_total_kb=378952
+ubolopt news #16091-0: timeout=1 rss_browser_kb=162480 rss_ext_kb=40356 rss_total_kb=438996
+ubolcomp news #16091-0: timeout=1 rss_browser_kb=175012 rss_ext_kb=40764 rss_total_kb=451820
+ubo news #16091-0: timeout=1 rss_browser_kb=141948 rss_ext_kb=140880 rss_total_kb=517864
+none load-wiki #16091-1: load_ms=2982 rss_browser_kb=135076 rss_ext_kb=40464 rss_total_kb=335500
+ubolopt load-wiki #16091-1: load_ms=3138 rss_browser_kb=162776 rss_ext_kb=125560 rss_total_kb=453384
+ubolcomp load-wiki #16091-1: load_ms=3738 rss_browser_kb=174424 rss_ext_kb=126196 rss_total_kb=472208
+ubo load-wiki #16091-1: load_ms=2838 rss_browser_kb=146432 rss_ext_kb=184020 rss_total_kb=489844
+none news #16091-1: timeout=1 rss_browser_kb=139044 rss_ext_kb=40148 rss_total_kb=430636
+ubolopt news #16091-1: timeout=1 rss_browser_kb=162456 rss_ext_kb=40268 rss_total_kb=438992
+ubolcomp news #16091-1: timeout=1 rss_browser_kb=164020 rss_ext_kb=40672 rss_total_kb=441832
+ubo news #16091-1: timeout=1 rss_browser_kb=144084 rss_ext_kb=141140 rss_total_kb=521648
+none load-wiki #16091-2: load_ms=2894 rss_browser_kb=136232 rss_ext_kb=40164 rss_total_kb=336220
+ubolopt load-wiki #16091-2: load_ms=3175 rss_browser_kb=164988 rss_ext_kb=125860 rss_total_kb=456368
+ubolcomp load-wiki #16091-2: load_ms=3455 rss_browser_kb=170108 rss_ext_kb=125712 rss_total_kb=470168
+ubo load-wiki #16091-2: load_ms=3418 rss_browser_kb=144268 rss_ext_kb=183880 rss_total_kb=484972
+none news #16091-2: timeout=1 rss_browser_kb=137808 rss_ext_kb=40120 rss_total_kb=430200
+ubolopt news #16091-2: timeout=1 rss_browser_kb=162480 rss_ext_kb=40484 rss_total_kb=439972
+ubolcomp news #16091-2: timeout=1 rss_browser_kb=164596 rss_ext_kb=40448 rss_total_kb=442888
+ubo news #16091-2: timeout=1 rss_browser_kb=139624 rss_ext_kb=141296 rss_total_kb=516892

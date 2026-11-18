@@ -66,13 +66,18 @@ def run_one(tag, case, run):
     print(f"{tag} {case} #{run}: " + " ".join(f"{k}={v}" for k, v in got.items()), flush=True)
 
 
-bench.tv("wget -q -O /dev/null http://127.0.0.1:8099/pages/harness.html || lighttpd -f /media/developer/bench/lighttpd.conf")
-args = sys.argv[1:]
-tags = ["stock", "ours"]
-if args[0] == "-b":
-    tags, args = args[1].split(","), args[2:]
-stamp = int(time.time()) % 100000
-for r in range(int(args[0])):
-    for case in args[1:]:
-        for tag in tags:
-            run_one(tag, case, f"{stamp}-{r}")
+def main():
+    bench.tv("wget -q -O /dev/null http://127.0.0.1:8099/pages/harness.html || lighttpd -f /media/developer/bench/lighttpd.conf")
+    args = sys.argv[1:]
+    tags = ["stock", "ours"]
+    if args[0] == "-b":
+        tags, args = args[1].split(","), args[2:]
+    stamp = int(time.time()) % 100000
+    for r in range(int(args[0])):
+        for case in args[1:]:
+            for tag in tags:
+                run_one(tag, case, f"{stamp}-{r}")
+
+
+if __name__ == "__main__":
+    main()

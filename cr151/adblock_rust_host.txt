@@ -1,0 +1,213 @@
+   Compiling proc-macro2 v1.0.106
+   Compiling quote v1.0.45
+   Compiling unicode-ident v1.0.24
+   Compiling stable_deref_trait v1.2.1
+   Compiling serde_core v1.0.229
+   Compiling memchr v2.8.3
+   Compiling litemap v0.8.2
+   Compiling writeable v0.6.3
+   Compiling crossbeam-utils v0.8.21
+   Compiling utf8_iter v1.0.4
+   Compiling serde v1.0.229
+   Compiling icu_normalizer_data v2.2.0
+   Compiling icu_properties_data v2.2.0
+   Compiling zmij v1.0.21
+   Compiling either v1.15.0
+   Compiling version_check v0.9.5
+   Compiling crossbeam-epoch v0.9.21
+   Compiling zerocopy v0.8.48
+   Compiling libc v0.2.186
+   Compiling generic-array v0.14.9
+   Compiling smallvec v1.15.1
+   Compiling autocfg v1.5.0
+   Compiling serde_json v1.0.154
+   Compiling semver v1.0.28
+   Compiling itoa v1.0.18
+   Compiling shlex v1.3.0
+   Compiling cfg-if v1.0.4
+   Compiling find-msvc-tools v0.1.9
+   Compiling num-traits v0.2.19
+   Compiling rustc_version v0.4.1
+   Compiling cc v1.2.61
+   Compiling aho-corasick v1.1.4
+   Compiling syn v2.0.117
+   Compiling syn v3.0.9
+   Compiling regex-syntax v0.8.11
+   Compiling rayon-core v1.13.0
+   Compiling typenum v1.20.0
+   Compiling crossbeam-deque v0.8.6
+   Compiling flatbuffers v25.12.19
+   Compiling psl-types v2.0.11
+   Compiling clap_lex v1.1.0
+   Compiling thiserror v1.0.69
+   Compiling alloca v0.4.0
+   Compiling plotters-backend v0.3.7
+   Compiling ciborium-io v0.2.2
+   Compiling percent-encoding v2.3.2
+   Compiling anstyle v1.0.14
+   Compiling clap_builder v4.6.0
+   Compiling plotters-svg v0.3.7
+   Compiling bitflags v2.13.2
+   Compiling regex-automata v0.4.18
+   Compiling psl v2.1.205
+   Compiling itertools v0.13.0
+   Compiling same-file v1.0.6
+   Compiling serde_derive v1.0.229
+   Compiling cast v0.3.0
+   Compiling walkdir v2.5.0
+   Compiling synstructure v0.13.2
+   Compiling rayon v1.12.0
+   Compiling plotters v0.3.7
+   Compiling clap v4.6.1
+   Compiling criterion-plot v0.8.2
+   Compiling form_urlencoded v1.2.2
+   Compiling block-buffer v0.9.0
+   Compiling digest v0.9.0
+   Compiling page_size v0.6.0
+   Compiling cpufeatures v0.2.17
+   Compiling zerofrom-derive v0.1.7
+   Compiling yoke-derive v0.8.2
+   Compiling zerovec-derive v0.11.3
+   Compiling displaydoc v0.2.5
+   Compiling zerocopy-derive v0.8.48
+   Compiling regex v1.13.1
+   Compiling thiserror-impl v1.0.69
+   Compiling addr v0.15.6
+   Compiling csv-core v0.1.13
+   Compiling itertools v0.14.0
+   Compiling rustc-hash v2.1.2
+   Compiling base64 v0.23.1
+   Compiling anes v0.1.6
+   Compiling ryu v1.0.23
+   Compiling tinytemplate v1.2.1
+   Compiling seahash v4.1.0
+   Compiling opaque-debug v0.3.1
+   Compiling arrayvec v0.7.6
+   Compiling oorandom v11.1.5
+   Compiling sha2 v0.9.9
+   Compiling csv v1.3.0
+   Compiling mock_instant v0.5.1
+   Compiling zerofrom v0.1.7
+   Compiling yoke v0.8.2
+   Compiling zerovec v0.11.6
+   Compiling zerotrie v0.2.4
+   Compiling tinystr v0.8.3
+   Compiling potential_utf v0.1.5
+   Compiling icu_collections v2.2.0
+   Compiling icu_locale_core v2.2.0
+   Compiling icu_provider v2.2.0
+   Compiling icu_normalizer v2.2.0
+   Compiling icu_properties v2.2.0
+   Compiling idna_adapter v1.2.2
+   Compiling idna v1.1.0
+   Compiling half v2.7.1
+   Compiling adblock v0.13.6 (/src)
+   Compiling url v2.5.8
+   Compiling ciborium-ll v0.2.2
+   Compiling ciborium v0.2.2
+   Compiling criterion v0.8.2
+    Finished `bench` profile [optimized] target(s) in 16.37s
+     Running benches/bench_matching.rs (/build/target-host/release/deps/bench_matching-b81733b0fdb85379)
+Gnuplot not found, using plotters backend
+Benchmarking rule-match/el+ep
+Warning: Unable to complete 10 samples in 5.0s. You may wish to increase target time to 6.2s.
+rule-match/el+ep        time:   [637.06 ms 661.26 ms 685.35 ms]
+                        thrpt:  [354.48 Kelem/s 367.40 Kelem/s 381.35 Kelem/s]
+Benchmarking rule-match/easylist
+Warning: Unable to complete 10 samples in 5.0s. You may wish to increase target time to 5.2s.
+rule-match/easylist     time:   [467.02 ms 472.59 ms 479.08 ms]
+                        thrpt:  [507.10 Kelem/s 514.07 Kelem/s 520.20 Kelem/s]
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) high mild
+Benchmarking rule-match/slimlist
+rule-match/slimlist     time:   [443.21 ms 446.60 ms 449.88 ms]
+                        thrpt:  [540.02 Kelem/s 543.99 Kelem/s 548.15 Kelem/s]
+Benchmarking rule-match-parsed/easylist
+rule-match-parsed/easylist
+                        time:   [259.57 ms 260.85 ms 262.57 ms]
+                        thrpt:  [925.25 Kelem/s 931.37 Kelem/s 935.97 Kelem/s]
+Found 2 outliers among 10 measurements (20.00%)
+  1 (10.00%) high mild
+  1 (10.00%) high severe
+Benchmarking rule-match-parsed/el+ep
+rule-match-parsed/el+ep time:   [401.17 ms 402.41 ms 403.86 ms]
+                        thrpt:  [601.56 Kelem/s 603.73 Kelem/s 605.60 Kelem/s]
+Benchmarking rule-match-parsed/slimlist
+rule-match-parsed/slimlist
+                        time:   [248.67 ms 251.44 ms 254.51 ms]
+                        thrpt:  [954.56 Kelem/s 966.23 Kelem/s 976.97 Kelem/s]
+Benchmarking rule-match-browserlike/el+ep
+Warning: Unable to complete 10 samples in 5.0s. You may wish to increase target time to 5.9s.
+rule-match-browserlike/el+ep
+                        time:   [574.50 ms 612.82 ms 664.89 ms]
+                        thrpt:  [365.39 Kelem/s 396.44 Kelem/s 422.88 Kelem/s]
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) high mild
+Benchmarking rule-match-browserlike/el
+rule-match-browserlike/el
+                        time:   [384.41 ms 387.29 ms 390.43 ms]
+                        thrpt:  [622.24 Kelem/s 627.29 Kelem/s 631.99 Kelem/s]
+Benchmarking rule-match-browserlike/slimlist
+rule-match-browserlike/slimlist
+                        time:   [361.04 ms 361.60 ms 362.08 ms]
+                        thrpt:  [670.97 Kelem/s 671.87 Kelem/s 672.90 Kelem/s]
+Found 2 outliers among 10 measurements (20.00%)
+  1 (10.00%) low severe
+  1 (10.00%) low mild
+Benchmarking rule-match-browserlike/brave-list
+Warning: Unable to complete 10 samples in 5.0s. You may wish to increase target time to 8.5s.
+rule-match-browserlike/brave-list
+                        time:   [833.00 ms 840.78 ms 850.12 ms]
+                        thrpt:  [285.78 Kelem/s 288.95 Kelem/s 291.65 Kelem/s]
+Found 2 outliers among 10 measurements (20.00%)
+  2 (20.00%) high mild
+Benchmarking rule-match-first-request/brave-list
+rule-match-first-request/brave-list
+                        time:   [616.20 µs 621.06 µs 626.46 µs]
+     Running benches/bench_memory.rs (/build/target-host/release/deps/bench_memory-b647c5533836dc18)
+Gnuplot not found, using plotters backend
+Benchmarking memory-usage-final/brave-list-initial
+memory-usage-final/brave-list-initial
+                        time:   [9.2283 MB 9.2283 MB 9.2283 MB]
+Benchmarking memory-usage-final/brave-list-1000-requests
+memory-usage-final/brave-list-1000-requests
+                        time:   [3.2752 MB 3.2752 MB 3.2752 MB]
+Benchmarking memory-usage-max/brave-list-initial/max
+memory-usage-max/brave-list-initial/max
+                        time:   [30.776 MB 30.776 MB 30.776 MB]
+Benchmarking memory-usage-alloc-count/brave-list-initial/alloc-count
+memory-usage-alloc-count/brave-list-initial/alloc-count
+                        time:   [292832 allocs 292832 allocs 292832 allocs]
+Benchmarking memory-usage-alloc-count/brave-list-1000-requests/alloc-count
+memory-usage-alloc-count/brave-list-1000-requests/alloc-count
+                        time:   [ 89177 allocs  89177 allocs  89177 allocs]
+     Running benches/bench_serialization.rs (/build/target-host/release/deps/bench_serialization-8de4a94d849ad2b1)
+Gnuplot not found, using plotters backend
+Benchmarking blocker-serialization/el+ep
+blocker-serialization/el+ep
+                        time:   [543.06 µs 550.52 µs 559.49 µs]
+Found 3 outliers among 20 measurements (15.00%)
+  2 (10.00%) high mild
+  1 (5.00%) high severe
+Benchmarking blocker-serialization/el
+blocker-serialization/el
+                        time:   [305.18 µs 306.31 µs 308.23 µs]
+Benchmarking blocker-serialization/slimlist
+blocker-serialization/slimlist
+                        time:   [21.930 µs 21.979 µs 22.042 µs]
+Found 2 outliers among 20 measurements (10.00%)
+  2 (10.00%) high mild
+Benchmarking blocker-deserialization/el+ep
+blocker-deserialization/el+ep
+                        time:   [609.81 µs 615.08 µs 623.06 µs]
+Found 2 outliers among 20 measurements (10.00%)
+  1 (5.00%) high mild
+  1 (5.00%) high severe
+Benchmarking blocker-deserialization/el
+blocker-deserialization/el
+                        time:   [341.40 µs 343.96 µs 347.53 µs]
+Found 1 outliers among 20 measurements (5.00%)
+  1 (5.00%) high severe
+Benchmarking blocker-deserialization/slimlist
+blocker-deserialization/slimlist
+                        time:   [94.599 µs 95.077 µs 95.684 µs]

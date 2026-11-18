@@ -1,0 +1,111 @@
+Gnuplot not found, using plotters backend
+Benchmarking rule-match/el+ep
+Warning: Unable to complete 10 samples in 5.0s. You may wish to increase target time to 104.5s.
+rule-match/el+ep        time:   [10.305 s 10.457 s 10.608 s]
+                        thrpt:  [22.902 Kelem/s 23.233 Kelem/s 23.575 Kelem/s]
+Benchmarking rule-match/easylist
+Warning: Unable to complete 10 samples in 5.0s. You may wish to increase target time to 80.8s.
+rule-match/easylist     time:   [7.9165 s 7.9986 s 8.0810 s]
+                        thrpt:  [30.064 Kelem/s 30.373 Kelem/s 30.688 Kelem/s]
+Found 2 outliers among 10 measurements (20.00%)
+  1 (10.00%) low mild
+  1 (10.00%) high mild
+Benchmarking rule-match/slimlist
+Warning: Unable to complete 10 samples in 5.0s. You may wish to increase target time to 80.5s.
+rule-match/slimlist     time:   [7.9836 s 8.0448 s 8.1026 s]
+                        thrpt:  [29.984 Kelem/s 30.199 Kelem/s 30.431 Kelem/s]
+Benchmarking rule-match-parsed/easylist
+Warning: Unable to complete 10 samples in 5.0s. You may wish to increase target time to 43.5s.
+rule-match-parsed/easylist
+                        time:   [4.2548 s 4.3041 s 4.3532 s]
+                        thrpt:  [55.809 Kelem/s 56.445 Kelem/s 57.099 Kelem/s]
+Benchmarking rule-match-parsed/el+ep
+Warning: Unable to complete 10 samples in 5.0s. You may wish to increase target time to 68.1s.
+rule-match-parsed/el+ep time:   [6.6127 s 6.6812 s 6.7447 s]
+                        thrpt:  [36.020 Kelem/s 36.362 Kelem/s 36.739 Kelem/s]
+Benchmarking rule-match-parsed/slimlist
+Warning: Unable to complete 10 samples in 5.0s. You may wish to increase target time to 44.9s.
+rule-match-parsed/slimlist
+                        time:   [4.3283 s 4.3637 s 4.3982 s]
+                        thrpt:  [55.237 Kelem/s 55.674 Kelem/s 56.129 Kelem/s]
+Benchmarking rule-match-browserlike/el+ep
+Warning: Unable to complete 10 samples in 5.0s. You may wish to increase target time to 86.9s.
+rule-match-browserlike/el+ep
+                        time:   [8.5377 s 8.5970 s 8.6747 s]
+                        thrpt:  [28.006 Kelem/s 28.259 Kelem/s 28.456 Kelem/s]
+Found 2 outliers among 10 measurements (20.00%)
+  1 (10.00%) high mild
+  1 (10.00%) high severe
+Benchmarking rule-match-browserlike/el
+Warning: Unable to complete 10 samples in 5.0s. You may wish to increase target time to 63.9s.
+rule-match-browserlike/el
+                        time:   [6.0323 s 6.0904 s 6.1552 s]
+                        thrpt:  [39.470 Kelem/s 39.890 Kelem/s 40.274 Kelem/s]
+Benchmarking rule-match-browserlike/slimlist
+Warning: Unable to complete 10 samples in 5.0s. You may wish to increase target time to 66.0s.
+rule-match-browserlike/slimlist
+                        time:   [6.2832 s 6.3516 s 6.4253 s]
+                        thrpt:  [37.810 Kelem/s 38.250 Kelem/s 38.666 Kelem/s]
+Benchmarking rule-match-browserlike/brave-list
+Warning: Unable to complete 10 samples in 5.0s. You may wish to increase target time to 140.1s.
+rule-match-browserlike/brave-list
+                        time:   [13.662 s 13.863 s 14.053 s]
+                        thrpt:  [17.287 Kelem/s 17.525 Kelem/s 17.783 Kelem/s]
+Benchmarking rule-match-first-request/brave-list
+Warning: Unable to complete 10 samples in 5.0s. You may wish to increase target time to 7.9s.
+rule-match-first-request/brave-list
+                        time:   [8.5364 ms 8.7426 ms 8.9592 ms]
+Gnuplot not found, using plotters backend
+Benchmarking memory-usage-final/brave-list-initial
+Warning: Unable to complete 10 samples in 1.0s. You may wish to increase target time to 8.5s.
+memory-usage-final/brave-list-initial
+                        time:   [9.2051 MB 9.2051 MB 9.2051 MB]
+Benchmarking memory-usage-final/brave-list-1000-requests
+Warning: Unable to complete 10 samples in 1.0s. You may wish to increase target time to 10.5s.
+memory-usage-final/brave-list-1000-requests
+                        time:   [2.8932 MB 2.8932 MB 2.8932 MB]
+Benchmarking memory-usage-max/brave-list-initial/max
+Warning: Unable to complete 10 samples in 1.0s. You may wish to increase target time to 7.8s.
+memory-usage-max/brave-list-initial/max
+                        time:   [30.775 MB 30.775 MB 30.775 MB]
+Benchmarking memory-usage-alloc-count/brave-list-initial/alloc-count
+Warning: Unable to complete 10 samples in 1.0s. You may wish to increase target time to 8.3s.
+memory-usage-alloc-count/brave-list-initial/alloc-count
+                        time:   [292640 allocs 292640 allocs 292640 allocs]
+Benchmarking memory-usage-alloc-count/brave-list-1000-requests/alloc-count
+Warning: Unable to complete 10 samples in 1.0s. You may wish to increase target time to 10.3s.
+memory-usage-alloc-count/brave-list-1000-requests/alloc-count
+                        time:   [ 89172 allocs  89172 allocs  89172 allocs]
+Gnuplot not found, using plotters backend
+Benchmarking blocker-serialization/el+ep
+blocker-serialization/el+ep
+                        time:   [20.193 ms 20.259 ms 20.346 ms]
+Found 2 outliers among 20 measurements (10.00%)
+  1 (5.00%) high mild
+  1 (5.00%) high severe
+Benchmarking blocker-serialization/el
+blocker-serialization/el
+                        time:   [11.191 ms 11.370 ms 11.555 ms]
+Found 2 outliers among 20 measurements (10.00%)
+  2 (10.00%) high mild
+Benchmarking blocker-serialization/slimlist
+blocker-serialization/slimlist
+                        time:   [522.25 µs 529.05 µs 537.27 µs]
+Found 3 outliers among 20 measurements (15.00%)
+  2 (10.00%) high mild
+  1 (5.00%) high severe
+Benchmarking blocker-deserialization/el+ep
+blocker-deserialization/el+ep
+                        time:   [21.664 ms 22.002 ms 22.478 ms]
+Found 1 outliers among 20 measurements (5.00%)
+  1 (5.00%) high mild
+Benchmarking blocker-deserialization/el
+blocker-deserialization/el
+                        time:   [12.040 ms 12.054 ms 12.070 ms]
+Found 1 outliers among 20 measurements (5.00%)
+  1 (5.00%) high severe
+Benchmarking blocker-deserialization/slimlist
+blocker-deserialization/slimlist
+                        time:   [1.5670 ms 1.5734 ms 1.5806 ms]
+Found 1 outliers among 20 measurements (5.00%)
+  1 (5.00%) high mild

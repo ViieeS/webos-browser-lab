@@ -166,9 +166,14 @@ def start(tag, page=PAGE):
     flags = ["--remote-debugging-port=9225", *(VARIANTS[variant].split() if variant else [])]
     launch = json.dumps({"id": app, "params": {"target": page}})
     fire(f"{close_all()}sleep 4")
+    # /tmp/<app> must belong to the app's jail user, so run.sh makes it: after a TV reboot (or for a new app) it
+    # is missing, and one plain launch creates it. Made by root, the browser cannot write its log there.
+    if "missing" in bench.tv(f"[ -d /tmp/{app} ] || echo missing"):
+        fire(f"luna-send -n 1 luna://com.webos.applicationManager/launch '{launch}' >/dev/null; sleep 20")
+        fire(f"{close_all()}sleep 4")
     # one flag per line; a long telnet command line resets the session, so the file is written in short pieces
     path = f"/tmp/{app}/browser.flags"
-    bench.tv(f"mkdir -p /tmp/{app}; : > {path}")   # /tmp is empty after a TV reboot
+    bench.tv(f": > {path}")
     for flag in flags:
         for i in range(0, len(flag), 300):
             bench.tv(f"printf '%s' '{flag[i:i + 300]}' >> {path}")
@@ -209,61 +214,66 @@ def page_eval(expr):
             return msg["result"]["result"].get("value")
 
 
-if sys.argv[1] == "focus":
-    tag, url, keys = sys.argv[2], sys.argv[3], sys.argv[4:]
-    start(tag, url).ws.sock.close()
-    print(f"{tag} start: {page_eval(FOCUSED)}", flush=True)
-    for i, k in enumerate(keys):
-        press([k])
-        time.sleep(0.5)
-        print(f"{tag} {i + 1} key {k}: {page_eval(FOCUSED)}", flush=True)
-    fire(close_all())
-    sys.exit()
-if sys.argv[1] == "trace":
-    tag, scenario, out = sys.argv[2:5]
-    br = start(tag)
-    br.call("Tracing.start", {"traceConfig": {"includedCategories": TRACE_CATEGORIES, "recordMode": "recordUntilFull"},
-                              "transferMode": "ReturnAsStream", "streamFormat": "json"})
-    press(SCENARIOS[scenario])
-    time.sleep(2)
-    br.trace_to(out)
-    fire(close_all())
-    sys.exit()
-if sys.argv[1] == "history":
-    # HistoryFuzzyProvider indexes hosts (UrlDomainReduction) of URLs visited in the last 3 days, so the URLs must
-    # be on different hosts. The profile is on flash: one fill serves every later launch of that app.
-    tag, urls = sys.argv[2], sys.argv[3:]
-    br = start(tag)
-    for url in urls:
-        tid = br.call("Target.createTarget", {"url": url})["targetId"]
-        time.sleep(8)
-        br.call("Target.closeTarget", {"targetId": tid})
-        print(f"visited {url}", flush=True)
-    br.ws.sock.close()
-    fire(close_all())
-    sys.exit()
-if sys.argv[1] == "omnicheck":
-    # type into the omnibox and leave the popup open (for a screenshot): MatchConversion.* > 0 means fuzzy matched
-    tag, keys = sys.argv[2], sys.argv[3:]
-    br = start(tag)
-    br.histograms(True)
-    press([str(F6), "w600", *keys])
-    time.sleep(2)
-    print(show(br.histograms(True), ("Omnibox.",)))
-    sys.exit()
-if sys.argv[1] == "probe":
-    br = Browser()
-    br.histograms(True)
-    press(sys.argv[2:])
-    time.sleep(2)
-    print(show(br.histograms(True), ("",)))
-    sys.exit()
-args = sys.argv[1:]
-tags = ["cr151own", "cr151"]
-if args[0] == "-b":
-    tags, args = args[1].split(","), args[2:]
-stamp = int(time.time()) % 100000
-for r in range(int(args[0])):
-    for scenario in args[1:]:
-        for tag in tags:
-            run(tag, scenario, f"{stamp}-{r}")
+def main():
+    if sys.argv[1] == "focus":
+        tag, url, keys = sys.argv[2], sys.argv[3], sys.argv[4:]
+        start(tag, url).ws.sock.close()
+        print(f"{tag} start: {page_eval(FOCUSED)}", flush=True)
+        for i, k in enumerate(keys):
+            press([k])
+            time.sleep(0.5)
+            print(f"{tag} {i + 1} key {k}: {page_eval(FOCUSED)}", flush=True)
+        fire(close_all())
+        return
+    if sys.argv[1] == "trace":
+        tag, scenario, out = sys.argv[2:5]
+        br = start(tag)
+        br.call("Tracing.start", {"traceConfig": {"includedCategories": TRACE_CATEGORIES, "recordMode": "recordUntilFull"},
+                                  "transferMode": "ReturnAsStream", "streamFormat": "json"})
+        press(SCENARIOS[scenario])
+        time.sleep(2)
+        br.trace_to(out)
+        fire(close_all())
+        return
+    if sys.argv[1] == "history":
+        # HistoryFuzzyProvider indexes hosts (UrlDomainReduction) of URLs visited in the last 3 days, so the URLs must
+        # be on different hosts. The profile is on flash: one fill serves every later launch of that app.
+        tag, urls = sys.argv[2], sys.argv[3:]
+        br = start(tag)
+        for url in urls:
+            tid = br.call("Target.createTarget", {"url": url})["targetId"]
+            time.sleep(8)
+            br.call("Target.closeTarget", {"targetId": tid})
+            print(f"visited {url}", flush=True)
+        br.ws.sock.close()
+        fire(close_all())
+        return
+    if sys.argv[1] == "omnicheck":
+        # type into the omnibox and leave the popup open (for a screenshot): MatchConversion.* > 0 means fuzzy matched
+        tag, keys = sys.argv[2], sys.argv[3:]
+        br = start(tag)
+        br.histograms(True)
+        press([str(F6), "w600", *keys])
+        time.sleep(2)
+        print(show(br.histograms(True), ("Omnibox.",)))
+        return
+    if sys.argv[1] == "probe":
+        br = Browser()
+        br.histograms(True)
+        press(sys.argv[2:])
+        time.sleep(2)
+        print(show(br.histograms(True), ("",)))
+        return
+    args = sys.argv[1:]
+    tags = ["cr151own", "cr151"]
+    if args[0] == "-b":
+        tags, args = args[1].split(","), args[2:]
+    stamp = int(time.time()) % 100000
+    for r in range(int(args[0])):
+        for scenario in args[1:]:
+            for tag in tags:
+                run(tag, scenario, f"{stamp}-{r}")
+
+
+if __name__ == "__main__":
+    main()

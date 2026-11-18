@@ -628,6 +628,32 @@ Details: `browser/cr151/UI_LATENCY.md`. Own build against 0.0.66, means over 3 i
 - `Event.Latency.OS2.KEY_PRESSED` is always 0 on webOS, so the time from the remote to Chromium is not visible.
 - zig cc for small TV tools needs `-fPIE -pie`. Without it the binary segfaults before main.
 
+### Adblocking (2026-11-18)
+
+Details and raw files: `browser/cr151/ADBLOCK.md`.
+
+- **uBO Lite complete is the pick.** adblock-tester 96/100, no YouTube ads, no patch. It costs about 4 % of
+  Speedometer, 0.6 s on Wikipedia and about 135 MB of RAM. Optimal mode: 91/100, Speedometer unchanged.
+- **Full uBlock Origin needs two changes in M151:**
+  - patch 0104 (`ShouldDisableLegacyExtensions()` → false);
+  - a V8 heap above run.sh's 192 MB. At 192 MB its background page dies of "V8 javascript OOM" about 2 minutes in.
+  - With both it scores the same as uBO Lite complete and uses more memory.
+- **Extensions under `--load-extension` must sit in the app's data folder**, owned by the app's uid. The browser runs
+  in a jail that does not see other paths. run.sh passes its own `--load-extension` (TV Tools), and the last
+  switch wins, so a variant must repeat TV Tools in its list.
+- **adblock-rust on the TV:** 57 µs per request with the full Brave list, about 9 MB resident. Request
+  matching is not the cost to save. Memory is.
+- **Heavy tabs: the ceiling is about 15–19 in every variant.** One run each: no blocker 16, uBO Lite complete 19,
+  uBO 14. In the uBO run the whole TV restarted by itself (power-on reason `micomPower`, nobody touched it):
+  memory pressure in the browser can take the whole TV down, not only the app. The logs before the restart are lost
+  (`/tmp/var/log` is in RAM). At 10 tabs all-chrome RSS is about 1 GB in every
+  variant: the blocker's own memory is paid back by the ads it stops.
+- **adblock-tester.com crashes the tab without a blocker** ("Aw, Snap!", error 11, Dawn/WebGPU warnings).
+  Not investigated.
+- **The TV screensaver stops runs.** It ignores a `registerScreenSaverRequest` client from a root shell. Shift
+  written to `/dev/input/event1` every minute resets the idle timer, and the browser does not see it
+  (`bench/keepawake.sh`). `event10` exists only while a network remote is connected.
+
 ## 7. Tooling gotchas
 
 ### Moving files
