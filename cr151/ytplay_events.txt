@@ -1,0 +1,38 @@
+cr151own   4.1 console.log: YTDBG 3629 play() 0.0
+cr151own   4.1 console.log: YTDBG 3637 play() 0.0
+cr151own   4.6 console.log: YTDBG 4137 event emptied 0.0 rs0 
+cr151own   4.6 console.log: YTDBG 4152 event play 0.0 rs0 
+cr151own   4.6 console.log: YTDBG 4155 event waiting 0.0 rs0 
+cr151own   9.7 console.log: YTDBG 9216 event loadedmetadata 0.0 rs1 
+cr151own   9.8 console.log: YTDBG 9345 event canplay 0.9 rs4 
+cr151own   9.8 console.log: YTDBG 9347 event playing 1.0 rs4 
+cr151own  12.2 console.log: YTDBG 11737 play() 2.8
+cr151own  25.4 console.log: YTDBG 24965 play() 19.9
+cr151own  26.2 console.log: YTDBG 25716 play() 0.0
+cr151own  27.5 console.log: YTDBG 27074 pause() 0.0 at uJ.pause (https://www.youtube.com/s/player/983e9c18/player_ias.vflset/en_US/base.js:14353:29) < at Object.pauseVideo 
+cr151own  28.7 console.log: YTDBG 28297 event emptied 0.0 rs0 
+cr151own  28.8 console.log: YTDBG 28301 event play 0.0 rs0 
+cr151own  28.8 console.log: YTDBG 28302 event waiting 0.0 rs0 
+cr151own  29.2 console.log: YTDBG 28732 event pause 0.0 rs0 
+cr151own  29.2 console.log: YTDBG 28734 play() rejected AbortError The play() request was interrupted by a call to pause(). https://goo.gl/LdLk22
+cr151own  31.3 console.log: YTDBG 30847 event loadedmetadata 0.0 rs1 
+cr151own  31.4 console.log: YTDBG 30967 event canplay 0.0 rs4 
+cr151   6.7 console.log: YTDBG 6107 play() 0.0
+cr151   6.7 console.log: YTDBG 6117 play() 0.0
+cr151   7.2 console.log: YTDBG 6754 event emptied 0.0 rs0 
+cr151   7.2 console.log: YTDBG 6769 event play 0.0 rs0 
+cr151   7.2 console.log: YTDBG 6772 event waiting 0.0 rs0 
+cr151  15.2 console.log: YTDBG 14696 event loadedmetadata 0.0 rs1 
+cr151  15.2 console.log: YTDBG 14769 play() 0.8
+cr151  15.4 console.log: YTDBG 14869 event canplay 1.7 rs4 
+cr151  15.4 console.log: YTDBG 14872 event playing 1.7 rs4 
+cr151  29.1 console.log: YTDBG 28674 play() 20.0
+cr151  30.1 console.log: YTDBG 29585 play() 0.0
+cr151  32.1 console.log: YTDBG 31626 event emptied 0.0 rs0 
+cr151  32.1 console.log: YTDBG 31633 event play 0.0 rs0 
+cr151  32.1 console.log: YTDBG 31636 event waiting 0.0 rs0 
+cr151  35.3 console.log: YTDBG 34881 event loadedmetadata 0.0 rs1 
+cr151  35.5 console.log: YTDBG 34997 event canplay 0.2 rs4 
+cr151  35.6 console.log: YTDBG 34998 event playing 0.2 rs4 
+cr151  38.9 console.log: YTDBG 38457 play() 3.6
+cr151  38.9 console.log: YTDBG 38461 play() 3.6

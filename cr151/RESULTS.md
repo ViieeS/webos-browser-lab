@@ -195,3 +195,10 @@ Verdict:
 - Recommendation: use com.viiees.cr151 as the Chromium browser. Next speed step, not tried: PGO
   (`chrome_pgo_phase = 2` with Chromium's arm32 profile, if one exists for M151) and a second build with their exact
   args to settle the trust question byte for byte.
+
+## YouTube playback in our builds (2026-11-18)
+
+Not a regression. The adblock runs saw YouTube advance a few seconds per minute. The cause was YouTube's consent
+lightbox, which pauses the player on a profile without Google's consent cookie. Answered, cr151own, cr151p and
+cr151b play at 1×. Local clips in cr151p (`video_cr151p.txt`) match the 2026-11-17 results: NDL, 0 dropped frames.
+Details: docs/FINDINGS.md, "YouTube playback". Script: `bench/ytplay.py`.

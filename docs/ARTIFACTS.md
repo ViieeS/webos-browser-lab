@@ -41,6 +41,7 @@ Results and conclusions from these artifacts are kept in the text files of this 
 | Build host | Docker volume `cr151work`, image `cr151` | Active work |
 | Build host | `cr120/content_shell.gz`, `cr120/cr120.tar.gz` | Last cr120 build, ready to deploy |
 | Build host | `perf/bin/perf` | Static perf for the TV. Rebuilding it needs the deleted `wpe-br` toolchain |
-| TV | `com.viiees.browser` (WPE, final library), `com.viiees.cr120` + `/media/developer/temp/cr120`, `org.nativechromium.browser` (cr151 0.0.66), `com.viiees.cr151` (own build, 233 MB), `com.viiees.cr151p` (own build + patch 0103 + fonts.conf, 233 MB), `com.viiees.cr151b` (own build + 0103 + 0104 + omnibox trim and HistoryFuzzy, uBO and uBO Lite unpacked in its `data/ab`) | Runnable engines for comparison |
-| TV | `/media/developer/bench/ext` (extension copies, 69 MB), `/media/developer/bench/abr` (armv7 adblock-rust benches and their data, 89 MB), `/media/developer/temp/{evkeys,tcprelay,keepawake.sh}` | Adblock comparison |
+| TV | `com.viiees.browser` (WPE, final library), `com.viiees.cr120` + `/media/developer/temp/cr120`, `org.nativechromium.browser` (cr151 0.0.66), `com.viiees.cr151` (own build, 233 MB), `com.viiees.cr151p` (own build + patches 0103 and 0104 + fonts.conf + omnibox trim and HistoryFuzzy, 233 MB, reinstalled 2026-11-18), `com.viiees.cr151b` (own build + 0103 + 0104 + omnibox trim and HistoryFuzzy, uBO and uBO Lite unpacked in its `data/ab`) | Runnable engines for comparison |
+| TV | `/media/developer/temp/{evkeys,tcprelay,keepawake.sh}` (sources in `bench/`) | Benchmark tools |
+| Build host | `.adblock-build/ipk/adblock_tv.tar` (extension copies and armv7 adblock-rust benches with data; removed from the TV 2026-11-18), `.adblock/` (official extension zips, adblock-rust clone) | Adblock comparison |
 | TV | `/media/developer/bench/{pages (incl. spatnav.html),media,speedometer3.1,motionmark1.3.2}`, `/media/developer/temp/{perf,threads*.sh}` | Benchmark set |

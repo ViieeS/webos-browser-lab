@@ -1,0 +1,19 @@
+cr151own   4.2 console.log: YTDBG 3683 play() 0.0
+cr151own   4.2 console.log: YTDBG 3692 play() 0.0
+cr151own   4.7 console.log: YTDBG 4229 event emptied 0.0 rs0 
+cr151own   4.7 console.log: YTDBG 4245 event play 0.0 rs0 
+cr151own   4.7 console.log: YTDBG 4248 event waiting 0.0 rs0 
+cr151own  10.0 console.log: YTDBG 9511 event loadedmetadata 0.0 rs1 
+cr151own  10.4 console.log: YTDBG 9804 play() 0.8
+cr151own  12.6 console.log: YTDBG 12123 event canplay 1.7 rs4 
+cr151own  12.6 console.log: YTDBG 12125 event playing 1.7 rs4 
+cr151own  25.4 console.log: YTDBG 24918 play() 19.4
+cr151own  26.0 console.log: YTDBG 25548 play() 0.0
+cr151own  27.7 console.log: YTDBG 27093 pause() 0.0 at uJ.pause (https://www.youtube.com/s/player/983e9c18/player_ias.vflset/en_US/base.js:14353:29) < at Object.pauseVideo (https://www.youtube.com/s/player/983e9c18/player_ias.vflset/en_US/base.js:14005:368) < at Object.pauseVideo (https://www.youtube.com/s/player/983e9c18/player_ias.vflset/en_US/base.js:12613:38) < at Object.pauseVideo (https://www.youtube.com/s/player/983e9c18/player_ias.vflset/en_US/base.js:15864:54) < at mR.pauseVideo (https://www.youtube.com/s/player/983e9c18/player_ias.vflset/en_US/base.js:12120:167) < at HTMLDivElement.pauseVideo (https://www.youtube.com/s/player/983e9c18/player_ias.vflset/en_US/base.js:5239:53) < at Object.pauseVideo (https://www.youtube.com/s/_/ytmainappweb/_/js/k=ytmainappweb.kevlar_base.en_US.M8RbVlx7BwI.es5.O/am=AAAAACAAAAABAFIC/d=1/br=1/rs=AGKMywHbtsdGpQ5uUOYo65pZcHMUj44GcQ/m=kevlar_base_module,kevlar_main_module,kevlar_base_sync_mod_chunk:17461:79) < at https://www.youtube.com/s/_/ytmainappweb/_/js/k=ytmainappweb.kevlar_base.en_US.M8RbVlx7BwI.es5.O/am=AAAAACAAAAABAFIC/d=1/br=1/rs=AGKMywHbtsdGpQ5uUOYo65pZcHMUj44GcQ/m=kevlar_base_module,kevlar_main_module,kevlar_base_sync_mod_chunk:18050:61
+cr151own  28.0 console.log: YTDBG 27547 event emptied 0.0 rs0 
+cr151own  28.0 console.log: YTDBG 27558 event play 0.0 rs0 
+cr151own  28.1 console.log: YTDBG 27562 event waiting 0.0 rs0 
+cr151own  28.8 console.log: YTDBG 28284 event pause 0.0 rs0 
+cr151own  28.8 console.log: YTDBG 28286 play() rejected AbortError The play() request was interrupted by a call to pause(). https://goo.gl/LdLk22
+cr151own  31.6 console.log: YTDBG 31130 event loadedmetadata 0.0 rs1 
+cr151own  32.0 console.log: YTDBG 31465 event canplay 0.0 rs4 

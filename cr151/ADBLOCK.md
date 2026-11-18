@@ -124,8 +124,11 @@ tabs, where memory is not short anyway.
 - **adblock-tester crashes the tab without a blocker:** "Aw, Snap!", error 11, with Dawn/WebGPU adapter
   warnings in the log. With a blocker the page loads. Not investigated: probably a script that a blocker stops
   reaches WebGPU.
-- **YouTube playback is slow in every variant:** an ad advances about 14 s per 60 s, content 2–4 s in a minute.
-  Not related to blocking: a separate problem of this build.
+- **The slow YouTube playback in these runs was a test artifact** (an ad advanced about 14 s per 60 s, content
+  2–4 s). The cr151b profile had no Google consent cookie. YouTube's consent lightbox comes 10–15 s after the
+  page, after the script had looked for it, and the page pauses the player while the lightbox is open. Answered,
+  playback runs at 1× in every build (`video_cr151p.txt`, `ytplay_consent.txt`, FINDINGS "YouTube playback").
+  The ad counts stand: a stuck ad inflates the no-blocker "40 / 40", but the blockers showed no ad at all.
 
 ## adblock-rust on the TV
 

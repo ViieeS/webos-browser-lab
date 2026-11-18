@@ -1,0 +1,290 @@
+cr151own dQw4w9WgXcQ +3s {"ad":true,"t":6.6,"paused":false,"rs":4,"ns":2,"ahead":8.3,"rate":1,"frames":168,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"8.43 s","kbps":"4042 Kbps","state":-1}}
+cr151own dQw4w9WgXcQ +14s consent: Reject all
+cr151own dQw4w9WgXcQ +16s {"ad":false,"t":0,"paused":true,"rs":0,"ns":2,"ahead":0,"rate":1,"frames":0,"dropped":0,"vis":"visible","focus":true,"w":0,"h":0,"yt":{"codecs":"","res":"0x0","health":"0.00 s","kbps":"5252 Kbps","state":-1}}
+cr151own dQw4w9WgXcQ +19s consent: Reject all
+cr151own dQw4w9WgXcQ +20s {"ad":false,"t":1.7,"paused":false,"rs":4,"ns":2,"ahead":7,"rate":1,"frames":48,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"6.99 s","kbps":"1430 Kbps","state":1}}
+cr151own dQw4w9WgXcQ +23s consent: Reject all
+cr151own dQw4w9WgXcQ +23s {"ad":false,"t":5.7,"paused":false,"rs":4,"ns":2,"ahead":15.1,"rate":1,"frames":146,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"13.69 s","kbps":"1524 Kbps","state":1}}
+cr151own dQw4w9WgXcQ +27s consent: Reject all
+cr151own dQw4w9WgXcQ +27s {"ad":false,"t":8.8,"paused":false,"rs":4,"ns":2,"ahead":27.4,"rate":1,"frames":224,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"27.54 s","kbps":"1672 Kbps","state":1}}
+cr151own dQw4w9WgXcQ +30s consent: Reject all
+cr151own dQw4w9WgXcQ +30s {"ad":false,"t":12,"paused":false,"rs":4,"ns":2,"ahead":30.1,"rate":1,"frames":304,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"24.43 s","kbps":"1672 Kbps","state":1}}
+cr151own dQw4w9WgXcQ +33s consent: Reject all
+cr151own dQw4w9WgXcQ +33s {"ad":false,"t":15.1,"paused":false,"rs":4,"ns":2,"ahead":33.7,"rate":1,"frames":382,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"33.88 s","kbps":"5770 Kbps","state":1}}
+cr151own dQw4w9WgXcQ +36s consent: Reject all
+cr151own dQw4w9WgXcQ +36s {"ad":false,"t":18.3,"paused":false,"rs":4,"ns":2,"ahead":43.6,"rate":1,"frames":461,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"43.79 s","kbps":"16848 Kbps","state":1}}
+cr151own dQw4w9WgXcQ +39s consent: Reject all
+cr151own dQw4w9WgXcQ +39s {"ad":false,"t":21.4,"paused":false,"rs":4,"ns":2,"ahead":40.5,"rate":1,"frames":539,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"40.67 s","kbps":"16848 Kbps","state":1}}
+cr151own dQw4w9WgXcQ +42s consent: Reject all
+cr151own dQw4w9WgXcQ +42s {"ad":false,"t":24.5,"paused":false,"rs":4,"ns":2,"ahead":37.3,"rate":1,"frames":617,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"37.38 s","kbps":"16848 Kbps","state":1}}
+cr151own dQw4w9WgXcQ cpu 8s:    258 chrome chrome;   158 chrome ThreadPoolForeg;    42 chrome Media;    21 chrome NetworkService;    17 run run;    13 chrome Chrome_InProcGp;    12 chrome Compositor;    11 chrome Chrome_IOThread;
+
+cr151own dQw4w9WgXcQ +60s consent: Reject all
+cr151own dQw4w9WgXcQ +60s {"ad":false,"t":41.8,"paused":false,"rs":4,"ns":2,"ahead":60.1,"rate":1,"frames":1050,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"60.26 s","kbps":"19052 Kbps","state":1}}
+cr151own dQw4w9WgXcQ +63s consent: Reject all
+cr151own dQw4w9WgXcQ +63s {"ad":false,"t":45,"paused":false,"rs":4,"ns":2,"ahead":57,"rate":1,"frames":1128,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"57.14 s","kbps":"19052 Kbps","state":1}}
+cr151own dQw4w9WgXcQ +66s consent: Reject all
+cr151own dQw4w9WgXcQ +66s {"ad":false,"t":48.1,"paused":false,"rs":4,"ns":2,"ahead":66.6,"rate":1,"frames":1207,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"66.82 s","kbps":"21572 Kbps","state":1}}
+cr151own dQw4w9WgXcQ +69s consent: Reject all
+cr151own dQw4w9WgXcQ +69s {"ad":false,"t":51.3,"paused":false,"rs":4,"ns":2,"ahead":74.5,"rate":1,"frames":1287,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"74.52 s","kbps":"21760 Kbps","state":1}}
+cr151own dQw4w9WgXcQ +72s consent: Reject all
+cr151own dQw4w9WgXcQ +72s {"ad":false,"t":54.4,"paused":false,"rs":4,"ns":2,"ahead":71.3,"rate":1,"frames":1365,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"71.41 s","kbps":"21760 Kbps","state":1}}
+cr151own dQw4w9WgXcQ +75s consent: Reject all
+cr151own dQw4w9WgXcQ +75s {"ad":false,"t":57.6,"paused":false,"rs":4,"ns":2,"ahead":80.4,"rate":1,"frames":1444,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"80.50 s","kbps":"19567 Kbps","state":1}}
+cr151own dQw4w9WgXcQ +79s consent: Reject all
+cr151own dQw4w9WgXcQ +79s {"ad":false,"t":60.9,"paused":false,"rs":4,"ns":2,"ahead":77.1,"rate":1,"frames":1525,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"77.21 s","kbps":"19567 Kbps","state":1}}
+cr151own dQw4w9WgXcQ +82s consent: Reject all
+cr151own dQw4w9WgXcQ +82s {"ad":false,"t":64.1,"paused":false,"rs":4,"ns":2,"ahead":89.1,"rate":1,"frames":1607,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"89.32 s","kbps":"18316 Kbps","state":1}}
+cr151own dQw4w9WgXcQ +85s consent: Reject all
+cr151own dQw4w9WgXcQ +85s {"ad":false,"t":67.3,"paused":false,"rs":4,"ns":2,"ahead":85.9,"rate":1,"frames":1685,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"85.99 s","kbps":"18316 Kbps","state":1}}
+cr151own dQw4w9WgXcQ +88s consent: Reject all
+cr151own dQw4w9WgXcQ +88s {"ad":false,"t":70.4,"paused":false,"rs":4,"ns":2,"ahead":82.8,"rate":1,"frames":1764,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"82.93 s","kbps":"18316 Kbps","state":1}}
+cr151own dQw4w9WgXcQ browser.log:
+[23839:23839:1118/202423.182585:ERROR:content/browser/media/session/webos/media_session_webos.cc:342] SetPlaybackStatusInternal  No active session
+[23839:23839:1118/202423.182638:ERROR:content/browser/media/session/webos/media_session_webos.cc:386] SetMediaMuteStatusInternal No active session.
+[23839:23839:1118/202425.145117:ERROR:base/neva/webos/luna_service_client.cc:86] Subscribe LSHandle not initialized: luna://com.webos.service.mediacontroller/registerMediaSession {"appId":"","mediaId":"D6EB0110066D5B4300
+[23839:23839:1118/202425.145197:ERROR:base/neva/webos/luna_service_client.cc:86] CallAsync LSHandle not initialized: luna://com.webos.service.mediacontroller/activateMediaSession {"mediaId":"D6EB0110066D5B430005DB9A4CCD0
+[23839:23839:1118/202425.145426:ERROR:base/neva/webos/luna_service_client.cc:86] CallAsync LSHandle not initialized: luna://com.webos.service.mediacontroller/setMediaPlayStatus {"mediaId":"D6EB0110066D5B430005DB9A4CCD010
+[23839:23839:1118/202425.145593:ERROR:base/neva/webos/luna_service_client.cc:86] CallAsync LSHandle not initialized: luna://com.webos.service.mediacontroller/setMediaPlayPosition {"mediaId":"D6EB0110066D5B430005DB9A4CCD0
+[23839:23839:1118/202425.145657:ERROR:base/neva/webos/luna_service_client.cc:86] CallAsync LSHandle not initialized: luna://com.webos.service.mediacontroller/setMediaMetaData {"mediaId":"D6EB0110066D5B430005DB9A4CCD0104"
+[23839:23839:1118/202439.854444:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[23839:23839:1118/202440.057164:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[23839:23839:1118/202441.270367:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[23839:23839:1118/202444.005005:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[23839:23839:1118/202444.183967:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[23839:23839:1118/202444.320664:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[23839:23839:1118/202444.323088:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[23839:23839:1118/202444.751825:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+
+cr151p dQw4w9WgXcQ +3s {"ad":true,"t":6.4,"paused":false,"rs":4,"ns":2,"ahead":8.5,"rate":1,"frames":164,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"8.64 s","kbps":"2200 Kbps","state":-1}}
+cr151p dQw4w9WgXcQ +14s consent: Reject all
+cr151p dQw4w9WgXcQ +15s {"ad":false,"t":0,"paused":true,"rs":0,"ns":2,"ahead":0,"rate":1,"frames":0,"dropped":0,"vis":"visible","focus":true,"w":0,"h":0,"yt":{"codecs":"","res":"0x0","health":"0.00 s","kbps":"2858 Kbps","state":-1}}
+cr151p dQw4w9WgXcQ +18s consent: Reject all
+cr151p dQw4w9WgXcQ +19s {"ad":false,"t":1.7,"paused":false,"rs":4,"ns":2,"ahead":8.7,"rate":1,"frames":47,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"7.39 s","kbps":"2079 Kbps","state":1}}
+cr151p dQw4w9WgXcQ +23s consent: Reject all
+cr151p dQw4w9WgXcQ +23s {"ad":false,"t":6,"paused":false,"rs":4,"ns":2,"ahead":18.6,"rate":1,"frames":154,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"16.34 s","kbps":"2079 Kbps","state":1}}
+cr151p dQw4w9WgXcQ +26s consent: Reject all
+cr151p dQw4w9WgXcQ +26s {"ad":false,"t":9.1,"paused":false,"rs":4,"ns":2,"ahead":27,"rate":1,"frames":232,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"27.28 s","kbps":"2875 Kbps","state":1}}
+cr151p dQw4w9WgXcQ +29s consent: Reject all
+cr151p dQw4w9WgXcQ +29s {"ad":false,"t":12.3,"paused":false,"rs":4,"ns":2,"ahead":23.9,"rate":1,"frames":311,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"24.04 s","kbps":"2875 Kbps","state":1}}
+cr151p dQw4w9WgXcQ +32s consent: Reject all
+cr151p dQw4w9WgXcQ +32s {"ad":false,"t":15.4,"paused":false,"rs":4,"ns":2,"ahead":33.4,"rate":1,"frames":389,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"33.62 s","kbps":"7969 Kbps","state":1}}
+cr151p dQw4w9WgXcQ +35s consent: Reject all
+cr151p dQw4w9WgXcQ +35s {"ad":false,"t":18.5,"paused":false,"rs":4,"ns":2,"ahead":30.3,"rate":1,"frames":467,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"30.48 s","kbps":"7969 Kbps","state":1}}
+cr151p dQw4w9WgXcQ +39s consent: Reject all
+cr151p dQw4w9WgXcQ +39s {"ad":false,"t":21.8,"paused":false,"rs":4,"ns":2,"ahead":40.1,"rate":1,"frames":549,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"40.15 s","kbps":"23328 Kbps","state":1}}
+cr151p dQw4w9WgXcQ +42s consent: Reject all
+cr151p dQw4w9WgXcQ +42s {"ad":false,"t":24.9,"paused":false,"rs":4,"ns":2,"ahead":37,"rate":1,"frames":627,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"37.18 s","kbps":"23328 Kbps","state":1}}
+cr151p dQw4w9WgXcQ cpu 8s:    254 chrome chrome;   149 chrome ThreadPoolForeg;    40 chrome Media;    19 run run;    15 chrome NetworkService;    15 chrome Compositor;    14 chrome Chrome_InProcGp;    10 chrome Chrome_IOThread;
+
+cr151p dQw4w9WgXcQ +59s consent: Reject all
+cr151p dQw4w9WgXcQ +59s {"ad":false,"t":42.1,"paused":false,"rs":4,"ns":2,"ahead":54.2,"rate":1,"frames":1057,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"54.37 s","kbps":"19399 Kbps","state":1}}
+cr151p dQw4w9WgXcQ +62s consent: Reject all
+cr151p dQw4w9WgXcQ +62s {"ad":false,"t":45.3,"paused":false,"rs":4,"ns":2,"ahead":63.1,"rate":1,"frames":1136,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"63.23 s","kbps":"19452 Kbps","state":1}}
+cr151p dQw4w9WgXcQ +65s consent: Reject all
+cr151p dQw4w9WgXcQ +65s {"ad":false,"t":48.5,"paused":false,"rs":4,"ns":2,"ahead":73.2,"rate":1,"frames":1216,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"73.27 s","kbps":"19477 Kbps","state":1}}
+cr151p dQw4w9WgXcQ +68s consent: Reject all
+cr151p dQw4w9WgXcQ +69s {"ad":false,"t":51.6,"paused":false,"rs":4,"ns":2,"ahead":70.1,"rate":1,"frames":1295,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"70.25 s","kbps":"19477 Kbps","state":1}}
+cr151p dQw4w9WgXcQ +72s consent: Reject all
+cr151p dQw4w9WgXcQ +72s {"ad":false,"t":54.8,"paused":false,"rs":4,"ns":2,"ahead":67,"rate":1,"frames":1373,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"67.13 s","kbps":"19477 Kbps","state":1}}
+cr151p dQw4w9WgXcQ +75s consent: Reject all
+cr151p dQw4w9WgXcQ +75s {"ad":false,"t":57.9,"paused":false,"rs":4,"ns":2,"ahead":80.1,"rate":1,"frames":1452,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"80.09 s","kbps":"19083 Kbps","state":1}}
+cr151p dQw4w9WgXcQ +78s consent: Reject all
+cr151p dQw4w9WgXcQ +78s {"ad":false,"t":61,"paused":false,"rs":4,"ns":2,"ahead":76.9,"rate":1,"frames":1530,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"76.97 s","kbps":"19083 Kbps","state":1}}
+cr151p dQw4w9WgXcQ +81s consent: Reject all
+cr151p dQw4w9WgXcQ +81s {"ad":false,"t":64.2,"paused":false,"rs":4,"ns":2,"ahead":89,"rate":1,"frames":1608,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"88.87 s","kbps":"19416 Kbps","state":1}}
+cr151p dQw4w9WgXcQ +84s consent: Reject all
+cr151p dQw4w9WgXcQ +84s {"ad":false,"t":67.3,"paused":false,"rs":4,"ns":2,"ahead":85.9,"rate":1,"frames":1687,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"85.91 s","kbps":"19293 Kbps","state":1}}
+cr151p dQw4w9WgXcQ +87s consent: Reject all
+cr151p dQw4w9WgXcQ +87s {"ad":false,"t":70.4,"paused":false,"rs":4,"ns":2,"ahead":82.8,"rate":1,"frames":1765,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"82.88 s","kbps":"19293 Kbps","state":1}}
+cr151p dQw4w9WgXcQ browser.log:
+[29413:29413:1118/202657.764098:ERROR:content/browser/media/session/webos/media_session_webos.cc:342] SetPlaybackStatusInternal  No active session
+[29413:29413:1118/202657.764122:ERROR:content/browser/media/session/webos/media_session_webos.cc:386] SetMediaMuteStatusInternal No active session.
+[29413:29413:1118/202657.973940:ERROR:base/neva/webos/luna_service_client.cc:86] Subscribe LSHandle not initialized: luna://com.webos.service.mediacontroller/registerMediaSession {"appId":"","mediaId":"52838ECE887D8505C6
+[29413:29413:1118/202657.974021:ERROR:base/neva/webos/luna_service_client.cc:86] CallAsync LSHandle not initialized: luna://com.webos.service.mediacontroller/activateMediaSession {"mediaId":"52838ECE887D8505C6F80819A0116
+[29413:29413:1118/202657.974264:ERROR:base/neva/webos/luna_service_client.cc:86] CallAsync LSHandle not initialized: luna://com.webos.service.mediacontroller/setMediaPlayStatus {"mediaId":"52838ECE887D8505C6F80819A011683
+[29413:29413:1118/202657.974429:ERROR:base/neva/webos/luna_service_client.cc:86] CallAsync LSHandle not initialized: luna://com.webos.service.mediacontroller/setMediaPlayPosition {"mediaId":"52838ECE887D8505C6F80819A0116
+[29413:29413:1118/202657.974488:ERROR:base/neva/webos/luna_service_client.cc:86] CallAsync LSHandle not initialized: luna://com.webos.service.mediacontroller/setMediaMetaData {"mediaId":"52838ECE887D8505C6F80819A011683F"
+[29413:29413:1118/202713.638921:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[29413:29413:1118/202713.968242:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[29413:29413:1118/202715.068496:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[29413:29413:1118/202717.460915:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[29413:29413:1118/202717.619391:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[29413:29413:1118/202717.682165:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[29413:29413:1118/202717.684930:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[29413:29413:1118/202717.829820:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+
+cr151b dQw4w9WgXcQ +3s {"ad":true,"t":3.6,"paused":false,"rs":4,"ns":2,"ahead":4.5,"rate":1,"frames":94,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"4.55 s","kbps":"3381 Kbps","state":-1}}
+cr151b dQw4w9WgXcQ +7s {"ad":true,"t":6.8,"paused":false,"rs":4,"ns":2,"ahead":8.1,"rate":1,"frames":174,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"8.28 s","kbps":"4710 Kbps","state":-1}}
+cr151b dQw4w9WgXcQ +20s consent: Reject all
+cr151b dQw4w9WgXcQ +21s {"ad":false,"t":0,"paused":true,"rs":0,"ns":2,"ahead":0,"rate":1,"frames":0,"dropped":0,"vis":"visible","focus":true,"w":0,"h":0,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"0x0@25 / 1280x720@25","health":"0.00 s","kbps":"6120 Kbps","state":-1}}
+cr151b dQw4w9WgXcQ +24s consent: Reject all
+cr151b dQw4w9WgXcQ +25s {"ad":false,"t":2.1,"paused":false,"rs":4,"ns":2,"ahead":8.3,"rate":1,"frames":56,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"7.29 s","kbps":"5611 Kbps","state":1}}
+cr151b dQw4w9WgXcQ +28s consent: Reject all
+cr151b dQw4w9WgXcQ +28s {"ad":false,"t":5.7,"paused":false,"rs":4,"ns":2,"ahead":18.9,"rate":1,"frames":146,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"19.03 s","kbps":"5611 Kbps","state":1}}
+cr151b dQw4w9WgXcQ +32s consent: Reject all
+cr151b dQw4w9WgXcQ +32s {"ad":false,"t":9,"paused":false,"rs":4,"ns":2,"ahead":27.2,"rate":1,"frames":229,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"27.24 s","kbps":"6623 Kbps","state":1}}
+cr151b dQw4w9WgXcQ +35s consent: Reject all
+cr151b dQw4w9WgXcQ +35s {"ad":false,"t":12.1,"paused":false,"rs":4,"ns":2,"ahead":36.7,"rate":1,"frames":307,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"36.12 s","kbps":"10947 Kbps","state":1}}
+cr151b dQw4w9WgXcQ +38s consent: Reject all
+cr151b dQw4w9WgXcQ +38s {"ad":false,"t":15.3,"paused":false,"rs":4,"ns":2,"ahead":33.5,"rate":1,"frames":386,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"33.64 s","kbps":"10947 Kbps","state":1}}
+cr151b dQw4w9WgXcQ +41s consent: Reject all
+cr151b dQw4w9WgXcQ +41s {"ad":false,"t":18.4,"paused":false,"rs":4,"ns":2,"ahead":30.4,"rate":1,"frames":464,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"30.59 s","kbps":"10947 Kbps","state":1}}
+cr151b dQw4w9WgXcQ +44s consent: Reject all
+cr151b dQw4w9WgXcQ +44s {"ad":false,"t":21.6,"paused":false,"rs":4,"ns":2,"ahead":40.3,"rate":1,"frames":544,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"40.53 s","kbps":"12601 Kbps","state":1}}
+cr151b dQw4w9WgXcQ cpu 8s:    111 chrome chrome;    39 chrome Media;    21 chrome NetworkService;    19 run run;     9 chrome ThreadPoolForeg;     7 run audio-src:src;     7 chrome Compositor;     6 run lxvideodec1:src;
+
+cr151b dQw4w9WgXcQ +62s consent: Reject all
+cr151b dQw4w9WgXcQ +62s {"ad":false,"t":39.2,"paused":false,"rs":4,"ns":2,"ahead":52.1,"rate":1,"frames":984,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"52.13 s","kbps":"31711 Kbps","state":1}}
+cr151b dQw4w9WgXcQ +65s consent: Reject all
+cr151b dQw4w9WgXcQ +65s {"ad":false,"t":42.3,"paused":false,"rs":4,"ns":2,"ahead":59.6,"rate":1,"frames":1062,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"59.75 s","kbps":"34140 Kbps","state":1}}
+cr151b dQw4w9WgXcQ +68s consent: Reject all
+cr151b dQw4w9WgXcQ +68s {"ad":false,"t":45.5,"paused":false,"rs":4,"ns":2,"ahead":69.3,"rate":1,"frames":1141,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"64.73 s","kbps":"34144 Kbps","state":1}}
+cr151b dQw4w9WgXcQ +71s consent: Reject all
+cr151b dQw4w9WgXcQ +71s {"ad":false,"t":48.6,"paused":false,"rs":4,"ns":2,"ahead":66.1,"rate":1,"frames":1219,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"66.18 s","kbps":"33957 Kbps","state":1}}
+cr151b dQw4w9WgXcQ +74s consent: Reject all
+cr151b dQw4w9WgXcQ +74s {"ad":false,"t":51.7,"paused":false,"rs":4,"ns":2,"ahead":63,"rate":1,"frames":1297,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"63.15 s","kbps":"33957 Kbps","state":1}}
+cr151b dQw4w9WgXcQ +78s consent: Reject all
+cr151b dQw4w9WgXcQ +78s {"ad":false,"t":54.8,"paused":false,"rs":4,"ns":2,"ahead":70.9,"rate":1,"frames":1375,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"71.08 s","kbps":"30916 Kbps","state":1}}
+cr151b dQw4w9WgXcQ +81s consent: Reject all
+cr151b dQw4w9WgXcQ +81s {"ad":false,"t":58,"paused":false,"rs":4,"ns":2,"ahead":80,"rate":1,"frames":1453,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"80.17 s","kbps":"30610 Kbps","state":1}}
+cr151b dQw4w9WgXcQ +84s consent: Reject all
+cr151b dQw4w9WgXcQ +84s {"ad":false,"t":61.1,"paused":false,"rs":4,"ns":2,"ahead":76.9,"rate":1,"frames":1531,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"77.10 s","kbps":"30610 Kbps","state":1}}
+cr151b dQw4w9WgXcQ +87s consent: Reject all
+cr151b dQw4w9WgXcQ +87s {"ad":false,"t":64.2,"paused":false,"rs":4,"ns":2,"ahead":75.8,"rate":1,"frames":1610,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"73.93 s","kbps":"30476 Kbps","state":1}}
+cr151b dQw4w9WgXcQ +90s consent: Reject all
+cr151b dQw4w9WgXcQ +90s {"ad":false,"t":67.4,"paused":false,"rs":4,"ns":2,"ahead":85.8,"rate":1,"frames":1688,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@25 / 1280x720@25","health":"85.98 s","kbps":"29472 Kbps","state":1}}
+cr151b dQw4w9WgXcQ browser.log:
+[4212:4212:1118/203000.702611:ERROR:content/browser/media/session/webos/media_session_webos.cc:386] SetMediaMuteStatusInternal No active session.
+[4212:4212:1118/203000.702725:ERROR:content/browser/media/session/webos/media_session_webos.cc:342] SetPlaybackStatusInternal  No active session
+[4212:4212:1118/203000.702753:ERROR:content/browser/media/session/webos/media_session_webos.cc:386] SetMediaMuteStatusInternal No active session.
+[4212:4212:1118/203000.927485:ERROR:base/neva/webos/luna_service_client.cc:86] Subscribe LSHandle not initialized: luna://com.webos.service.mediacontroller/registerMediaSession {"appId":"","mediaId":"910AE42061DE0C970BCF
+[4212:4212:1118/203000.927566:ERROR:base/neva/webos/luna_service_client.cc:86] CallAsync LSHandle not initialized: luna://com.webos.service.mediacontroller/activateMediaSession {"mediaId":"910AE42061DE0C970BCF15E5B8FACE5
+[4212:4212:1118/203000.928392:ERROR:base/neva/webos/luna_service_client.cc:86] CallAsync LSHandle not initialized: luna://com.webos.service.mediacontroller/setMediaPlayStatus {"mediaId":"910AE42061DE0C970BCF15E5B8FACE5D"
+[4212:4212:1118/203000.928657:ERROR:base/neva/webos/luna_service_client.cc:86] CallAsync LSHandle not initialized: luna://com.webos.service.mediacontroller/setMediaPlayPosition {"mediaId":"910AE42061DE0C970BCF15E5B8FACE5
+[4212:4212:1118/203000.928752:ERROR:base/neva/webos/luna_service_client.cc:86] CallAsync LSHandle not initialized: luna://com.webos.service.mediacontroller/setMediaMetaData {"mediaId":"910AE42061DE0C970BCF15E5B8FACE5D","
+[4212:4212:1118/203020.585635:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[4212:4212:1118/203020.840953:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[4212:4212:1118/203023.188355:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[4212:4212:1118/203023.349571:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[4212:4212:1118/203023.349914:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[4212:4212:1118/203023.352494:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[4212:4212:1118/203023.903915:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+
+cr151own kJQP7kiw5Fk +3s {"ad":true,"t":6.3,"paused":false,"rs":4,"ns":2,"ahead":13.7,"rate":1,"frames":156,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"13.91 s","kbps":"3040 Kbps","state":-1}}
+cr151own kJQP7kiw5Fk +14s {"ad":true,"t":16.8,"paused":false,"rs":4,"ns":2,"ahead":3.2,"rate":1,"frames":407,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"4.33 s","kbps":"3040 Kbps","state":-1}}
+cr151own kJQP7kiw5Fk +17s {"ad":true,"t":20,"paused":true,"rs":4,"ns":2,"ahead":0,"rate":1,"frames":480,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"0.00 s","kbps":"1295 Kbps","state":-1}}
+cr151own kJQP7kiw5Fk +21s {"ad":false,"t":1.8,"paused":false,"rs":4,"ns":2,"ahead":4.8,"rate":1,"frames":48,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"3.70 s","kbps":"1577 Kbps","state":1}}
+cr151own kJQP7kiw5Fk +24s {"ad":false,"t":4.9,"paused":false,"rs":4,"ns":2,"ahead":25.1,"rate":1,"frames":122,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"25.18 s","kbps":"1577 Kbps","state":1}}
+cr151own kJQP7kiw5Fk +27s {"ad":false,"t":8,"paused":false,"rs":4,"ns":2,"ahead":22,"rate":1,"frames":197,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"22.05 s","kbps":"1577 Kbps","state":1}}
+cr151own kJQP7kiw5Fk +30s {"ad":false,"t":11.2,"paused":false,"rs":4,"ns":2,"ahead":30.3,"rate":1,"frames":271,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"30.48 s","kbps":"1771 Kbps","state":1}}
+cr151own kJQP7kiw5Fk +33s {"ad":false,"t":14.3,"paused":false,"rs":4,"ns":2,"ahead":27.2,"rate":1,"frames":346,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"27.21 s","kbps":"1771 Kbps","state":1}}
+cr151own kJQP7kiw5Fk +36s {"ad":false,"t":17.4,"paused":false,"rs":4,"ns":2,"ahead":36.3,"rate":1,"frames":421,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"36.36 s","kbps":"3279 Kbps","state":1}}
+cr151own kJQP7kiw5Fk +39s {"ad":false,"t":20.5,"paused":false,"rs":4,"ns":2,"ahead":33.1,"rate":1,"frames":496,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"33.34 s","kbps":"3279 Kbps","state":1}}
+cr151own kJQP7kiw5Fk cpu 8s:    292 chrome chrome;   156 chrome ThreadPoolForeg;    41 chrome Media;    31 chrome NetworkService;    25 chrome Compositor;    25 chrome Chrome_InProcGp;    19 run run;    13 chrome VizCompositorTh;
+
+cr151own kJQP7kiw5Fk +57s {"ad":false,"t":37.8,"paused":false,"rs":4,"ns":2,"ahead":55.5,"rate":1,"frames":911,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"55.55 s","kbps":"20708 Kbps","state":1}}
+cr151own kJQP7kiw5Fk +60s {"ad":false,"t":40.9,"paused":false,"rs":4,"ns":2,"ahead":58.1,"rate":1,"frames":986,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"58.24 s","kbps":"20738 Kbps","state":1}}
+cr151own kJQP7kiw5Fk +63s {"ad":false,"t":44.1,"paused":false,"rs":4,"ns":2,"ahead":61.5,"rate":1,"frames":1060,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"61.63 s","kbps":"12066 Kbps","state":1}}
+cr151own kJQP7kiw5Fk +66s {"ad":false,"t":47.2,"paused":false,"rs":4,"ns":2,"ahead":70,"rate":1,"frames":1135,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"67.89 s","kbps":"11763 Kbps","state":1}}
+cr151own kJQP7kiw5Fk +69s {"ad":false,"t":50.3,"paused":false,"rs":4,"ns":2,"ahead":66.9,"rate":1,"frames":1210,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"67.06 s","kbps":"11305 Kbps","state":1}}
+cr151own kJQP7kiw5Fk +72s {"ad":false,"t":53.4,"paused":false,"rs":4,"ns":2,"ahead":63.7,"rate":1,"frames":1285,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"63.95 s","kbps":"11305 Kbps","state":1}}
+cr151own kJQP7kiw5Fk +75s {"ad":false,"t":56.5,"paused":false,"rs":4,"ns":2,"ahead":75.3,"rate":1,"frames":1359,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"75.54 s","kbps":"16160 Kbps","state":1}}
+cr151own kJQP7kiw5Fk +79s {"ad":false,"t":59.6,"paused":false,"rs":4,"ns":2,"ahead":72.2,"rate":1,"frames":1434,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"72.43 s","kbps":"16160 Kbps","state":1}}
+cr151own kJQP7kiw5Fk +82s {"ad":false,"t":62.8,"paused":false,"rs":4,"ns":2,"ahead":83.8,"rate":1,"frames":1509,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"83.99 s","kbps":"21367 Kbps","state":1}}
+cr151own kJQP7kiw5Fk +85s {"ad":false,"t":65.9,"paused":false,"rs":4,"ns":2,"ahead":80.7,"rate":1,"frames":1584,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"80.68 s","kbps":"21367 Kbps","state":1}}
+cr151own kJQP7kiw5Fk browser.log:
+[10058:10058:1118/203234.834112:ERROR:base/neva/webos/luna_service_client.cc:86] Subscribe LSHandle not initialized: luna://com.webos.service.mediacontroller/registerMediaSession {"appId":"","mediaId":"7994B4D990F86FC22F
+[10058:10058:1118/203234.834194:ERROR:base/neva/webos/luna_service_client.cc:86] CallAsync LSHandle not initialized: luna://com.webos.service.mediacontroller/activateMediaSession {"mediaId":"7994B4D990F86FC22F77BE78C881D
+[10058:10058:1118/203234.834421:ERROR:base/neva/webos/luna_service_client.cc:86] CallAsync LSHandle not initialized: luna://com.webos.service.mediacontroller/setMediaPlayStatus {"mediaId":"7994B4D990F86FC22F77BE78C881DF6
+[10058:10058:1118/203234.834641:ERROR:base/neva/webos/luna_service_client.cc:86] CallAsync LSHandle not initialized: luna://com.webos.service.mediacontroller/setMediaPlayPosition {"mediaId":"7994B4D990F86FC22F77BE78C881D
+[10058:10058:1118/203234.834704:ERROR:base/neva/webos/luna_service_client.cc:86] CallAsync LSHandle not initialized: luna://com.webos.service.mediacontroller/setMediaMetaData {"mediaId":"7994B4D990F86FC22F77BE78C881DF68"
+[10058:10058:1118/203254.737149:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[10058:10058:1118/203254.737252:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[10058:10058:1118/203254.963322:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[10058:10058:1118/203254.963822:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[10058:10058:1118/203255.234081:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[10058:10058:1118/203256.449050:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[10058:10058:1118/203256.634392:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[10058:10058:1118/203256.635449:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[10058:10058:1118/203256.635535:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[10058:10058:1118/203256.709797:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+
+cr151p kJQP7kiw5Fk +3s {"ad":true,"t":6.7,"paused":false,"rs":4,"ns":2,"ahead":13.4,"rate":1,"frames":164,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"13.77 s","kbps":"3208 Kbps","state":-1}}
+cr151p kJQP7kiw5Fk +14s {"ad":true,"t":17.1,"paused":false,"rs":4,"ns":2,"ahead":3,"rate":1,"frames":414,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"4.14 s","kbps":"3208 Kbps","state":-1}}
+cr151p kJQP7kiw5Fk +18s {"ad":false,"t":0,"paused":false,"rs":0,"ns":2,"ahead":0,"rate":1,"frames":0,"dropped":0,"vis":"visible","focus":true,"w":0,"h":0,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"0x0@24 / 1280x720@24","health":"0.00 s","kbps":"2672 Kbps","state":-1}}
+cr151p kJQP7kiw5Fk +22s {"ad":false,"t":2.5,"paused":false,"rs":4,"ns":2,"ahead":1.4,"rate":1,"frames":65,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"1.48 s","kbps":"2672 Kbps","state":1}}
+cr151p kJQP7kiw5Fk +25s {"ad":false,"t":5.6,"paused":false,"rs":4,"ns":2,"ahead":24.4,"rate":1,"frames":139,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"24.47 s","kbps":"2637 Kbps","state":1}}
+cr151p kJQP7kiw5Fk +28s {"ad":false,"t":8.8,"paused":false,"rs":4,"ns":2,"ahead":21.2,"rate":1,"frames":214,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"21.29 s","kbps":"2637 Kbps","state":1}}
+cr151p kJQP7kiw5Fk +32s {"ad":false,"t":12.4,"paused":false,"rs":4,"ns":2,"ahead":29.1,"rate":1,"frames":301,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"29.65 s","kbps":"4343 Kbps","state":1}}
+cr151p kJQP7kiw5Fk +35s {"ad":false,"t":15.7,"paused":false,"rs":4,"ns":2,"ahead":25.7,"rate":1,"frames":381,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"26.03 s","kbps":"4343 Kbps","state":1}}
+cr151p kJQP7kiw5Fk +39s {"ad":false,"t":18.9,"paused":false,"rs":4,"ns":2,"ahead":34.8,"rate":1,"frames":458,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"34.89 s","kbps":"11340 Kbps","state":1}}
+cr151p kJQP7kiw5Fk +42s {"ad":false,"t":22.1,"paused":false,"rs":4,"ns":2,"ahead":43.8,"rate":1,"frames":535,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"44.07 s","kbps":"16964 Kbps","state":1}}
+cr151p kJQP7kiw5Fk cpu 8s:    366 chrome chrome;   162 chrome ThreadPoolForeg;    45 chrome NetworkService;    43 chrome Media;    38 chrome Compositor;    25 chrome Chrome_InProcGp;    19 run run;    16 chrome VizCompositorTh;
+
+cr151p kJQP7kiw5Fk +60s {"ad":false,"t":40.6,"paused":false,"rs":4,"ns":2,"ahead":58.4,"rate":1,"frames":977,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"58.63 s","kbps":"18011 Kbps","state":1}}
+cr151p kJQP7kiw5Fk +63s {"ad":false,"t":43.7,"paused":false,"rs":4,"ns":2,"ahead":55.3,"rate":1,"frames":1052,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"55.36 s","kbps":"18011 Kbps","state":1}}
+cr151p kJQP7kiw5Fk +67s {"ad":false,"t":46.9,"paused":false,"rs":4,"ns":2,"ahead":64.5,"rate":1,"frames":1127,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"64.65 s","kbps":"18722 Kbps","state":1}}
+cr151p kJQP7kiw5Fk +70s {"ad":false,"t":50,"paused":false,"rs":4,"ns":2,"ahead":72.4,"rate":1,"frames":1202,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"72.51 s","kbps":"19208 Kbps","state":1}}
+cr151p kJQP7kiw5Fk +73s {"ad":false,"t":53.1,"paused":false,"rs":4,"ns":2,"ahead":69.2,"rate":1,"frames":1277,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"69.47 s","kbps":"19208 Kbps","state":1}}
+cr151p kJQP7kiw5Fk +76s {"ad":false,"t":56.2,"paused":false,"rs":4,"ns":2,"ahead":67.4,"rate":1,"frames":1352,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"66.83 s","kbps":"19208 Kbps","state":1}}
+cr151p kJQP7kiw5Fk +79s {"ad":false,"t":59.4,"paused":false,"rs":4,"ns":2,"ahead":78.4,"rate":1,"frames":1427,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"78.54 s","kbps":"18128 Kbps","state":1}}
+cr151p kJQP7kiw5Fk +82s {"ad":false,"t":62.5,"paused":false,"rs":4,"ns":2,"ahead":75.3,"rate":1,"frames":1502,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"75.45 s","kbps":"18128 Kbps","state":1}}
+cr151p kJQP7kiw5Fk +85s {"ad":false,"t":65.6,"paused":false,"rs":4,"ns":2,"ahead":87.5,"rate":1,"frames":1576,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"87.55 s","kbps":"18788 Kbps","state":1}}
+cr151p kJQP7kiw5Fk +88s {"ad":false,"t":68.7,"paused":false,"rs":4,"ns":2,"ahead":84.3,"rate":1,"frames":1652,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"84.49 s","kbps":"18788 Kbps","state":1}}
+cr151p kJQP7kiw5Fk browser.log:
+[15597:15597:1118/203504.911288:ERROR:base/neva/webos/luna_service_client.cc:86] Subscribe LSHandle not initialized: luna://com.webos.service.mediacontroller/registerMediaSession {"appId":"","mediaId":"4CBE88BB7BD414CB4F
+[15597:15597:1118/203504.911392:ERROR:base/neva/webos/luna_service_client.cc:86] CallAsync LSHandle not initialized: luna://com.webos.service.mediacontroller/activateMediaSession {"mediaId":"4CBE88BB7BD414CB4FE8162A10FF5
+[15597:15597:1118/203504.911656:ERROR:base/neva/webos/luna_service_client.cc:86] CallAsync LSHandle not initialized: luna://com.webos.service.mediacontroller/setMediaPlayStatus {"mediaId":"4CBE88BB7BD414CB4FE8162A10FF54C
+[15597:15597:1118/203504.911946:ERROR:base/neva/webos/luna_service_client.cc:86] CallAsync LSHandle not initialized: luna://com.webos.service.mediacontroller/setMediaPlayPosition {"mediaId":"4CBE88BB7BD414CB4FE8162A10FF5
+[15597:15597:1118/203504.912034:ERROR:base/neva/webos/luna_service_client.cc:86] CallAsync LSHandle not initialized: luna://com.webos.service.mediacontroller/setMediaMetaData {"mediaId":"4CBE88BB7BD414CB4FE8162A10FF54CF"
+[15597:15597:1118/203524.796348:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[15597:15597:1118/203524.796473:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[15597:15597:1118/203525.060820:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[15597:15597:1118/203525.064250:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[15597:15597:1118/203525.301288:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[15597:15597:1118/203527.358831:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[15597:15597:1118/203527.679163:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[15597:15597:1118/203527.679674:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[15597:15597:1118/203527.680050:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[15597:15597:1118/203527.759502:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+
+cr151b kJQP7kiw5Fk +4s {"ad":true,"t":3.9,"paused":false,"rs":4,"ns":2,"ahead":5.6,"rate":1,"frames":98,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"1.43 s","kbps":"3008 Kbps","state":-1}}
+cr151b kJQP7kiw5Fk +15s {"ad":true,"t":15.2,"paused":false,"rs":4,"ns":2,"ahead":4.8,"rate":1,"frames":369,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"11.85 s","kbps":"3008 Kbps","state":-1}}
+cr151b kJQP7kiw5Fk +18s {"ad":true,"t":18.7,"paused":false,"rs":4,"ns":2,"ahead":1.3,"rate":1,"frames":453,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"1.53 s","kbps":"1615 Kbps","state":-1}}
+cr151b kJQP7kiw5Fk +22s {"ad":false,"t":0,"paused":false,"rs":1,"ns":2,"ahead":0,"rate":1,"frames":0,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"0.00 s","kbps":"1966 Kbps","state":-1}}
+cr151b kJQP7kiw5Fk +25s {"ad":false,"t":3.4,"paused":false,"rs":4,"ns":2,"ahead":3.3,"rate":1,"frames":85,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"1.72 s","kbps":"1784 Kbps","state":1}}
+cr151b kJQP7kiw5Fk +29s {"ad":false,"t":6.6,"paused":false,"rs":4,"ns":2,"ahead":23.4,"rate":1,"frames":163,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"23.59 s","kbps":"1784 Kbps","state":1}}
+cr151b kJQP7kiw5Fk +32s {"ad":false,"t":9.7,"paused":false,"rs":4,"ns":2,"ahead":20.3,"rate":1,"frames":237,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"20.43 s","kbps":"1784 Kbps","state":1}}
+cr151b kJQP7kiw5Fk +35s {"ad":false,"t":12.9,"paused":false,"rs":4,"ns":2,"ahead":28.6,"rate":1,"frames":312,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"28.62 s","kbps":"2914 Kbps","state":1}}
+cr151b kJQP7kiw5Fk +38s {"ad":false,"t":16,"paused":false,"rs":4,"ns":2,"ahead":37.7,"rate":1,"frames":388,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"37.83 s","kbps":"8194 Kbps","state":1}}
+cr151b kJQP7kiw5Fk +41s {"ad":false,"t":19.1,"paused":false,"rs":4,"ns":2,"ahead":34.5,"rate":1,"frames":463,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"34.55 s","kbps":"8194 Kbps","state":1}}
+cr151b kJQP7kiw5Fk cpu 8s:    219 chrome chrome;   125 chrome ThreadPoolForeg;    39 chrome Media;    26 chrome NetworkService;    22 chrome Compositor;    20 run run;    15 chrome VizCompositorTh;     7 run audio-src:src;
+
+cr151b kJQP7kiw5Fk +58s {"ad":false,"t":36.3,"paused":false,"rs":4,"ns":2,"ahead":49,"rate":1,"frames":875,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"49.15 s","kbps":"23435 Kbps","state":1}}
+cr151b kJQP7kiw5Fk +62s {"ad":false,"t":39.5,"paused":false,"rs":4,"ns":2,"ahead":53.8,"rate":1,"frames":951,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"54.07 s","kbps":"24507 Kbps","state":1}}
+cr151b kJQP7kiw5Fk +65s {"ad":false,"t":42.6,"paused":false,"rs":4,"ns":2,"ahead":56.4,"rate":1,"frames":1026,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"56.47 s","kbps":"24102 Kbps","state":1}}
+cr151b kJQP7kiw5Fk +68s {"ad":false,"t":45.8,"paused":false,"rs":4,"ns":2,"ahead":59.7,"rate":1,"frames":1102,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"59.79 s","kbps":"22712 Kbps","state":1}}
+cr151b kJQP7kiw5Fk +71s {"ad":false,"t":48.9,"paused":false,"rs":4,"ns":2,"ahead":62.5,"rate":1,"frames":1177,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"62.63 s","kbps":"22445 Kbps","state":1}}
+cr151b kJQP7kiw5Fk +74s {"ad":false,"t":52,"paused":false,"rs":4,"ns":2,"ahead":70.3,"rate":1,"frames":1251,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"70.53 s","kbps":"15080 Kbps","state":1}}
+cr151b kJQP7kiw5Fk +77s {"ad":false,"t":55.2,"paused":false,"rs":4,"ns":2,"ahead":67.2,"rate":1,"frames":1327,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"67.26 s","kbps":"15080 Kbps","state":1}}
+cr151b kJQP7kiw5Fk +80s {"ad":false,"t":58.3,"paused":false,"rs":4,"ns":2,"ahead":73.6,"rate":1,"frames":1401,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"73.56 s","kbps":"20490 Kbps","state":1}}
+cr151b kJQP7kiw5Fk +83s {"ad":false,"t":61.4,"paused":false,"rs":4,"ns":2,"ahead":79.8,"rate":1,"frames":1476,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"79.83 s","kbps":"19103 Kbps","state":1}}
+cr151b kJQP7kiw5Fk +87s {"ad":false,"t":64.5,"paused":false,"rs":4,"ns":2,"ahead":76.7,"rate":1,"frames":1551,"dropped":0,"vis":"visible","focus":true,"w":1280,"h":720,"yt":{"codecs":"av01.0.05M.08 (398) / opus (251)","res":"1280x720@24 / 1280x720@24","health":"76.78 s","kbps":"19103 Kbps","state":1}}
+cr151b kJQP7kiw5Fk browser.log:
+[21221:21221:1118/203744.289440:ERROR:base/neva/webos/luna_service_client.cc:86] Subscribe LSHandle not initialized: luna://com.webos.service.mediacontroller/registerMediaSession {"appId":"","mediaId":"6E23A5D70D43BF2E91
+[21221:21221:1118/203744.289529:ERROR:base/neva/webos/luna_service_client.cc:86] CallAsync LSHandle not initialized: luna://com.webos.service.mediacontroller/activateMediaSession {"mediaId":"6E23A5D70D43BF2E91E4378D07D0B
+[21221:21221:1118/203744.290625:ERROR:base/neva/webos/luna_service_client.cc:86] CallAsync LSHandle not initialized: luna://com.webos.service.mediacontroller/setMediaPlayStatus {"mediaId":"6E23A5D70D43BF2E91E4378D07D0B6F
+[21221:21221:1118/203744.290916:ERROR:base/neva/webos/luna_service_client.cc:86] CallAsync LSHandle not initialized: luna://com.webos.service.mediacontroller/setMediaPlayPosition {"mediaId":"6E23A5D70D43BF2E91E4378D07D0B
+[21221:21221:1118/203744.291016:ERROR:base/neva/webos/luna_service_client.cc:86] CallAsync LSHandle not initialized: luna://com.webos.service.mediacontroller/setMediaMetaData {"mediaId":"6E23A5D70D43BF2E91E4378D07D0B6F8"
+[21221:21221:1118/203804.110931:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[21221:21221:1118/203804.126968:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[21221:21221:1118/203804.224740:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[21221:21221:1118/203804.224884:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[21221:21221:1118/203804.472232:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[21221:21221:1118/203806.187883:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[21221:21221:1118/203806.381235:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[21221:21221:1118/203806.382037:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[21221:21221:1118/203806.382123:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+[21221:21221:1118/203806.550088:ERROR:content/browser/media/session/webos/media_session_webos.cc:174] MediaSessionPositionChanged  position is not received
+

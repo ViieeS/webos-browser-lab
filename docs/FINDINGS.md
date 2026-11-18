@@ -628,6 +628,31 @@ Details: `browser/cr151/UI_LATENCY.md`. Own build against 0.0.66, means over 3 i
 - `Event.Latency.OS2.KEY_PRESSED` is always 0 on webOS, so the time from the remote to Chromium is not visible.
 - zig cc for small TV tools needs `-fPIE -pie`. Without it the binary segfaults before main.
 
+### YouTube playback (2026-11-18)
+
+Question: is YouTube slow in our builds? The adblock runs showed an ad advancing about 14 s per minute and the
+video 2–4 s. Answer: no. It was a test artifact. Raw files are in `browser/cr151/`:
+`video_cr151p.txt`, `ytplay_builds.txt`, `ytplay_events.txt`, `ytplay_events_stack.txt`, `ytplay_consent.txt`.
+Script: `bench/ytplay.py`.
+
+- **Local clips decode as before.** cr151p plays every clip in `bench/media` at 1×, with 0 dropped frames, through
+  `lxvideodec` (NDL), up to VP9 and AV1 4K. Results are the same as `video_cr151own.txt` from 2026-11-17.
+- **The media configuration equals the release.** `args.delta.gn` changes only optimisation, CPU and LTO args.
+  `proprietary_codecs`, `ffmpeg_branding="Chrome"` and `use_vaapi=false` come from their `args.gn` unchanged. No
+  patch in 0100–0104 touches media.
+- **The stall was YouTube's consent lightbox.** On a profile without the `SOCS` cookie, "Before you continue to
+  YouTube" (`ytd-consent-bump-v2-lightbox`) appears 10–15 s after the watch page loads.
+  - While it is open, the page's own script (`ytmainappweb`/kevlar → `player.pauseVideo()`) pauses the video
+    after the pre-roll: `play()` is rejected with AbortError and the player stays in state -1 with 30 s buffered.
+  - The release app 0.0.66 played because its profile already had `SOCS` from an earlier session.
+  - With "Reject all" answered, cr151own, cr151p and cr151b all play content at 1× (about 3.1 s per 3 s).
+    The choice is then kept: the next video showed no lightbox.
+- **For benchmarks:** answer the consent lightbox whenever it appears, not once after a fixed delay.
+  `adblock_run.reject_consent()` looks once, 8 s after load, which is too early for the watch page.
+- **The autoplay policy is not involved.** `--autoplay-policy=no-user-gesture-required` did not change the stall.
+- The webOS media session errors in `browser.log` (`LSHandle not initialized` for
+  `com.webos.service.mediacontroller`) appear in the release too. They are not the cause.
+
 ### Adblocking (2026-11-18)
 
 Details and raw files: `browser/cr151/ADBLOCK.md`.
@@ -648,6 +673,8 @@ Details and raw files: `browser/cr151/ADBLOCK.md`.
   memory pressure in the browser can take the whole TV down, not only the app. The logs before the restart are lost
   (`/tmp/var/log` is in RAM). At 10 tabs all-chrome RSS is about 1 GB in every
   variant: the blocker's own memory is paid back by the ads it stops.
+- **The slow YouTube playback seen in the adblock runs was the consent lightbox,** not the build. See "YouTube
+  playback" above.
 - **adblock-tester.com crashes the tab without a blocker** ("Aw, Snap!", error 11, Dawn/WebGPU warnings).
   Not investigated.
 - **The TV screensaver stops runs.** It ignores a `registerScreenSaverRequest` client from a root shell. Shift
