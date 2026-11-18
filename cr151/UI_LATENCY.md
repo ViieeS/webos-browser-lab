@@ -231,5 +231,20 @@ patch 0103 and the font fix):
   output-path problem at this level.
 - What the user loses: 5 rows instead of 8-10, search suggestions only after a typing pause, no calculator, typo
   matching, document, AI Mode or on-device suggestions.
+- **HistoryFuzzy back on top of the trim costs nothing measurable** (2026-11-18, `uilat.py -b
+  cr151p+trim,cr151p+trimfuzzy 5 omnibox omnitypo`, interleaved, raw `uilat_fuzzy.txt`; mask 201221632 = the trim
+  mask without bit 65536). Key to screen: 94 vs 94 ms when typing "wikipedia", 93 vs 90 ms with the typo "archiev"
+  (per-run means overlap, n=135 and 105 keys). `Omnibox.HistoryFuzzy.SearchDuration` is under 1 ms on every key.
+  The history held 24 hosts, filled with `uilat.py history`: en.wikipedia.org, youtube, github, reddit, bbc.co.uk,
+  theguardian, nytimes, imdb, stackoverflow, amazon, netflix, twitch, espn, edition.cnn, apple, mozilla, archive.org,
+  duckduckgo, news.ycombinator, lg, openstreetmap, weather, spotify, speedtest. The trie only holds hosts, so the cost
+  grows with distinct hosts, not visits. `EventLatency.KeyPressed` is a renderer metric and is not recorded for
+  omnibox keys, which the browser's Views UI handles.
+  - It works on the TV: "archiev" adds the history row "Internet Archive … - archive.org", which the trim alone does
+    not show (`cap_fuzzy_off.png`, `cap_fuzzy_on.png`). `MatchConversion.HistoryQuick` = 1 on each corrected key, and
+    the trim runs record no HistoryFuzzy histogram, which confirms the mask.
+  - Limits: no correction in the first two characters (`ToleranceSchedule.start_index = 2` in
+    `history_fuzzy_provider.cc`), so "yuotube" is not corrected. For popular sites Google's navsuggest already
+    offers the right host, so fuzzy changes the popup mainly for sites Google does not suggest.
 - Next, if the owner agrees: ship the trim in run.sh (package.sh can add it). Beyond that, a smaller toolbar
   (`ToolbarView::DisplayMode::kLocation`) or a remote-first URL field like the Enact browser would need patches.

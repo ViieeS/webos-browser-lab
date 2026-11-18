@@ -10,7 +10,8 @@ import sys
 ITEM = re.compile(r"\s*(\S+) n=(\d+) mean=([\d.]+) p50>=(\d+)")
 SHOWN = ("Omnibox.CharTypedToRepaintLatency", "Omnibox.Views.PopupFirstPaint", "Browser.Tabs.TotalSwitchDuration3",
          "EventLatency.KeyPressed.TotalLatency", "Startup.BrowserWindowDisplay", "Startup.BrowserWindow.FirstPaint",
-         "Startup.FirstWebContents.NonEmptyPaint3")
+         "Startup.FirstWebContents.NonEmptyPaint3", "Omnibox.HistoryFuzzy.SearchDuration",
+         "Omnibox.HistoryFuzzy.MatchConversion.HistoryQuick")
 runs = collections.defaultdict(list)   # (metric, scenario, build) -> [(n, mean, p50)]
 for line in open(sys.argv[1]):
     head, _, body = line.partition(": ")

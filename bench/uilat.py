@@ -2,10 +2,12 @@
 """Browser UI latency in WebOS-Chromium builds from Chromium's own histograms, read over CDP (Browser.getHistograms).
 Keys go in as the remote's own events (evkeys on /dev/input/event10, "LGE Network Input", which the compositor reads; event1 it does not), so the LG input -> compositor -> Wayland path is
 exercised, but Chromium's metrics start at its event timestamp and do not include that path.
-usage: uilat.py -b cr151own,cr151 <rounds> <scenario>...      scenarios: omnibox tabs keyscroll keyfocus
+usage: uilat.py -b cr151own,cr151 <rounds> <scenario>...      scenarios: omnibox omnitypo tabs keyscroll keyfocus
          a build tag may carry a variant: cr151own+nosmooth, cr151own+nogpu (extra flag in browser.flags, VARIANTS)
        uilat.py trace <tag> <scenario> <out.json>   (one run under Chromium tracing, categories TRACE_CATEGORIES)
        uilat.py focus <tag> <url> <key>...   (spatial navigation check: the focused element after every key)
+       uilat.py history <tag> <url>...     (visit each URL once in that app's profile: history for HistoryFuzzyProvider)
+       uilat.py omnicheck <tag> <key>...   (type into the omnibox, print Omnibox.* histograms, leave the popup open)
        uilat.py probe <evkeys args...>     (app already running with DevTools: press keys, print every changed histogram)
 Needs, per app: --remote-debugging-port=9225 in /tmp/<appid>/browser.flags, tcprelay <TV LAN ip> 9226 -> 9225,
 /media/developer/temp/evkeys. Every launch is a fresh process, so Startup.* is read once per run.
@@ -26,17 +28,22 @@ CDP = f"{TV}:9226"
 EVKEYS = "/media/developer/temp/evkeys /dev/input/event10"
 APPS = {"cr151own": "com.viiees.cr151", "cr151p": "com.viiees.cr151p",   # cr151p: own build + patch 0103
         "cr151": "org.nativechromium.browser"}
-PREFIXES = ("EventLatency.KeyPressed", "Omnibox.Views.PopupFirstPaint", "Omnibox.CharTypedToRepaintLatency", "Browser.Tabs.TotalSwitchDuration3",
+PREFIXES = ("EventLatency.KeyPressed", "Omnibox.HistoryFuzzy","Omnibox.Views.PopupFirstPaint", "Omnibox.CharTypedToRepaintLatency", "Browser.Tabs.TotalSwitchDuration3",
             "TabStrip.TimeToSwitch", "Startup.BrowserWindow", "Startup.FirstWebContents.NonEmptyPaint3",
             "Startup.BrowserMessageLoopStartTime", "Startup.LoadTime")
 CTRL, A, T, TAB, ESC, DOWN, F6, BACKSPACE = 29, 30, 20, 15, 1, 108, 64, 14
 WIKIPEDIA = [17, 23, 37, 23, 25, 18, 32, 23, 30]
+ARCHIEV = [30, 19, 46, 35, 23, 18, 47]   # "archiev"
 GAP_MS = 300
 SCENARIOS = {   # evkeys arguments; each press is spaced GAP_MS so one paint ends before the next key
     # F6 moves focus from the page to the omnibox (Ctrl+L right after launch went to the page). Type 9 letters,
     # select all, delete; 3 times = 27 typed characters. Suggestions come from Google, as for a person typing.
     "omnibox": [str(F6), "w600"] + [*map(str, WIKIPEDIA), f"{CTRL}+{A}", str(BACKSPACE), "w800"] * 3
                + [str(ESC), str(ESC)],
+    # the same with a typo HistoryFuzzyProvider corrects to a host in history (archive.org): the costly path, where
+    # the fuzzy search finds a correction and reruns HistoryQuick on it
+    "omnitypo": [str(F6), "w600"] + [*map(str, ARCHIEV), f"{CTRL}+{A}", str(BACKSPACE), "w800"] * 3
+                + [str(ESC), str(ESC)],
     # 20 Tab presses in the page: focus moves from link to link (the focus ring repaints)
     "keyfocus": ["w300"] + [str(TAB)] * 20,
     # a second tab once, then 20 tab switches
@@ -44,12 +51,16 @@ SCENARIOS = {   # evkeys arguments; each press is spaced GAP_MS so one paint end
     # 20 Down presses in the page (keyboard scroll), the content key path
     "keyscroll": ["w300"] + [str(DOWN)] * 20,
 }
+# omnibox trimmed for a TV (cr151/UI_LATENCY.md): run.sh's --disable-features list repeated (the last switch wins)
+# plus ours, 5 popup rows, providers off by the DisableProviders mask, suggest after a pause
+TRIM = ("--disable-features=Translate,OptimizationHints,MediaRouter,BackForwardCache,Vulkan,ContextualTasks,ContextualTasksContext,ContextualTasksSidePanel,PreloadTopChromeWebUI,SpareRendererForSitePerProcess,SpareRenderer,OptimizationGuideModelDownloading,IsolateOrigins,site-per-process,WebUIToolbar,WebUIToolbarWebView,WebUIToolbarInternalWebView,WebUIReloadButton,WebUILocationBar,AudioServiceOutOfProcess,WebUIOmniboxPopup,WebUIOmniboxAimPopup,WebUIOmniboxFullPopup,DisableLoadExtensionCommandLineSwitch,HardwareMediaKeyHandling,WebGPUService,WebGPUBlobCache,OmniboxDynamicMaxAutocomplete,OmniboxRichAutocompletion,MlUrlScoring,UrlScoringModel,MlUrlScoreCaching,AimEnabled,AllowAiModeMatches,OmniboxMiaZPS,PreconnectNonSearchOmniboxSuggestions --enable-features=NetworkServiceInProcess2,OmniboxUIExperimentMaxAutocompleteMatches:UIMaxAutocompleteMatches/5 --force-fieldtrials=OmniboxBundledExperimentV1/TV/ --force-fieldtrial-params=OmniboxBundledExperimentV1.TV:DisableProviders/201287168/SuggestPollingDelayMs/400/MeasureSuggestPollingDelayFromLastKeystroke/true")
 VARIANTS = {"nosmooth": "--disable-smooth-scrolling",
             "nospatnav": "--blink-settings=spatialNavigationEnabled=false",
-            "nogpu": "--disable-gpu",
-            # omnibox trimmed for a TV (cr151/UI_LATENCY.md): run.sh's --disable-features list repeated (the last
-            # switch wins) plus ours, 5 popup rows, providers off by the DisableProviders mask, suggest after a pause
-            "trim": "--disable-features=Translate,OptimizationHints,MediaRouter,BackForwardCache,Vulkan,ContextualTasks,ContextualTasksContext,ContextualTasksSidePanel,PreloadTopChromeWebUI,SpareRendererForSitePerProcess,SpareRenderer,OptimizationGuideModelDownloading,IsolateOrigins,site-per-process,WebUIToolbar,WebUIToolbarWebView,WebUIToolbarInternalWebView,WebUIReloadButton,WebUILocationBar,AudioServiceOutOfProcess,WebUIOmniboxPopup,WebUIOmniboxAimPopup,WebUIOmniboxFullPopup,DisableLoadExtensionCommandLineSwitch,HardwareMediaKeyHandling,WebGPUService,WebGPUBlobCache,OmniboxDynamicMaxAutocomplete,OmniboxRichAutocompletion,MlUrlScoring,UrlScoringModel,MlUrlScoreCaching,AimEnabled,AllowAiModeMatches,OmniboxMiaZPS,PreconnectNonSearchOmniboxSuggestions --enable-features=NetworkServiceInProcess2,OmniboxUIExperimentMaxAutocompleteMatches:UIMaxAutocompleteMatches/5 --force-fieldtrials=OmniboxBundledExperimentV1/TV/ --force-fieldtrial-params=OmniboxBundledExperimentV1.TV:DisableProviders/201287168/SuggestPollingDelayMs/400/MeasureSuggestPollingDelayFromLastKeystroke/true"}   # the launcher's own fallback when its GPU probe fails: software raster+compositing
+            "nogpu": "--disable-gpu",   # the launcher's own fallback when its GPU probe fails: software raster+compositing
+            "trim": TRIM,
+            # trim with HistoryFuzzyProvider (1 << 16) left on: typo correction over history hosts
+            "trimfuzzy": TRIM.replace("DisableProviders/201287168", "DisableProviders/201221632")}
+assert VARIANTS["trimfuzzy"] != TRIM
 # EventLatency and PipelineReporter (cc,input / cc,benchmark) carry Chromium's own stage split of each latency
 TRACE_CATEGORIES = os.environ.get("UILAT_CATS", "cc,benchmark,input,latencyInfo").split(",")   # UILAT_CATS: more
 SHOW = ("",) if os.environ.get("UILAT_ALL") else PREFIXES   # UILAT_ALL=1: every changed histogram
@@ -157,7 +168,7 @@ def start(tag, page=PAGE):
     fire(f"{close_all()}sleep 4")
     # one flag per line; a long telnet command line resets the session, so the file is written in short pieces
     path = f"/tmp/{app}/browser.flags"
-    bench.tv(f": > {path}")
+    bench.tv(f"mkdir -p /tmp/{app}; : > {path}")   # /tmp is empty after a TV reboot
     for flag in flags:
         for i in range(0, len(flag), 300):
             bench.tv(f"printf '%s' '{flag[i:i + 300]}' >> {path}")
@@ -217,6 +228,28 @@ if sys.argv[1] == "trace":
     time.sleep(2)
     br.trace_to(out)
     fire(close_all())
+    sys.exit()
+if sys.argv[1] == "history":
+    # HistoryFuzzyProvider indexes hosts (UrlDomainReduction) of URLs visited in the last 3 days, so the URLs must
+    # be on different hosts. The profile is on flash: one fill serves every later launch of that app.
+    tag, urls = sys.argv[2], sys.argv[3:]
+    br = start(tag)
+    for url in urls:
+        tid = br.call("Target.createTarget", {"url": url})["targetId"]
+        time.sleep(8)
+        br.call("Target.closeTarget", {"targetId": tid})
+        print(f"visited {url}", flush=True)
+    br.ws.sock.close()
+    fire(close_all())
+    sys.exit()
+if sys.argv[1] == "omnicheck":
+    # type into the omnibox and leave the popup open (for a screenshot): MatchConversion.* > 0 means fuzzy matched
+    tag, keys = sys.argv[2], sys.argv[3:]
+    br = start(tag)
+    br.histograms(True)
+    press([str(F6), "w600", *keys])
+    time.sleep(2)
+    print(show(br.histograms(True), ("Omnibox.",)))
     sys.exit()
 if sys.argv[1] == "probe":
     br = Browser()
