@@ -161,3 +161,12 @@ key, both builds.
 - The rest, about 80 ms over the no-spatnav level, is the walk itself: 11 672 elements, a focusability check each and
   a rectangle for every candidate. Making it shorter means skipping parts of the page, for example offscreen locked
   sections. That changes which elements are candidates, so it is a separate decision.
+
+## UI font (2026-11-18)
+
+Not a latency item, but the owner saw it in the omnibox. Every family resolved to LG Display-Regular with full hinting.
+Patch-free fix: our `fonts.conf` plus `FONTCONFIG_FILE` in run.sh (`package.sh`). Before and after:
+`cap_font_omnibox_before.png` / `cap_font_omnibox_after.png` (Droid Sans, round dots, even spacing) and
+`cap_font_page_before.png` / `cap_font_page_after.png` (page text in Droid Sans, bold now bold). Details in FINDINGS.
+The fix is in `com.viiees.cr151p` only. `com.viiees.cr151` stays as built for A/B runs against the old state.
+Omnibox latency runs after this point use the fixed font.

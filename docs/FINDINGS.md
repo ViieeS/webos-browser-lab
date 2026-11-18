@@ -91,7 +91,7 @@ Probed 2026-11-09 with a 32-bit native wayland/EGL probe:
 
 - `GIO_EXTRA_MODULES=/usr/lib/gio/modules` loads gnutls from glib-networking 2.54, incompatible with a newer glib. Unset it and set `GIO_USE_TLS=openssl`.
 - `GST_PLUGIN_PATH_1_0`, `GST_REGISTRY_1_0`, `GST_REGISTRY_UPDATE=no` and `GST_PLUGIN_SCANNER_1_0` point at LG's plugins. Versioned variables win over plain ones. LG plugins then load into a bundled GStreamer and the type system breaks ("cannot register existing type GstVideoScale"), which hung YouTube. Unset all of them in-process, set the `_1_0` variants yourself, point `GST_PLUGIN_SYSTEM_PATH` at bundled plugins and set `GST_REGISTRY_FORK=no`.
-- `/etc/fonts` has only `conf.d/31-webos-aliases.conf`. There are no generic aliases, so "serif" matches nothing. Ship your own `fonts.conf` (generic and web font aliases to Tinos, Droid and LG Smart UI, `append_last` fallback, reject `*.bin`) and set `FONTCONFIG_FILE`.
+- `/etc/fonts` holds a stock `fonts.conf` (dirs and the mono/sans spelling rules only) and `conf.d/31-webos-aliases.conf`, which appends "LG Display-Regular" to every pattern (checked 2026-11-18; an earlier note said only conf.d existed). There are no generic aliases, so "serif", "sans-serif" and "monospace" all end on LG Display, or on nothing for engines that reject non-matching fallbacks. Ship your own `fonts.conf` (generic and web font aliases to Tinos, Droid and LG Smart UI, `append_last` fallback, reject `*.bin`) and set `FONTCONFIG_FILE`.
 
 ### Memory-pressure kills
 
@@ -722,3 +722,17 @@ None of these has been submitted.
 - `package.sh`: a variant id goes in `CR151_APP_ID`, not `APP_ID`. lib.sh sets `APP_ID` from their config.env first, so
   `${APP_ID:-...}` built an `org.nativechromium.browser` IPK, which would replace their app.
 - Writing a file with `{ ...; diff; } > file` in this harness can leave a truncated file: write patches from Python.
+
+### cr151 UI font (2026-11-18)
+
+- Chromium 151 uses the TV's own `libfontconfig.so.1` (`use_bundled_fontconfig = false` in their args.gn), and run.sh
+  set no `FONTCONFIG_FILE`. Every family came out as LG Display-Regular with full hinting (`hintstyle 3`): the omnibox
+  showed comma-like dots and uneven spacing, and bold text on pages was not bold (LG Display has no regular-width Bold).
+- The Views UI asks fontconfig with **no family at all** (`FallbackLinuxUi::InitializeFontSettings()` without GTK), so
+  aliases for sans or system-ui never apply to it. Only an unconditional `append_last` rule placed before LG's
+  `31-webos-aliases.conf` changes the UI font.
+- Fix: `browser/cr151/fonts.conf` (generic and web-font aliases to Droid Sans, Tinos, Droid Sans Mono; the
+  `append_last` Droid Sans rule; grayscale antialiasing, `hintslight`, no embedded bitmaps; LG's rules last).
+  `package.sh` ships it as `browser/fonts.conf` and adds `export FONTCONFIG_FILE=$D/browser/fonts.conf` to run.sh.
+  Screenshots: `cr151/cap_font_omnibox_{before,after}.png`, `cr151/cap_font_page_{before,after}.png`.
+- `fc-match` exists on the TV (`/usr/bin/fc-match`), handy for checking a fonts.conf before a browser run.
