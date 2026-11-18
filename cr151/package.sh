@@ -43,6 +43,16 @@ grep -q FONTCONFIG_FILE "$CN/package/run.sh" ||
 	sed -i 's|^export LANG=|export FONTCONFIG_FILE=$D/browser/fonts.conf\nexport LANG=|' "$CN/package/run.sh"
 grep -q '^export FONTCONFIG_FILE=' "$CN/package/run.sh" || die "run.sh: FONTCONFIG_FILE line not added"
 
+# Omnibox trimmed for a TV (UI_LATENCY.md: key to screen 160 -> 94 ms): fewer providers, 5 rows, suggest after a
+# pause. The mask keeps HistoryFuzzyProvider (1 << 16): typo matching over history measured at no cost.
+# Appended to run.sh's own feature lists so its WebGPU toggle keeps working.
+OMNI_OFF=OmniboxDynamicMaxAutocomplete,OmniboxRichAutocompletion,MlUrlScoring,UrlScoringModel,MlUrlScoreCaching,AimEnabled,AllowAiModeMatches,OmniboxMiaZPS,PreconnectNonSearchOmniboxSuggestions
+OMNI_ON="OmniboxUIExperimentMaxAutocompleteMatches:UIMaxAutocompleteMatches/5 --force-fieldtrials=OmniboxBundledExperimentV1/TV/ --force-fieldtrial-params=OmniboxBundledExperimentV1.TV:DisableProviders/201221632/SuggestPollingDelayMs/400/MeasureSuggestPollingDelayFromLastKeystroke/true"
+grep -q OmniboxBundledExperimentV1 "$CN/package/run.sh" ||
+	sed -i "s|HardwareMediaKeyHandling\\\$WEBGPU_OFF|HardwareMediaKeyHandling,$OMNI_OFF\$WEBGPU_OFF|; s|--enable-features=NetworkServiceInProcess2 |--enable-features=NetworkServiceInProcess2,$OMNI_ON |" "$CN/package/run.sh"
+[ "$(grep -c -e "$OMNI_OFF\\\$WEBGPU_OFF" -e 'DisableProviders/201221632' "$CN/package/run.sh")" = 2 ] ||
+	die "run.sh: omnibox trim not added"
+
 tar --format=posix -C "$D" -cf - browser | zstd -T0 -10 -q -o "$D/browser.tar.zst"
 sed -i "s/^APP_ID=.*/APP_ID=$APP_ID/; s/^APP_TITLE=.*/APP_TITLE=$APP_TITLE/" "$CN/config.env"
 python3 "$CN/package/mkipk.py" --browser "$D/browser.tar.zst" --version "$VERSION" --launcher "$D/cnrun" \

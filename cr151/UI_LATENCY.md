@@ -246,5 +246,6 @@ patch 0103 and the font fix):
   - Limits: no correction in the first two characters (`ToleranceSchedule.start_index = 2` in
     `history_fuzzy_provider.cc`), so "yuotube" is not corrected. For popular sites Google's navsuggest already
     offers the right host, so fuzzy changes the popup mainly for sites Google does not suggest.
-- Next, if the owner agrees: ship the trim in run.sh (package.sh can add it). Beyond that, a smaller toolbar
+- **Shipped by default** (2026-11-18): package.sh adds the trim with HistoryFuzzy on (mask 201221632) to run.sh's
+  own feature lists. Beyond that, a smaller toolbar
   (`ToolbarView::DisplayMode::kLocation`) or a remote-first URL field like the Enact browser would need patches.
