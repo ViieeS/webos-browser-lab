@@ -1,0 +1,144 @@
+cr151own start:  | BODY | spatnav check
+
+  g1g2g3 wide
+  |  | 0 | 0
+cr151own 1 key 108: g3 | A | g3 wide | #g3 | 0 | 0
+cr151own 2 key 108: g6 | A | g6 | #g6 | 0 | 0
+cr151own 3 key 108: g11 | A | g11 | #g11 | 0 | 0
+cr151own 4 key 106: g12 | A | g12 wide | #g12 | 0 | 0
+cr151own 5 key 106: g12 | A | g12 wide | #g12 | 0 | 0
+cr151own 6 key 108: f3 | SELECT | onetwo |  | 0 | 0
+cr151own 7 key 108: f3 | SELECT | onetwo |  | 40 | 0
+cr151own 8 key 108: f3 | SELECT | onetwo |  | 80 | 0
+cr151own 9 key 108: f3 | SELECT | onetwo |  | 120 | 0
+cr151own 10 key 108: f3 | SELECT | onetwo |  | 160 | 0
+cr151own 11 key 108: f3 | SELECT | onetwo |  | 200 | 0
+cr151own 12 key 108: f3 | SELECT | onetwo |  | 240 | 0
+cr151own 13 key 108: f3 | SELECT | onetwo |  | 280 | 0
+cr151own 14 key 108: f3 | SELECT | onetwo |  | 320 | 0
+cr151own 15 key 108: f3 | SELECT | onetwo |  | 360 | 0
+cr151own 16 key 108: f3 | SELECT | onetwo |  | 400 | 0
+cr151own 17 key 105: f2 | BUTTON | button |  | 400 | 0
+cr151own 18 key 103: f2 | BUTTON | button |  | 360 | 0
+cr151own 19 key 103: f2 | BUTTON | button |  | 320 | 0
+cr151own 20 key 103: f2 | BUTTON | button |  | 280 | 0
+cr151p start:  | BODY | spatnav check
+
+  g1g2g3 wide
+  |  | 0 | 0
+cr151p 1 key 108: g3 | A | g3 wide | #g3 | 0 | 0
+cr151p 2 key 108: g6 | A | g6 | #g6 | 0 | 0
+cr151p 3 key 108: g11 | A | g11 | #g11 | 0 | 0
+cr151p 4 key 106: g12 | A | g12 wide | #g12 | 0 | 0
+cr151p 5 key 106: g12 | A | g12 wide | #g12 | 0 | 0
+cr151p 6 key 108: f3 | SELECT | onetwo |  | 0 | 0
+cr151p 7 key 108: f3 | SELECT | onetwo |  | 40 | 0
+cr151p 8 key 108: f3 | SELECT | onetwo |  | 80 | 0
+cr151p 9 key 108: f3 | SELECT | onetwo |  | 120 | 0
+cr151p 10 key 108: f3 | SELECT | onetwo |  | 160 | 0
+cr151p 11 key 108: f3 | SELECT | onetwo |  | 200 | 0
+cr151p 12 key 108: f3 | SELECT | onetwo |  | 240 | 0
+cr151p 13 key 108: f3 | SELECT | onetwo |  | 280 | 0
+cr151p 14 key 108: f3 | SELECT | onetwo |  | 320 | 0
+cr151p 15 key 108: f3 | SELECT | onetwo |  | 360 | 0
+cr151p 16 key 108: f3 | SELECT | onetwo |  | 400 | 0
+cr151p 17 key 105: f2 | BUTTON | button |  | 400 | 0
+cr151p 18 key 103: f2 | BUTTON | button |  | 360 | 0
+cr151p 19 key 103: f2 | BUTTON | button |  | 320 | 0
+cr151p 20 key 103: f2 | BUTTON | button |  | 280 | 0
+cr151own start:  | BODY | Jump to content
+
+	
+		
+			
+				 |  | 0 | 
+cr151own 1 key 108:  | A |  | https://en.wikipedia.org/wiki/Main_Page | 0 | 
+cr151own 2 key 108:  | BUTTON | hide |  | 0 | 
+cr151own 3 key 108:  | A | (Top) | Television.html# | 0 | 
+cr151own 4 key 108:  | A | 1
+				Etymology | Television.html#Etymology | 0 | 
+cr151own 5 key 108:  | A | 2
+				History | Television.html#History | 0 | 
+cr151own 6 key 108:  | A | 3
+				Broadcast systems | Television.html#Broadcast_systems | 0 | 
+cr151own 7 key 108:  | A | 4
+				Sets | Television.html#Sets | 0 | 
+cr151own 8 key 108:  | A | 5
+				Content | Television.html#Content | 0 | 
+cr151own 9 key 108:  | A | 6
+				Social aspects | Television.html#Social_aspects | 0 | 
+cr151own 10 key 108:  | A | 7
+				Negative impacts | Television.html#Negative_impacts | 0 | 
+cr151own 11 key 108:  | A | 8
+				See also | Television.html#See_also | 0 | 
+cr151own 12 key 108:  | A | 9
+				References | Television.html#References | 0 | 
+cr151own 13 key 106: mwHA | A | radio receivers | https://en.wikipedia.org/wiki/Radio_receiver | 0 | 
+cr151own 14 key 106: mwDw | A |  | https://en.wikipedia.org/wiki/File:Cptvdisplay.jpg | 0 | 
+cr151own 15 key 106:  | BUTTON | hide |  | 0 | 
+cr151own 16 key 108: mwE_k | A |  | https://en.wikipedia.org/wiki/Wikipedia:Protection_policy#semi | 0 | 
+cr151own 17 key 108:  | A | Television (disambiguation) | https://en.wikipedia.org/wiki/Television_(disambiguation) | 0 | 
+cr151own 18 key 108: mwDw | A |  | https://en.wikipedia.org/wiki/File:Cptvdisplay.jpg | 0 | 
+cr151own 19 key 108: mwEg | A | Flat-screen | https://en.wikipedia.org/wiki/Flat-panel_display | 0 | 
+cr151own 20 key 108: mwHg | A | World War II | https://en.wikipedia.org/wiki/World_War_II | 0 | 
+cr151p start:  | BODY | Jump to content
+
+	
+		
+			
+				 |  | 0 | 
+cr151p 1 key 108:  | A |  | https://en.wikipedia.org/wiki/Main_Page | 0 | 
+cr151p 2 key 108:  | BUTTON | hide |  | 0 | 
+cr151p 3 key 108:  | A | (Top) | Television.html# | 0 | 
+cr151p 4 key 108:  | A | 1
+				Etymology | Television.html#Etymology | 0 | 
+cr151p 5 key 108:  | A | 2
+				History | Television.html#History | 0 | 
+cr151p 6 key 108:  | A | 3
+				Broadcast systems | Television.html#Broadcast_systems | 0 | 
+cr151p 7 key 108:  | A | 4
+				Sets | Television.html#Sets | 0 | 
+cr151p 8 key 108:  | A | 5
+				Content | Television.html#Content | 0 | 
+cr151p 9 key 108:  | A | 6
+				Social aspects | Television.html#Social_aspects | 0 | 
+cr151p 10 key 108:  | A | 7
+				Negative impacts | Television.html#Negative_impacts | 0 | 
+cr151p 11 key 108:  | A | 8
+				See also | Television.html#See_also | 0 | 
+cr151p 12 key 108:  | A | 9
+				References | Television.html#References | 0 | 
+cr151p 13 key 106: mwHA | A | radio receivers | https://en.wikipedia.org/wiki/Radio_receiver | 0 | 
+cr151p 14 key 106: mwDw | A |  | https://en.wikipedia.org/wiki/File:Cptvdisplay.jpg | 0 | 
+cr151p 15 key 106:  | BUTTON | hide |  | 0 | 
+cr151p 16 key 108: mwE_k | A |  | https://en.wikipedia.org/wiki/Wikipedia:Protection_policy#semi | 0 | 
+cr151p 17 key 108:  | A | Television (disambiguation) | https://en.wikipedia.org/wiki/Television_(disambiguation) | 0 | 
+cr151p 18 key 108: mwDw | A |  | https://en.wikipedia.org/wiki/File:Cptvdisplay.jpg | 0 | 
+cr151p 19 key 108: mwEg | A | Flat-screen | https://en.wikipedia.org/wiki/Flat-panel_display | 0 | 
+cr151p 20 key 108: mwHg | A | World War II | https://en.wikipedia.org/wiki/World_War_II | 0 | 
+cr151own start:  | BODY | Hacker Newsnew | past | commen |  | 0 | 
+cr151own 1 key 108:  | A |  | https://news.ycombinator.com | 0 | 
+cr151own 2 key 108: up_50538240 | A |  | vote?id=50538240&how=up&goto=news | 0 | 
+cr151own 3 key 108: up_50535230 | A |  | vote?id=50535230&how=up&goto=news | 0 | 
+cr151own 4 key 108: up_50538994 | A |  | vote?id=50538994&how=up&goto=news | 0 | 
+cr151own 5 key 108: up_50534631 | A |  | vote?id=50534631&how=up&goto=news | 0 | 
+cr151own 6 key 108: up_50539747 | A |  | vote?id=50539747&how=up&goto=news | 0 | 
+cr151own 7 key 108: up_50537156 | A |  | vote?id=50537156&how=up&goto=news | 0 | 
+cr151own 8 key 108: up_50535885 | A |  | vote?id=50535885&how=up&goto=news | 0 | 
+cr151own 9 key 108: up_50535992 | A |  | vote?id=50535992&how=up&goto=news | 0 | 
+cr151own 10 key 108: up_50536813 | A |  | vote?id=50536813&how=up&goto=news | 0 | 
+cr151own 11 key 106:  | A | 350 years ago, Ole Rømer disco | https://www.sciencenorway.no/culture-history-history-of-science/350-years-ago-this-man-discovered-that-light-has-a-finite-speed/2737969 | 0 | 
+cr151own 12 key 106:  | A | sciencenorway.no | from?site=sciencenorway.no | 0 | 
+cr151p start:  | BODY | Hacker Newsnew | past | commen |  | 0 | 
+cr151p 1 key 108:  | A |  | https://news.ycombinator.com | 0 | 
+cr151p 2 key 108: up_50538240 | A |  | vote?id=50538240&how=up&goto=news | 0 | 
+cr151p 3 key 108: up_50535230 | A |  | vote?id=50535230&how=up&goto=news | 0 | 
+cr151p 4 key 108: up_50538994 | A |  | vote?id=50538994&how=up&goto=news | 0 | 
+cr151p 5 key 108: up_50539747 | A |  | vote?id=50539747&how=up&goto=news | 0 | 
+cr151p 6 key 108: up_50534631 | A |  | vote?id=50534631&how=up&goto=news | 0 | 
+cr151p 7 key 108: up_50537156 | A |  | vote?id=50537156&how=up&goto=news | 0 | 
+cr151p 8 key 108: up_50535885 | A |  | vote?id=50535885&how=up&goto=news | 0 | 
+cr151p 9 key 108: up_50535992 | A |  | vote?id=50535992&how=up&goto=news | 0 | 
+cr151p 10 key 108: up_50536813 | A |  | vote?id=50536813&how=up&goto=news | 0 | 
+cr151p 11 key 106:  | A | 350 years ago, Ole Rømer disco | https://www.sciencenorway.no/culture-history-history-of-science/350-years-ago-this-man-discovered-that-light-has-a-finite-speed/2737969 | 0 | 
+cr151p 12 key 106:  | A | sciencenorway.no | from?site=sciencenorway.no | 0 | 

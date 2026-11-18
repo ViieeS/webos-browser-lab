@@ -1,0 +1,144 @@
+Spatial navigation: no style and layout update per element in the candidate walk.
+
+FindNextCandidateInContainer() checks every element with IsKeyboardFocusableSlow(), whose default
+UpdateBehavior::kStyleAndLayout makes CanBeKeyboardFocusableScroller() call Document::UpdateStyleAndLayoutForNode()
+for each non-link element. On a Wikipedia article (11 672 elements walked) that is about 3 750 Document::
+UpdateStyleAndLayout calls per arrow key on the LG C1, about 130 of the 170 ms of a Down press.
+On a clean document such a call changes nothing, except under a locked display lock (content-visibility: auto,
+54 locks on that page), where it forces the locked subtree up to date. The walk now updates once, forces once per
+lock (its first element), and checks the rest with kNoneForFocusManagement. If a forced update leaves the document
+dirty, the rest of the walk takes the old per-element path, so the candidates stay the same. A trace event
+(blink, SpatialNavigation::CandidateWalk) reports elements, forced updates and whether the document stayed clean.
+Not fixed in Chromium main as of 2026-11-18 (the same calls in spatial_navigation_controller.cc and element.cc).
+
+diff -ru a/src/third_party/blink/renderer/core/page/spatial_navigation_controller.cc b/src/third_party/blink/renderer/core/page/spatial_navigation_controller.cc
+--- a/src/third_party/blink/renderer/core/page/spatial_navigation_controller.cc	2026-11-17 22:27:55
++++ b/src/third_party/blink/renderer/core/page/spatial_navigation_controller.cc	2026-11-18 00:02:48
+@@ -8,6 +8,9 @@
+ #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
+ #include "third_party/blink/renderer/core/css/style_change_reason.h"
+ #include "third_party/blink/renderer/core/css/css_property_names.h"
++#include "base/trace_event/trace_event.h"
++#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
++#include "third_party/blink/renderer/core/frame/local_frame_view.h"
+ #include "third_party/blink/renderer/core/dom/document.h"
+ #include "third_party/blink/renderer/core/dom/element.h"
+ #include "third_party/blink/renderer/core/dom/element_traversal.h"
+@@ -373,6 +376,27 @@
+   return false;
+ }
+ 
++static bool IsValidCandidateWith(const Element* element,
++                                 Element::UpdateBehavior update_behavior) {
++  if (!element || !element->isConnected() || !element->GetLayoutObject())
++    return false;
++
++  LocalFrame* frame = element->GetDocument().GetFrame();
++  if (!frame)
++    return false;
++
++  // If the author installed a click handler on the main document or body, we
++  // almost certainly don't want to actually interest it. Doing so leads to
++  // issues since the document/body will likely contain most of the other
++  // content on the page.
++  if (frame->IsOutermostMainFrame()) {
++    if (IsA<HTMLHtmlElement>(element) || IsA<HTMLBodyElement>(element))
++      return false;
++  }
++
++  return element->IsKeyboardFocusableSlow(update_behavior);
++}
++
+ FocusCandidate SpatialNavigationController::FindNextCandidateInContainer(
+     Node& container,
+     const PhysicalRect& starting_rect_in_root_frame,
+@@ -385,6 +409,26 @@
+   current_interest.focusable_node = interest_child_in_container;
+   current_interest.visible_node = interest_child_in_container;
+ 
++  // With the default UpdateBehavior, the focusability check of every element
++  // (IsKeyboardFocusableSlow -> CanBeKeyboardFocusableScroller) runs
++  // Document::UpdateStyleAndLayoutForNode on its own: thousands of calls per
++  // arrow key on a long page, most of the key's latency on a TV. On a clean
++  // document such a call changes nothing, except under a locked display lock
++  // (content-visibility), where it forces the locked subtree up to date. So:
++  // update once here, force once per lock (for its first element), and check
++  // the rest without an update. If a forced update leaves the document dirty,
++  // the remaining elements take the old per-element path.
++  Document& document = container.GetDocument();
++  auto is_clean = [&document] {
++    return document.IsActive() && !document.NeedsLayoutTreeUpdate() &&
++           document.View() && !document.View()->NeedsLayout();
++  };
++  if (document.IsActive())
++    document.UpdateStyleAndLayout(DocumentUpdateReason::kSpatialNavigation);
++  bool skip_updates = is_clean();
++  const Element* forced_lock = nullptr;
++  int elements = 0, forced = 0;
++
+   FocusCandidate best_candidate, previous_best_candidate;
+   double previous_best_distance = kMaxDistance;
+   double best_distance = kMaxDistance;
+@@ -399,7 +443,25 @@
+     if (HasRemoteFrame(element))
+       continue;
+ 
+-    if (!IsValidCandidate(element))
++    ++elements;
++    Element::UpdateBehavior update_behavior =
++        Element::UpdateBehavior::kStyleAndLayout;
++    if (skip_updates) {
++      const Element* lock =
++          DisplayLockUtilities::LockedInclusiveAncestorPreventingLayout(
++              *element);
++      if (!lock || lock == forced_lock)
++        update_behavior = Element::UpdateBehavior::kNoneForFocusManagement;
++      else
++        forced_lock = lock;
++    }
++    if (update_behavior == Element::UpdateBehavior::kStyleAndLayout)
++      ++forced;
++    bool valid = IsValidCandidateWith(element, update_behavior);
++    if (update_behavior == Element::UpdateBehavior::kStyleAndLayout &&
++        skip_updates && !is_clean())
++      skip_updates = false;
++    if (!valid)
+       continue;
+ 
+     FocusCandidate candidate = FocusCandidate(element, direction);
+@@ -410,6 +472,9 @@
+                              &best_candidate, best_distance,
+                              &previous_best_candidate, previous_best_distance);
+   }
++  TRACE_EVENT_INSTANT("blink", "SpatialNavigation::CandidateWalk", "elements",
++                      elements, "forced_updates", forced, "stayed_clean",
++                      skip_updates);
+ 
+   return best_candidate;
+ }
+@@ -510,23 +575,8 @@
+ 
+ bool SpatialNavigationController::IsValidCandidate(
+     const Element* element) const {
+-  if (!element || !element->isConnected() || !element->GetLayoutObject())
+-    return false;
+-
+-  LocalFrame* frame = element->GetDocument().GetFrame();
+-  if (!frame)
+-    return false;
+-
+-  // If the author installed a click handler on the main document or body, we
+-  // almost certainly don't want to actually interest it. Doing so leads to
+-  // issues since the document/body will likely contain most of the other
+-  // content on the page.
+-  if (frame->IsOutermostMainFrame()) {
+-    if (IsA<HTMLHtmlElement>(element) || IsA<HTMLBodyElement>(element))
+-      return false;
+-  }
+-
+-  return element->IsKeyboardFocusableSlow();
++  return IsValidCandidateWith(element,
++                              Element::UpdateBehavior::kStyleAndLayout);
+ }
+ 
+ Element* SpatialNavigationController::GetInterestedElement() const {

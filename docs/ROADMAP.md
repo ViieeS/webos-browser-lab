@@ -27,7 +27,8 @@ Measured 2026-11-17 (`cr151/UI_LATENCY.md`, Chromium's own histograms): the spee
 press in a page about 160 ms. The flags do not fix it. The stage split and A/B found two causes:
 - In pages, `--enable-spatial-navigation` (their run.sh) costs about 125 ms of each arrow press: the candidate walk
   updates style and layout thousands of times per key. With it off, Down takes 36 ms, but arrows stop moving between
-  links. Next: a Blink patch for the walk, or the owner turns it off in browser.flags.
+  links. Patch 0103 (2026-11-18) removes the per-element update: Down 167 → 115 ms, same focus moves. Left: the walk
+  over all elements (about 80 ms on a long page). Next step, if wanted: skip offscreen locked sections (changes candidates).
 - In the omnibox, the cost is the browser main thread (Views layout and paint, autocomplete), not GPU or flags.
   Software rendering is worse everywhere. Next: the "trim the UI" option below.
 

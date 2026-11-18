@@ -711,3 +711,14 @@ None of these has been submitted.
 | cr151 0101 arm-cortex-a55-tune-and-fpu | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) | Fixes the overridden `-mfpu` of their 0012; measured with the speed build | not submitted |
 | Platform notes: quoted screensaver timestamp, NDL main-ELF requirement, Mali EGL display | [webosbrew](https://github.com/webosbrew) (documentation) | Knowledge for homebrew authors, not a code patch | not submitted |
 
+### Spatial navigation patch 0103 (2026-11-18)
+
+- `FindNextCandidateInContainer()` checks every element with `IsKeyboardFocusableSlow()` (default
+  `kStyleAndLayout`); for non-links that is a `Document::UpdateStyleAndLayoutForNode()` each. Same code in Chromium main
+  on 2026-11-18, no upstream fix.
+- Wikipedia articles have dozens of locked display locks (`content-visibility: auto`, 54 on "Television"). A fix that
+  falls back while any lock exists never takes effect there. Patch 0103 forces once per lock instead.
+- Result with the same focus moves: Down 167 → 115 ms, Tab unchanged. Details: `browser/cr151/UI_LATENCY.md`.
+- `package.sh`: a variant id goes in `CR151_APP_ID`, not `APP_ID`. lib.sh sets `APP_ID` from their config.env first, so
+  `${APP_ID:-...}` built an `org.nativechromium.browser` IPK, which would replace their app.
+- Writing a file with `{ ...; diff; } > file` in this harness can leave a truncated file: write patches from Python.

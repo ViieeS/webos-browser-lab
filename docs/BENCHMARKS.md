@@ -22,7 +22,7 @@ Ranges are min-max over 2-4 runs. WPE is the final build: a55 + patches 0013-001
 | Engine | Page cases (micro, load-wiki, raf-wiki, Speedometer) | YouTube | Video |
 |---|---|---|---|
 | cr151 own build | `cr151/harness_cr151own.txt` (interleaved with 0.0.66) | `cr151/youtube_cr151own.txt` | `cr151/video_cr151own.txt` |
-| cr151 UI latency (both builds) | `cr151/uilat_cr151.txt`, A/B of flags `cr151/uilat_ab.txt` (`bench/uilat.py`, summary `bench/uilat_summary.py`, traces not kept: `bench/uilat_trace.py`) | — | — |
+| cr151 UI latency (both builds) | `cr151/uilat_cr151.txt`, A/B of flags `cr151/uilat_ab.txt`, patch 0103 `cr151/uilat_0103.txt` and its focus check `cr151/spatnav_focus.txt` (`bench/uilat.py`, summary `bench/uilat_summary.py`, traces not kept: `bench/uilat_trace.py`) | — | — |
 | cr151 | `cr151/harness_cr151.txt` | `cr151/RESULTS.md` (cdpnav.py runs, the raw console output was not kept) | `cr151/video_cr151.txt` |
 | cr120 | `cr120/harness_cr120_swraster.txt`. GPU-raster runs: `cr120/harness_cr120.txt` | `cr120/RESULTS.md` (cdpnav.py, raw output not kept) | `cr120/video_cr120.txt` (software), `cr120/video_neva.log` (uMediaServer), `cr120/video_ndl.log` (NDL) |
 | WPE | `bench/results/mi-mimalloc-clean.jsonl` (4 rounds), `bench/results/default-mi.jsonl` | `cold-youtube` in the same file: the host's load event, not CDP | Video was run in WPE on 2026-11-16, but its raw output was not kept. The summary is in [FINDINGS.md](FINDINGS.md) |

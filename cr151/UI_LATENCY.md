@@ -116,3 +116,48 @@ overlap, so they are not added up.
   after the renderer, so smooth scrolling is not the cause.
 - A camera measurement (phone slow motion) is not needed to confirm the slowness, because Chromium's own numbers
   already show it. It would add the input path that the metrics leave out.
+
+## Patch 0103: spatial navigation without a layout update per element (2026-11-18)
+
+`patches/0103-spatnav-one-layout-update-per-walk.patch`, installed as dev app `com.viiees.cr151p` next to
+`com.viiees.cr151` (the same build without it), measured interleaved.
+
+**Cause, from the code.** `SpatialNavigationController::FindNextCandidateInContainer()` calls `IsValidCandidate()` on
+every element of the page. It ends in `IsKeyboardFocusableSlow()` with the default `UpdateBehavior::kStyleAndLayout`,
+and for non-links `CanBeKeyboardFocusableScroller()` calls `Document::UpdateStyleAndLayoutForNode()`. That is the
+~3 750 `Document::UpdateStyleAndLayout` calls per key in the trace.
+
+**Upstream.** `spatial_navigation_controller.cc` and `element.cc` in Chromium main, read on 2026-11-18, make the same
+calls. No upstream fix exists to backport. The git log pages of googlesource need a login, so there is no CL link.
+
+**First version, no effect.** It switched to the cheap path only when the document had no locked display lock. The
+Wikipedia page has 54 (sections with `content-visibility: auto`), so it always took the old path: 166 → 164 ms.
+A trace event in the walk showed this (`fast: false, locked: 54`).
+
+**Second version, the patch now.** One update before the walk. For each locked display lock, the first element under
+it keeps the forced update. All other elements are checked with `kNoneForFocusManagement`. If a forced update leaves
+the document dirty, the rest of the walk goes back to the old path. The trace event
+`blink / SpatialNavigation::CandidateWalk` reports: 11 672 elements walked, 54 forced updates, document stayed clean,
+`Document::UpdateStyleAndLayout` 79 553 → 1 173 calls in 20 keys. Renderer main thread per Down: 219 → 79 ms (traced).
+
+**Correctness** (`uilat.py focus`, raw: `spatnav_focus.txt`): the same keys on three pages, focused element after each
+key, both builds.
+
+| Page | Keys | Same focused element |
+|---|---|---|
+| `bench/pages/spatnav.html` (link grid, scroll container, form, `content-visibility` section) | 20 | 20 of 20 |
+| local Wikipedia "Television" | 20 | 20 of 20 |
+| news.ycombinator.com (live) | 12 | 10 of 12: steps 5 and 6 swapped two stories. Both builds moved one row down each time, the live ranking changed between the loads (judgment) |
+
+**Latency** (`uilat.py -b cr151own,cr151p 3 keyscroll keyfocus`, raw: `uilat_0103.txt`):
+
+| Metric | Scenario | Without 0103 | With 0103 | Spatial navigation off (reference) |
+|---|---|---|---|---|
+| EventLatency.KeyPressed.TotalLatency | keyscroll (Down) | 167 ms (p50 147-170) | **115 ms** (p50 109) | 36 ms |
+| EventLatency.KeyPressed.TotalLatency | keyfocus (Tab) | 210 ms (p50 52-70) | 191 ms (p50 52-61) | 91 ms |
+
+- Down in a page: -31 %, arrows still move between links.
+- Tab barely changes. Sequential focus navigation does not use this walk.
+- The rest, about 80 ms over the no-spatnav level, is the walk itself: 11 672 elements, a focusability check each and
+  a rectangle for every candidate. Making it shorter means skipping parts of the page, for example offscreen locked
+  sections. That changes which elements are candidates, so it is a separate decision.

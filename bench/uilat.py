@@ -5,6 +5,7 @@ exercised, but Chromium's metrics start at its event timestamp and do not includ
 usage: uilat.py -b cr151own,cr151 <rounds> <scenario>...      scenarios: omnibox tabs keyscroll keyfocus
          a build tag may carry a variant: cr151own+nosmooth, cr151own+nogpu (extra flag in browser.flags, VARIANTS)
        uilat.py trace <tag> <scenario> <out.json>   (one run under Chromium tracing, categories TRACE_CATEGORIES)
+       uilat.py focus <tag> <url> <key>...   (spatial navigation check: the focused element after every key)
        uilat.py probe <evkeys args...>     (app already running with DevTools: press keys, print every changed histogram)
 Needs, per app: --remote-debugging-port=9225 in /tmp/<appid>/browser.flags, tcprelay <TV LAN ip> 9226 -> 9225,
 /media/developer/temp/evkeys. Every launch is a fresh process, so Startup.* is read once per run.
@@ -23,7 +24,8 @@ from inspector import WebSocket  # noqa: E402
 TV = os.environ["TV_HOST"]
 CDP = f"{TV}:9226"
 EVKEYS = "/media/developer/temp/evkeys /dev/input/event10"
-APPS = {"cr151own": "com.viiees.cr151", "cr151": "org.nativechromium.browser"}
+APPS = {"cr151own": "com.viiees.cr151", "cr151p": "com.viiees.cr151p",   # cr151p: own build + patch 0103
+        "cr151": "org.nativechromium.browser"}
 PREFIXES = ("EventLatency.KeyPressed", "Omnibox.Views.PopupFirstPaint", "Omnibox.CharTypedToRepaintLatency", "Browser.Tabs.TotalSwitchDuration3",
             "TabStrip.TimeToSwitch", "Startup.BrowserWindow", "Startup.FirstWebContents.NonEmptyPaint3",
             "Startup.BrowserMessageLoopStartTime", "Startup.LoadTime")
@@ -143,12 +145,12 @@ def wait_cdp(seconds=40):
             time.sleep(1)
 
 
-def start(tag):
+def start(tag, page=PAGE):
     """Fresh launch of the build in tag ("cr151own" or "cr151own+nosmooth") with DevTools and the variant's flag."""
     base, _, variant = tag.partition("+")
     app = APPS[base]
     flags = " ".join(["--remote-debugging-port=9225", VARIANTS[variant] if variant else ""])
-    launch = json.dumps({"id": app, "params": {"target": PAGE}})
+    launch = json.dumps({"id": app, "params": {"target": page}})
     fire(f"{close_all()}sleep 4; printf '%s\\n' {flags} > /tmp/{app}/browser.flags; "
          f"luna-send -n 1 luna://com.webos.applicationManager/launch '{launch}' >/dev/null")
     br = wait_cdp()
@@ -169,6 +171,33 @@ def run(tag, scenario, rnd):
     fire(close_all())
 
 
+FOCUSED = """(() => { const e = document.activeElement, s = document.getElementById("scroller");
+  return [e.id || "", e.tagName, (e.textContent || "").trim().slice(0, 30), e.getAttribute("href") || "",
+          Math.round(scrollY), s ? s.scrollTop : ""].join(" | "); })()"""
+
+
+def page_eval(expr):
+    targets = json.load(urllib.request.urlopen(f"http://{CDP}/json/list", timeout=20))
+    page = next(t for t in targets if t["type"] == "page" and t["url"].startswith("http"))
+    ws = WebSocket(CDP, "/devtools/page/" + page["id"])
+    ws.send(json.dumps({"id": 1, "method": "Runtime.evaluate", "params": {"expression": expr, "returnByValue": True}}))
+    while True:
+        msg = json.loads(ws.recv())
+        if msg.get("id") == 1:
+            ws.sock.close()
+            return msg["result"]["result"].get("value")
+
+
+if sys.argv[1] == "focus":
+    tag, url, keys = sys.argv[2], sys.argv[3], sys.argv[4:]
+    start(tag, url).ws.sock.close()
+    print(f"{tag} start: {page_eval(FOCUSED)}", flush=True)
+    for i, k in enumerate(keys):
+        press([k])
+        time.sleep(0.5)
+        print(f"{tag} {i + 1} key {k}: {page_eval(FOCUSED)}", flush=True)
+    fire(close_all())
+    sys.exit()
 if sys.argv[1] == "trace":
     tag, scenario, out = sys.argv[2:5]
     br = start(tag)

@@ -41,5 +41,5 @@ Results and conclusions from these artifacts are kept in the text files of this 
 | Build host | Docker volume `cr151work`, image `cr151` | Active work |
 | Build host | `cr120/content_shell.gz`, `cr120/cr120.tar.gz` | Last cr120 build, ready to deploy |
 | Build host | `perf/bin/perf` | Static perf for the TV. Rebuilding it needs the deleted `wpe-br` toolchain |
-| TV | `com.viiees.browser` (WPE, final library), `com.viiees.cr120` + `/media/developer/temp/cr120`, `org.nativechromium.browser` (cr151 0.0.66), `com.viiees.cr151` (own build, 233 MB) | Runnable engines for comparison |
-| TV | `/media/developer/bench/{pages,media,speedometer3.1,motionmark1.3.2}`, `/media/developer/temp/{perf,threads*.sh}` | Benchmark set |
+| TV | `com.viiees.browser` (WPE, final library), `com.viiees.cr120` + `/media/developer/temp/cr120`, `org.nativechromium.browser` (cr151 0.0.66), `com.viiees.cr151` (own build, 233 MB), `com.viiees.cr151p` (own build + patch 0103, 233 MB) | Runnable engines for comparison |
+| TV | `/media/developer/bench/{pages (incl. spatnav.html),media,speedometer3.1,motionmark1.3.2}`, `/media/developer/temp/{perf,threads*.sh}` | Benchmark set |

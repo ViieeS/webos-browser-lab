@@ -1,0 +1,44 @@
+<!doctype html>
+<!-- Spatial navigation check page: arrows must land on the same elements with and without cr151 patch 0103.
+     Covers a link grid, a scroll container, form controls and a content-visibility:auto section (a display lock,
+     where patch 0103 falls back to the per-element update). Every focusable element has an id. -->
+<html>
+<head>
+<meta charset="utf-8">
+<title>spatnav check</title>
+<style>
+  body { font: 24px sans-serif; margin: 20px; }
+  .grid { display: grid; grid-template-columns: repeat(5, 200px); gap: 16px 24px; }
+  .grid a { display: block; padding: 12px; background: #eef; }
+  .grid a.wide { grid-column: span 2; }
+  .scroller { height: 180px; width: 640px; overflow: auto; border: 2px solid #888; margin: 24px 0; }
+  .scroller a { display: block; padding: 10px; }
+  form { margin: 24px 0; display: flex; gap: 24px; }
+  .cv { content-visibility: auto; contain-intrinsic-size: auto 400px; margin-top: 1400px; }
+  .cv a { display: inline-block; margin: 12px; padding: 12px; background: #efe; }
+</style>
+</head>
+<body>
+<h1>spatnav check</h1>
+<div class="grid">
+  <a id="g1" href="#g1">g1</a><a id="g2" href="#g2">g2</a><a id="g3" class="wide" href="#g3">g3 wide</a>
+  <a id="g4" href="#g4">g4</a>
+  <a id="g5" class="wide" href="#g5">g5 wide</a><a id="g6" href="#g6">g6</a><a id="g7" href="#g7">g7</a>
+  <a id="g8" href="#g8">g8</a>
+  <a id="g9" href="#g9">g9</a><a id="g10" href="#g10">g10</a><a id="g11" href="#g11">g11</a>
+  <a id="g12" class="wide" href="#g12">g12 wide</a>
+</div>
+<div class="scroller" id="scroller">
+  <a id="s1" href="#s1">s1</a><a id="s2" href="#s2">s2</a><a id="s3" href="#s3">s3</a><a id="s4" href="#s4">s4</a>
+  <a id="s5" href="#s5">s5</a><a id="s6" href="#s6">s6</a><a id="s7" href="#s7">s7</a><a id="s8" href="#s8">s8</a>
+</div>
+<form onsubmit="return false">
+  <input id="f1" value="text"><button id="f2" type="button">button</button>
+  <select id="f3"><option>one</option><option>two</option></select>
+</form>
+<div class="cv" id="cv">
+  <a id="c1" href="#c1">c1</a><a id="c2" href="#c2">c2</a><a id="c3" href="#c3">c3</a><a id="c4" href="#c4">c4</a>
+</div>
+<p style="height: 600px"></p>
+</body>
+</html>
