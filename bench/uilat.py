@@ -27,6 +27,7 @@ TV = os.environ["TV_HOST"]
 CDP = f"{TV}:9226"
 EVKEYS = "/media/developer/temp/evkeys /dev/input/event10"
 APPS = {"cr151own": "com.viiees.cr151", "cr151p": "com.viiees.cr151p",   # cr151p: own build + patch 0103
+        "chromiumtv": "com.viiees.chromiumtv",   # the finished browser (cr151/package.sh default)
         "cr151": "org.nativechromium.browser"}
 PREFIXES = ("EventLatency.KeyPressed", "Omnibox.HistoryFuzzy","Omnibox.Views.PopupFirstPaint", "Omnibox.CharTypedToRepaintLatency", "Browser.Tabs.TotalSwitchDuration3",
             "TabStrip.TimeToSwitch", "Startup.BrowserWindow", "Startup.FirstWebContents.NonEmptyPaint3",

@@ -676,13 +676,78 @@ Raw: `browser/cr151/ubol_builtin_check.txt`. Details: `browser/cr151/ADBLOCK.md`
   96/100. Two YouTube videos had no ad sample and played at 1×.
 - uBO Lite opens no first-run tab: its background script has no `tabs.create`.
 
+### Chromium TV: the final app id (2026-11-18)
+
+- The browser ships as `com.viiees.chromiumtv`, "Chromium TV" (`cr151/package.sh` default). It replaced
+  `com.viiees.cr151p`, the same build.
+- **Moving a profile to a new app id.** Each app runs as its own uid, set at install (here 5925, cr151p was 6585).
+  Launch the new app once, close it, then replace its `data/profile` with a copy of the old one, remove
+  `Singleton*` from the copy and `chown -R <new uid>:5000`. Cookies (YouTube's consent included) and history carry
+  over.
+- Unpacked extensions get their id from their path. uBO Lite's id changes with the app, so its own settings start
+  fresh, in complete mode by our default. TV Tools keeps its id through the `key` in its manifest.
+
+### Chromium TV: fonts, web apps, YouTube 4K60 (2026-11-19)
+
+**Fonts.** Raw: `browser/cr151/fonts_chromiumtv.txt` (before), `fonts_chromiumtv_fixed.txt` and
+`fonts_chromiumtv_fixed_*.png` (after). Page: `bench/pages/fonts.html`. Script: `bench/fontcheck.py`, which reports
+the font Blink actually used for each sample via `CSS.getPlatformFontsForNode`.
+
+- **Web fonts are never substituted.** Google Fonts (Roboto, Inter, Open Sans, PT Serif, JetBrains Mono, Latin and
+  Cyrillic) draw from the downloaded files in every weight and style. Blink loads @font-face itself, fontconfig is not
+  asked.
+- **Bug, fixed in `cr151/fonts.conf`:** a page asking for Arial, Helvetica, Verdana or Courier New alone got the
+  default serif (Tinos), Courier New included. `fc-match` said Droid Sans, but Chrome accepts a fontconfig
+  substitute only when it is the first family after config substitution, or metric-compatible (Tinos for Times,
+  Arimo for Arial). The aliases used `<accept>`, which leaves the requested name first.
+  - Now `<prefer>` with strong binding. Also added: Georgia and Cambria → Tinos; Verdana, Tahoma, Segoe UI,
+    Trebuchet MS and Calibri → Droid Sans; Consolas, Monaco, Menlo and Lucida Console → Droid Sans Mono.
+  - Most sites end their list with a generic family, so they were already right. This fixes the ones that do not.
+- **Synthesised styles.** Droid Sans has no italic on the TV: italic is slanted, bold is the real Droid Sans Bold.
+  Tinos is there only as `Tinos-Regular.ttf`, so its bold and italic are both synthesised.
+- **Arimo and Cousine are not on the TV** (`fc-list`), nor Liberation. So the metric-compatible path for Arial
+  and Courier New does not exist, and the `<prefer>` aliases above are what makes them sans and mono.
+  - Shipping Croscore (Arimo, Tinos, Cousine with all four styles, Apache 2.0, about 1–2 MB) would add
+    Arial/Times/Courier metrics and real bold and italic. Then pages laid out for Arial would wrap as designed.
+  - Not needed for correct families, and not done.
+- **Browser UI** (`cap_ui_chromiumtv_omnibox.png`, `_omnibox_crop.png`, `_menu.png`):
+  - the address bar with its suggestions, the tab strip and the app menu are Droid Sans throughout, Latin and
+    Cyrillic in one face;
+  - grayscale antialiasing with no colour fringes, even spacing, round dots, mnemonic underlines in the menu;
+  - nothing to fix. The address bar shows 5 suggestion rows, as the trim sets.
+- **Keys for UI screenshots:** `event10` exists only while LG's phone remote (ThinQ) is connected. Without it
+  `evkeys` fails with "No such device or address". After launch, Ctrl+L focuses the address bar. F6 went to the tab
+  strip once a page bubble (Translate) had taken focus.
+
+**Installable web apps (PWA).** Raw: `browser/cr151/pwa_check.txt`, screens `cap_pwa_*.png`.
+
+- **They work.** Install comes from the address bar icon or menu → Save and share → Install. The dialog's focus starts
+  on Cancel, so with the remote press Right or Tab before OK.
+- The app opens in its own window: a title bar in the app's colour and no address bar. It is listed in
+  `chrome://apps` and survives a browser restart.
+- **No entry in webOS's launcher.** An installed web app is reached through `chrome://apps` (or the "Open in app"
+  chip on its site) inside Chromium TV. Chromium writes no `.desktop` file there, and webOS has no place for one.
+- CDP's `PWA` domain is not in this build (`'PWA.install' wasn't found`), so scripts install through the menu.
+
+**YouTube 4K60, measured** (raw `browser/cr151/yt4k60_chromiumtv.txt`, script `bench/yt4k.py`). Big Buck Bunny
+4K60 (`aqz-KE-bpKQ`), fresh profile, TV Tools `maxRes` raised to 2160 (its "Auto" stops at 1080p60), player asked
+for hd2160.
+
+- Over 52.6 s of wall time: 52.57 s of video (1.00×), 3 154 frames decoded (60.0 per second), 0 dropped by
+  `getVideoPlaybackQuality` and by YouTube's own stats.
+- Stream: `3840x2160@60`, AV1 (itag 401), a short VP9 start. Buffer health 7–11 s.
+- CPU: browser main thread about 12 % of a core, decoding in `lxvideodec` (NDL).
+- **Not measurable from the browser: on-screen pacing.** The video goes to LG's video plane, past Chrome's
+  compositor, so `requestVideoFrameCallback` hardly fires. A look at the screen is still the check for judder.
+- The one stall in the run was the consent lightbox on the fresh profile.
+
 ### Open items in cr151 before a final browser (2026-11-18)
 
 The tab limit and DRM are left out: the owner set the first aside, and the second is a separate project.
 
 | Item | Before the final? | Why |
 |---|---|---|
-| YouTube 4K60 not watched on screen (RESULTS.md) | Yes, cheap | One minute of the owner's eyes. Counters show 0 dropped, but stutter can hide from them (WebOS-Chromium issue #12) |
+| YouTube 4K60 not watched on screen (RESULTS.md) | Yes, cheap | Measured on 2026-11-19: 1.00×, 60 fps decoded, 0 dropped (see "Chromium TV: fonts, web apps, YouTube 4K60"). On-screen pacing still needs one minute of the owner's eyes (WebOS-Chromium issue #12: stutter with clean counters) |
 | VP9 profile 2 (YouTube HDR) unsupported | No | Same kind of type check as HEVC, but HDR output through NDL is untested. YouTube falls back to SDR VP9, so nothing breaks now |
 | HDR colours of HEVC Main 10 (0106) | No | Same unknown as VP9 profile 2. SDR HEVC is checked |
 | E-AC3 unsupported | No | Few web players need it. Stereo AAC and Opus work |
@@ -805,7 +870,7 @@ Details and raw files: `browser/cr151/ADBLOCK.md`.
 
 ## 8. Upstream candidates
 
-None of these has been submitted.
+Submitted rows carry the link; the rest are not submitted.
 
 | Patch | Target project | Note | Status |
 |---|---|---|---|
@@ -824,13 +889,13 @@ None of these has been submitted.
 | cr120 0008 paint-event (first half) | [webosose/chromium120](https://github.com/webosose/chromium120) | Wrong guard on `kFirstContainerResetPaint`. The scanner half is local | not submitted |
 | cr120 0009 pal-pc-factory-signatures | [webosose/chromium120](https://github.com/webosose/chromium120) | PC pal factory drift | not submitted |
 | cr120 0013 neva-media-position-non-webos | [webosose/chromium120](https://github.com/webosose/chromium120) | Non-webOS build of media/neva | not submitted |
-| cr151 0100 webos-no-caption-buttons | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) | Removes minimise/maximise/close on webOS | not submitted |
-| cr151 0101 arm-cortex-a55-tune-and-fpu | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) | Fixes the overridden `-mfpu` of their 0012; measured with the speed build | not submitted |
+| cr151 0100 webos-no-caption-buttons | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) | Removes minimise/maximise/close on webOS | [PR #18](https://github.com/sarahahzub/WebOS-Chromium/pull/18) as 0053, 2026-11-19 |
+| cr151 0101 arm-cortex-a55-tune-and-fpu | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) | Fixes the overridden `-mfpu` of their 0012; measured with the speed build | [PR #21](https://github.com/sarahahzub/WebOS-Chromium/pull/21) as 0056, opt-in for arm_version 8, 2026-11-19 |
 | cr151 0103 spatnav-one-layout-update-per-walk | [Chromium](https://issues.chromium.org) (Blink spatial navigation), copy to WebOS-Chromium | Platform-independent: Down 167 → 115 ms on a Wikipedia article. The same code is in Chromium main on 2026-11-18. The Chromium tracker was not searched | not submitted |
-| cr151 0105 vizfmp-swap-needs-compositor | [webOS-ports/chromium151](https://github.com/webOS-ports/chromium151) (the neva code is in its base tree), report to WebOS-Chromium | Renderer NULL dereference on adblock-tester.com in 0.0.66 too. No issue or PR in either repository (checked 2026-11-18). PR #17 there touches FCP waiting in viz, not this | not submitted |
-| cr151 0106 webos-hevc-through-ndl | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) | Depends on their NDL renderer (0023) and `$CN_MEDIA_SOCK`. HEVC 4K plays on the C1. No HEVC issue there | not submitted |
-| cr151 fonts.conf | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) (package: run.sh + a shipped fonts.conf) | Every family came out as LG Display with full hinting. No issue there | not submitted |
-| cr151 omnibox trim (run.sh flags) | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) (run.sh) | Omnibox key to screen 160 → 87 ms, flags only. A TV product choice (fewer providers, 5 rows), so offer it as an option. No issue there | not submitted |
+| cr151 0105 vizfmp-swap-needs-compositor | [webOS-ports/chromium151](https://github.com/webOS-ports/chromium151) (the neva code is in its base tree), report to WebOS-Chromium | Renderer NULL dereference on adblock-tester.com in 0.0.66 too. No issue or PR in either repository (checked 2026-11-18). PR #17 there touches FCP waiting in viz, not this | [PR #19](https://github.com/sarahahzub/WebOS-Chromium/pull/19) as 0054, [chromium151 #31](https://github.com/webOS-ports/chromium151/issues/31), 2026-11-19 |
+| cr151 0106 webos-hevc-through-ndl | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) | Depends on their NDL renderer (0023) and `$CN_MEDIA_SOCK`. HEVC 4K plays on the C1. No HEVC issue there | [PR #20](https://github.com/sarahahzub/WebOS-Chromium/pull/20) as 0055, 2026-11-19 |
+| cr151 fonts.conf | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) (package: run.sh + a shipped fonts.conf) | Every family came out as LG Display with full hinting. No issue there | [PR #22](https://github.com/sarahahzub/WebOS-Chromium/pull/22), 2026-11-19 |
+| cr151 omnibox trim (run.sh flags) | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) (run.sh) | Omnibox key to screen 160 → 87 ms, flags only. A TV product choice (fewer providers, 5 rows), so offer it as an option. No issue there | [PR #23](https://github.com/sarahahzub/WebOS-Chromium/pull/23), on by default, media.opts `omnibox=full` turns it off, 2026-11-19 |
 | Platform notes: quoted screensaver timestamp, NDL main-ELF requirement, Mali EGL display | [webosbrew](https://github.com/webosbrew) (documentation) | Knowledge for homebrew authors, not a code patch | not submitted |
 
 ### Spatial navigation patch 0103 (2026-11-18)

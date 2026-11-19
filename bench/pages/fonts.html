@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Font check</title>
+<!-- Web fonts from Google Fonts: Blink downloads these itself, fontconfig is not asked. Latin and Cyrillic subsets. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Open+Sans:wght@400;700&display=block">
+<style>
+  body { margin: 24px 40px; background: #fff; color: #111; }
+  .row { display: flex; align-items: baseline; gap: 16px; margin: 3px 0; white-space: nowrap; }
+  .label { font: 12px monospace; color: #777; width: 190px; flex: none; }
+  .s11 { font-size: 11px; } .s13 { font-size: 13px; } .s16 { font-size: 16px; } .s22 { font-size: 22px; }
+  h2 { font: bold 14px sans-serif; margin: 14px 0 4px; color: #555; }
+</style>
+</head>
+<body>
+<div id="rows"></div>
+<script>
+// One row per family and style. Each sample has an id, so a script can ask which platform font drew it.
+const LAT = "Sphinx of black quartz, judge my vow. AV To Wa Yo LT 0123456789 Il1| O0",
+      CYR = "Съешь же ещё этих мягких французских булок, да выпей чаю. Ёё Йй «Ж»",
+      MONO = "for (let i = 0; i < n; i++) { x[i] = y[i] * 2; } // 0O Il1|",
+      FAMILIES = [
+        ["generic", ["sans-serif", "serif", "monospace", "system-ui"]],
+        ["named local", ["Arial", "Helvetica", "Times New Roman", "Courier New", "Verdana", "Georgia"]],
+        ["web (Google Fonts)", ["Roboto", "Inter", "Open Sans", "PT Serif", "JetBrains Mono"]],
+      ],
+      STYLES = [["16", "", LAT], ["16", "", CYR], ["16", "bold", LAT], ["16", "italic", CYR], ["11", "", LAT],
+                ["13", "", CYR], ["22", "", LAT]];
+const root = document.getElementById("rows");
+let n = 0;
+for (const [group, fams] of FAMILIES) {
+  const h = document.createElement("h2"); h.textContent = group; root.append(h);
+  for (const fam of fams) {
+    for (const [size, style, text] of STYLES) {
+      if (/mono|Courier/i.test(fam) && text !== LAT) continue;
+      const row = document.createElement("div"); row.className = "row";
+      const label = document.createElement("span"); label.className = "label";
+      label.textContent = `${fam} ${size}${style ? " " + style : ""}`;
+      const s = document.createElement("span"); s.id = "f" + n++; s.className = "s" + size;
+      s.style.fontFamily = `"${fam}"`.replace(/"(sans-serif|serif|monospace|system-ui)"/, "$1");
+      if (style === "bold") s.style.fontWeight = "700";
+      if (style === "italic") s.style.fontStyle = "italic";
+      s.textContent = /mono|Courier/i.test(fam) ? MONO : text;
+      s.dataset.label = label.textContent;
+      row.append(label, s); root.append(row);
+    }
+  }
+}
+</script>
+</body>
+</html>

@@ -35,6 +35,10 @@ The goal of this repository is that the next person does not start from scratch.
 | [docs/ARTIFACTS.md](docs/ARTIFACTS.md) | What was built, what was deleted, and how to recreate it |
 | [AGENTS.md](AGENTS.md) | Working rules for an engineer or an LLM agent picking this up |
 
+**The browser: Chromium TV** (`com.viiees.chromiumtv`), our own build of WebOS-Chromium 151. `cr151/package.sh`
+builds it with patches 0100–0106, the omnibox trim, our fonts.conf and uBO Lite in complete mode. Its open items are
+in [docs/FINDINGS.md](docs/FINDINGS.md), "Open items in cr151 before a final browser".
+
 **Direction: [WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) 151.**
 - It wins on scrolling, YouTube and video, has a real browser UI, and the GPU works on the C1.
 - The open work is our own build of it, for two reasons:

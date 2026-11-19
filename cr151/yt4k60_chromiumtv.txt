@@ -1,0 +1,33 @@
+chromiumtv aqz-KE-bpKQ tvtools settings: {"maxRes": 2160}
+chromiumtv aqz-KE-bpKQ +8.8s {"ad":false,"t":0,"paused":false,"res":"0x0@60 / 3840x2160@60","codecs":"vp09.00.51.08.01.01.01.01.00 (315) / opus (251)","health":"0.00 s","q":"hd2160","frames":0,"dropped":0,"rvfc":0,"gap_p50":null,"gap_p95":null,"gap_max":null}
+chromiumtv aqz-KE-bpKQ +12.3s {"ad":false,"t":3.1,"paused":false,"res":"3840x2160@60 / 3840x2160@60","codecs":"vp09.00.51.08.01.01.01.01.00 (315) / opus (251)","health":"2.67 s","q":"hd2160","frames":195,"dropped":0,"rvfc":1,"gap_p50":null,"gap_p95":null,"gap_max":null}
+chromiumtv aqz-KE-bpKQ +15.8s {"ad":false,"t":6.63,"paused":false,"res":"3840x2160@60 / 3840x2160@60","codecs":"vp09.00.51.08.01.01.01.01.00 (315) / opus (251)","health":"6.67 s","q":"hd2160","frames":407,"dropped":0,"rvfc":1,"gap_p50":null,"gap_p95":null,"gap_max":null}
+chromiumtv aqz-KE-bpKQ +27s consent: Reject all
+chromiumtv aqz-KE-bpKQ +28.8s {"ad":false,"t":13.52,"paused":true,"res":"3840x2160@60 / 3840x2160@60","codecs":"av01.0.13M.08 (401) / opus (251)","health":"0.00 s","q":"hd2160","frames":794,"dropped":0,"rvfc":1,"gap_p50":null,"gap_p95":null,"gap_max":null}
+chromiumtv aqz-KE-bpKQ +34s consent: Reject all
+chromiumtv aqz-KE-bpKQ +34.6s {"ad":false,"t":13.53,"paused":false,"res":"3840x2160@60 / 3840x2160@60","codecs":"av01.0.13M.08 (401) / opus (251)","health":"0.00 s","q":"hd2160","frames":795,"dropped":0,"rvfc":1,"gap_p50":null,"gap_p95":null,"gap_max":null}
+chromiumtv aqz-KE-bpKQ +38s consent: Reject all
+chromiumtv aqz-KE-bpKQ +38.5s {"ad":false,"t":22.72,"paused":false,"res":"3840x2160@60 / 3840x2160@60","codecs":"av01.0.13M.08 (401) / opus (251)","health":"4.81 s","q":"hd2160","frames":1373,"dropped":0,"rvfc":2,"gap_p50":28015.6,"gap_p95":28015.6,"gap_max":28015.6}
+chromiumtv aqz-KE-bpKQ +42s consent: Reject all
+chromiumtv aqz-KE-bpKQ +42.2s {"ad":false,"t":26.44,"paused":false,"res":"3840x2160@60 / 3840x2160@60","codecs":"av01.0.13M.08 (401) / opus (251)","health":"8.18 s","q":"hd2160","frames":1596,"dropped":0,"rvfc":2,"gap_p50":null,"gap_p95":null,"gap_max":null}
+chromiumtv aqz-KE-bpKQ +45s consent: Reject all
+chromiumtv aqz-KE-bpKQ cpu 8s: 99 chrome chrome; 49 chrome Media; 28 run run; 15 chrome ThreadPoolForeg; 12 run lxvideodec2:src; 8 run video-src:src; 8 run task14; 8 run audio-src:src;
+chromiumtv aqz-KE-bpKQ +60.4s {"ad":false,"t":44.57,"paused":false,"res":"3840x2160@60 / 3840x2160@60","codecs":"av01.0.13M.08 (401) / opus (251)","health":"7.77 s","q":"hd2160","frames":2684,"dropped":0,"rvfc":2,"gap_p50":null,"gap_p95":null,"gap_max":null}
+chromiumtv aqz-KE-bpKQ +64s consent: Reject all
+chromiumtv aqz-KE-bpKQ +64.0s {"ad":false,"t":48.24,"paused":false,"res":"3840x2160@60 / 3840x2160@60","codecs":"av01.0.13M.08 (401) / opus (251)","health":"11.06 s","q":"hd2160","frames":2904,"dropped":0,"rvfc":2,"gap_p50":null,"gap_p95":null,"gap_max":null}
+chromiumtv aqz-KE-bpKQ +67s consent: Reject all
+chromiumtv aqz-KE-bpKQ +67.3s {"ad":false,"t":51.5,"paused":false,"res":"3840x2160@60 / 3840x2160@60","codecs":"av01.0.13M.08 (401) / opus (251)","health":"7.77 s","q":"hd2160","frames":3099,"dropped":0,"rvfc":2,"gap_p50":null,"gap_p95":null,"gap_max":null}
+chromiumtv aqz-KE-bpKQ +70s consent: Reject all
+chromiumtv aqz-KE-bpKQ +70.7s {"ad":false,"t":54.89,"paused":false,"res":"3840x2160@60 / 3840x2160@60","codecs":"av01.0.13M.08 (401) / opus (251)","health":"7.53 s","q":"hd2160","frames":3303,"dropped":0,"rvfc":2,"gap_p50":null,"gap_p95":null,"gap_max":null}
+chromiumtv aqz-KE-bpKQ +74s consent: Reject all
+chromiumtv aqz-KE-bpKQ +74.0s {"ad":false,"t":58.24,"paused":false,"res":"3840x2160@60 / 3840x2160@60","codecs":"av01.0.13M.08 (401) / opus (251)","health":"9.97 s","q":"hd2160","frames":3503,"dropped":0,"rvfc":2,"gap_p50":null,"gap_p95":null,"gap_max":null}
+chromiumtv aqz-KE-bpKQ +77s consent: Reject all
+chromiumtv aqz-KE-bpKQ +77.4s {"ad":false,"t":61.6,"paused":false,"res":"3840x2160@60 / 3840x2160@60","codecs":"av01.0.13M.08 (401) / opus (251)","health":"6.76 s","q":"hd2160","frames":3705,"dropped":0,"rvfc":2,"gap_p50":null,"gap_p95":null,"gap_max":null}
+chromiumtv aqz-KE-bpKQ +81s consent: Reject all
+chromiumtv aqz-KE-bpKQ +80.7s {"ad":false,"t":64.89,"paused":false,"res":"3840x2160@60 / 3840x2160@60","codecs":"av01.0.13M.08 (401) / opus (251)","health":"7.53 s","q":"hd2160","frames":3903,"dropped":0,"rvfc":2,"gap_p50":null,"gap_p95":null,"gap_max":null}
+chromiumtv aqz-KE-bpKQ +84s consent: Reject all
+chromiumtv aqz-KE-bpKQ +84.0s {"ad":false,"t":68.25,"paused":false,"res":"3840x2160@60 / 3840x2160@60","codecs":"av01.0.13M.08 (401) / opus (251)","health":"7.59 s","q":"hd2160","frames":4104,"dropped":0,"rvfc":2,"gap_p50":null,"gap_p95":null,"gap_max":null}
+chromiumtv aqz-KE-bpKQ +87s consent: Reject all
+chromiumtv aqz-KE-bpKQ +87.3s {"ad":false,"t":71.51,"paused":false,"res":"3840x2160@60 / 3840x2160@60","codecs":"av01.0.13M.08 (401) / opus (251)","health":"7.98 s","q":"hd2160","frames":4300,"dropped":0,"rvfc":2,"gap_p50":null,"gap_p95":null,"gap_max":null}
+chromiumtv aqz-KE-bpKQ +91s consent: Reject all
+chromiumtv aqz-KE-bpKQ +91.1s {"ad":false,"t":75.29,"paused":false,"res":"3840x2160@60 / 3840x2160@60","codecs":"av01.0.13M.08 (401) / opus (251)","health":"9.27 s","q":"hd2160","frames":4527,"dropped":0,"rvfc":2,"gap_p50":null,"gap_p95":null,"gap_max":null}

@@ -5,10 +5,10 @@
 # Output: /work/dist/<APP_ID>_<VERSION>_arm.ipk, /work/dist/browser/ (unpacked, stripped), check-abi report.
 . /opt/cn/container/lib.sh
 need_sysroot   # check-abi compares against the sysroot's TV-SONAMES and glibc
-# CR151_APP_ID, CR151_APP_TITLE: a variant next to it (com.viiees.cr151p: + patch 0103). Not APP_ID: lib.sh has
-# already set that from their config.env (org.nativechromium.browser).
-APP_ID=${CR151_APP_ID:-com.viiees.cr151}
-APP_TITLE=${CR151_APP_TITLE:-"Chromium 151 (own build)"}
+# The default is the finished browser, Chromium TV. CR151_APP_ID, CR151_APP_TITLE: a test variant next to it under
+# another id. Not APP_ID: lib.sh has already set that from their config.env (org.nativechromium.browser).
+APP_ID=${CR151_APP_ID:-com.viiees.chromiumtv}
+APP_TITLE=${CR151_APP_TITLE:-"Chromium TV"}
 VERSION=0.0.66
 D=/work/dist; B=$D/browser; rm -rf "$D"; mkdir -p "$B"
 cd "$OUT"

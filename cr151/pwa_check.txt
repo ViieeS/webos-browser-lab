@@ -1,0 +1,13 @@
+# Installable web app (PWA) in Chromium TV, 2026-11-19. squoosh.app, keys through evkeys (event10).
+# Screens: cap_pwa_icon.png (install icon in the address bar), cap_pwa_menu.png (menu > Save and share >
+# Install Squoosh...), cap_pwa_dialog.png (install dialog, focus starts on Cancel), cap_pwa_apps.png (chrome://apps),
+# cap_pwa_window.png (the app's own window).
+install dialog: "Successfully installed", Squoosh, squoosh.app
+CDP: PWA.install -> {'code': -32601, 'message': "'PWA.install' wasn't found"} (the PWA domain is not in this build)
+chrome://apps before restart: one app-item, Squoosh
+launch from chrome://apps: new page target https://squoosh.app/?utm_medium=PWA&utm_source=launcher, own window
+  (title bar in the app's theme colour, no address bar), squoosh.app's service worker registered
+after a browser restart, chrome://apps: ['Squoosh View in Web Store Open in window Launch at startup Create shortcut
+  Install on this device Uninstall Remove from Chrome App settings']
+webOS launcher (applicationManager/listApps) before and after: no new app id
+*.desktop files under the app's data folder and /tmp/<app id>: none
