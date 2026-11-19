@@ -55,8 +55,8 @@ press in a page about 160 ms. The flags do not fix it. The stage split and A/B f
   - the ARMv7 CSS JIT (0015).
 - **DRM is not solvable.** Widevine is not available as a Chrome CDM on the TV. PlayReady is API-compatible but untested.
 - **Tab memory ceiling.** Every blocker variant fails at 15-19 heavy tabs, and once the whole TV restarted
-  ([ADBLOCK.md](../cr151/ADBLOCK.md#many-tabs)). Cap the tab count or discard background tabs before zram fills.
-  After the current tasks.
+  ([ADBLOCK.md](../cr151/ADBLOCK.md#many-tabs)). Done 2026-11-19: `package.sh` sets TV Tools' tab limit to 8, so
+  the oldest tab closes above 8 ([TRIM_CANDIDATES.md](../cr151/TRIM_CANDIDATES.md#results-2026-11-19)).
 
 ## 4. Housekeeping
 
