@@ -1,0 +1,5 @@
+base variations: trials=659 enable_features=738 disable_features=81
+noft variations: trials=2 enable_features=3 disable_features=36
+all variations: trials=2 enable_features=3 disable_features=40
+noft variations: trials=2 enable_features=3 disable_features=36
+noftmisc variations: trials=2 enable_features=3 disable_features=46

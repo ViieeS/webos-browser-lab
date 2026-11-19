@@ -1,10 +1,73 @@
 # What else to switch off in Chromium 151 for the TV
 
-Analysis only (2026-11-19). Nothing here is applied or measured on the TV yet. Every name below was checked in the
+Analysis and an A/B of rows 1, 2 and 4 on the TV (2026-11-19, "Results" below). Every name below was checked in the
 Chromium 151.0.7922.108 tree that `cr151/build.sh` builds (`out/tv`), unless the row says otherwise. GN rows were
 checked with `gn gen` on a copy of `out/tv/args.gn` with the arg appended (generation only, nothing was compiled).
 
 "Gain" is an estimate unless it cites a source. Sources are published numbers from other platforms, not from this TV.
+
+## Results (2026-11-19)
+
+A/B on the installed Chromium TV (`com.viiees.chromiumtv` 0.0.66, OLED55C1). Each run is a fresh launch with the variant's
+switches in `browser.flags`, variants alternate inside a round. Script: `bench/trim_run.py`.
+
+| Variant | Switches | Wikipedia load, median of 3 | Speedometer 3.1, median (runs) | Browser process RSS | Swap free, 6 heavy tabs |
+|---|---|---|---|---|---|
+| base | none | 3.66 s | 0.722 (8) | 180–197 MB | 209, 213 MB |
+| noft (row 1) | `--disable-field-trial-config` | 3.70 s | 0.711 (12) | 148–170 MB | 249, 265 MB |
+| noft + sqrt | noft plus V8 `--sqrt-allocation-limits` | | **0.737 (4)** | 148–168 MB | 29, 63 MB (noft: 40, 35)¹ |
+| nopred (row 2) | four preloading features off | 3.38 s | 0.719 (1) | 180–201 MB | 234, 184 MB |
+| neva (row 4) | LG's five cache switches | 3.48 s | 0.737 (1) | 195–204 MB | 208, 125 MB |
+| all | the three together | 3.71 s | 0.707 (1) | 148–167 MB | 250, 207 MB |
+| noftmisc (rows 5, 12, 13) | noft plus ten features and `--disable-domain-reliability` | 3.64, 3.82 s | 0.715 (2) | 154–161 MB | |
+
+¹ A later run, after the TV had been up for 6 hours: its background apps held more memory, so zram was fuller for
+both variants. Compare the pair with each other only.
+
+- **Row 1, field-trial config off: wins on memory, costs about 1.5 % of JS speed.** It turns off 657 of 659 active
+  trials and 735 of 738 enabled features (`trim_variations.txt`). The two trials left come from run.sh's own forced
+  omnibox switches, so the omnibox trim keeps working.
+  - The browser process is 25–35 MB smaller in every case and every round.
+  - During Speedometer all-Chrome RSS is 429 MB instead of 495 MB, and MemAvailable is 49 MB higher.
+  - With 6 live heavy tabs zram has 40–50 MB more free.
+  - Load time does not change. Speedometer is lower than base in each of 5 paired rounds, by 0.1–3 %.
+  - On by default: `package.sh` adds it to run.sh's switch line.
+- **The speed loss is one study: `V8SqrtAllocationLimits`.** Found by halving (`trim_bisect*.txt`): the V8 studies
+  brought the speed back, the PartitionAlloc ones and V8Turbolev did not. Inside V8, the heap and GC half did, and inside
+  that only this study. It turns on V8's `--sqrt-allocation-limits`, a different rule for when the heap grows before the
+  next GC. Its params in the config are V8's own defaults (80/80/20/4), so the flag alone is the same thing.
+  - noft + this flag: Speedometer 0.737, 3.7 % above noft and 2 % above base, in all 4 runs (`trim_bisect3.txt`,
+    `trim_sqrt.txt`).
+  - Memory: on heavy pages no difference from noft. During Speedometer all-Chrome RSS is up to 30 MB higher in one of
+    two rounds.
+  - On by default: `package.sh` adds `--sqrt-allocation-limits` to run.sh's `--js-flags`.
+- **Row 2, preloading off: no gain.** The omnibox test (`trim_omnipre.txt`) types "wikipedia" and opens a suggestion.
+  Without the four features the browser no longer preconnects to the search engine. But a prerender still starts while
+  typing (`ClientHints.FetchLatency_PrerenderHost` in both variants), memory while typing is the same (342 and 343 MB),
+  and the search page opens in 2.4–3.1 s either way. The prerender stops only with the pref
+  `net.network_prediction_options = 2`, which this A/B did not set.
+- **Rows 5, 12 and 13 together: no gain.** Speedometer and Wikipedia load are within noise of noft. Memory is the same.
+- **Row 4, neva switches: rejected.** No memory gain. In the second heavy round zram was the fullest of all variants.
+- **Row 3, memory saver: not measured.** The owner chose a tab limit instead. `package.sh` sets TV Tools' own limit
+  to 8 by default (oldest tab closes above 8): in the ADBLOCK.md tab test MemAvailable fell under 300 MB and zram was
+  nearly full from the 8th heavy tab. The installed TV has the limit set to 8 too.
+- **Rows 6–11 and 14 were not measured.** They need a rebuild or prefs, or (row 9) give up a security mitigation.
+
+Raw files in `cr151/`:
+
+- `trim_variations.txt`: active trials and features per variant;
+- `trim_load.txt`, `trim_load2.txt`: Wikipedia, 3 rounds each;
+- `trim_heavy.txt`: 5 live heavy pages, 2 rounds;
+- `trim_speedometer.txt` (one round, the second was stopped because the TV was needed), `trim_speedometer2.txt`;
+- `trim_bisect.txt`, `trim_bisect2.txt`, `trim_bisect3.txt`: Speedometer with groups of studies on top of noft;
+- `trim_sqrt.txt`: noft against noft + `V8Flag_sqrt_allocation_limits`, Speedometer and heavy pages;
+- `trim_omnipre.txt`: omnibox typing, preloading histograms and the navigation that followed.
+
+`bench/fieldtrial_linux.json` holds the first experiment of every Linux study in M151's testing config, which is what
+the build applies. `trim_run.py` forces any set of them on top of noft.
+
+Void runs, kept for reference, are in `trim_heavy_void.txt` and `trim_speedometer_void.txt`. In those runs Chrome had
+not exited between variants, so tabs piled up to 25. At SwapFree 5 MB the whole TV rebooted.
 
 ## Measure these first
 

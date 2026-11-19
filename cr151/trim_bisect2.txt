@@ -1,0 +1,24 @@
+noft speedometer #93536-0: score=0.712 wall_s=116 rss_browser_kb=158600 rss_ext_kb=85456 rss_total_kb=453600
+noft speedometer #93536-0 mem: MemAvailable: 467620 kB SwapTotal: 614396 kB SwapFree: 140448 kB
+noft+v8jit speedometer #93536-0: score=0.696 wall_s=117 rss_browser_kb=163936 rss_ext_kb=86040 rss_total_kb=458012
+noft+v8jit speedometer #93536-0 mem: MemAvailable: 450904 kB SwapTotal: 614396 kB SwapFree: 141860 kB
+noft+v8gc speedometer #93536-0: score=0.723 wall_s=113 rss_browser_kb=148240 rss_ext_kb=85920 rss_total_kb=431564
+noft+v8gc speedometer #93536-0 mem: MemAvailable: 464332 kB SwapTotal: 614396 kB SwapFree: 143352 kB
+base speedometer #93536-0: score=0.715 wall_s=114 rss_browser_kb=172008 rss_ext_kb=88848 rss_total_kb=475764
+base speedometer #93536-0 mem: MemAvailable: 441856 kB SwapTotal: 614396 kB SwapFree: 117116 kB
+noft speedometer #93536-1: score=0.711 wall_s=117 rss_browser_kb=162260 rss_ext_kb=86316 rss_total_kb=464464
+noft speedometer #93536-1 mem: MemAvailable: 449632 kB SwapTotal: 614396 kB SwapFree: 140656 kB
+noft+v8jit speedometer #93536-1: score=0.701 wall_s=117 rss_browser_kb=164648 rss_ext_kb=85880 rss_total_kb=467412
+noft+v8jit speedometer #93536-1 mem: MemAvailable: 444792 kB SwapTotal: 614396 kB SwapFree: 141308 kB
+noft+v8gc speedometer #93536-1: score=0.731 wall_s=111 rss_browser_kb=168512 rss_ext_kb=85888 rss_total_kb=487528
+noft+v8gc speedometer #93536-1 mem: MemAvailable: 555748 kB SwapTotal: 614396 kB SwapFree: 184752 kB
+base speedometer #93536-1: score=0.722 wall_s=112 rss_browser_kb=203472 rss_ext_kb=88624 rss_total_kb=522760
+base speedometer #93536-1 mem: MemAvailable: 545688 kB SwapTotal: 614396 kB SwapFree: 184176 kB
+noft speedometer #93536-2: score=0.704 wall_s=118 rss_browser_kb=148356 rss_ext_kb=85572 rss_total_kb=428932
+noft speedometer #93536-2 mem: MemAvailable: 595788 kB SwapTotal: 614396 kB SwapFree: 184764 kB
+noft+v8jit speedometer #93536-2: score=0.705 wall_s=116 rss_browser_kb=165276 rss_ext_kb=85844 rss_total_kb=465996
+noft+v8jit speedometer #93536-2 mem: MemAvailable: 594460 kB SwapTotal: 614396 kB SwapFree: 185328 kB
+noft+v8gc speedometer #93536-2: score=0.733 wall_s=112 rss_browser_kb=168796 rss_ext_kb=85828 rss_total_kb=467596
+noft+v8gc speedometer #93536-2 mem: MemAvailable: 579064 kB SwapTotal: 614396 kB SwapFree: 185940 kB
+base speedometer #93536-2: score=0.730 wall_s=112 rss_browser_kb=199664 rss_ext_kb=88916 rss_total_kb=514304
+base speedometer #93536-2 mem: MemAvailable: 550960 kB SwapTotal: 614396 kB SwapFree: 186196 kB

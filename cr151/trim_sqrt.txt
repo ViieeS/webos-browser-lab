@@ -1,0 +1,12 @@
+noft speedometer #99776-0: score=0.712 wall_s=115 rss_browser_kb=146632 rss_ext_kb=85612 rss_total_kb=432572
+noft speedometer #99776-0 mem: MemAvailable: 572076 kB SwapTotal: 614396 kB SwapFree: 198276 kB
+noftsqrt speedometer #99776-0: score=0.735 wall_s=112 rss_browser_kb=168092 rss_ext_kb=85764 rss_total_kb=460928
+noftsqrt speedometer #99776-0 mem: MemAvailable: 566028 kB SwapTotal: 614396 kB SwapFree: 198384 kB
+noft heavy #99776-0: s=221 pages=6 ok=6 busy=0 MemAvailable: 324088 kB SwapTotal: 614396 kB SwapFree: 40108 kB rss_browser_kb=159284 rss_ext_kb=39688 rss_total_kb=732240
+noftsqrt heavy #99776-0: s=221 pages=6 ok=6 busy=0 MemAvailable: 326372 kB SwapTotal: 614396 kB SwapFree: 29076 kB rss_browser_kb=148576 rss_ext_kb=39408 rss_total_kb=711728
+noft speedometer #99776-1: score=0.707 wall_s=117 rss_browser_kb=167764 rss_ext_kb=85600 rss_total_kb=467528
+noft speedometer #99776-1 mem: MemAvailable: 581084 kB SwapTotal: 614396 kB SwapFree: 157120 kB
+noftsqrt speedometer #99776-1: score=0.742 wall_s=113 rss_browser_kb=167672 rss_ext_kb=86200 rss_total_kb=469336
+noftsqrt speedometer #99776-1 mem: MemAvailable: 580040 kB SwapTotal: 614396 kB SwapFree: 163580 kB
+noft heavy #99776-1: s=221 pages=6 ok=6 busy=0 MemAvailable: 326712 kB SwapTotal: 614396 kB SwapFree: 34792 kB rss_browser_kb=155228 rss_ext_kb=39644 rss_total_kb=755320
+noftsqrt heavy #99776-1: s=221 pages=6 ok=6 busy=0 MemAvailable: 352872 kB SwapTotal: 614396 kB SwapFree: 62888 kB rss_browser_kb=158828 rss_ext_kb=77540 rss_total_kb=707800

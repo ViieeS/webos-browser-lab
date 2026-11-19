@@ -1,0 +1,12 @@
+noft load-wiki #88861-0: load_ms=4255 rss_browser_kb=151244 rss_ext_kb=96240 rss_total_kb=415156
+noft load-wiki #88861-0 mem: MemAvailable: 475880 kB SwapTotal: 614396 kB SwapFree: 146956 kB
+noftmisc load-wiki #88861-0: load_ms=3638 rss_browser_kb=154588 rss_ext_kb=96480 rss_total_kb=412028
+noftmisc load-wiki #88861-0 mem: MemAvailable: 477964 kB SwapTotal: 614396 kB SwapFree: 147720 kB
+noft load-wiki #88861-1: load_ms=3817 rss_browser_kb=155768 rss_ext_kb=96088 rss_total_kb=418048
+noft load-wiki #88861-1 mem: MemAvailable: 465940 kB SwapTotal: 614396 kB SwapFree: 148500 kB
+noftmisc load-wiki #88861-1: load_ms=3822 rss_browser_kb=154032 rss_ext_kb=96064 rss_total_kb=411032
+noftmisc load-wiki #88861-1 mem: MemAvailable: 474152 kB SwapTotal: 614396 kB SwapFree: 148812 kB
+noft load-wiki #88861-2: load_ms=3666 rss_browser_kb=152340 rss_ext_kb=96824 rss_total_kb=408340
+noft load-wiki #88861-2 mem: MemAvailable: 475292 kB SwapTotal: 614396 kB SwapFree: 149016 kB
+noftmisc load-wiki #88861-2: load_ms=3874 rss_browser_kb=154428 rss_ext_kb=96948 rss_total_kb=415948
+noftmisc load-wiki #88861-2 mem: MemAvailable: 467244 kB SwapTotal: 614396 kB SwapFree: 149324 kB

@@ -1,0 +1,30 @@
+base load-wiki #74845-0: load_ms=7160 rss_browser_kb=197208 rss_ext_kb=98492 rss_total_kb=439920
+base load-wiki #74845-0 mem: MemAvailable: 626652 kB SwapTotal: 614396 kB SwapFree: 408656 kB
+noft load-wiki #74845-0: load_ms=3697 rss_browser_kb=187796 rss_ext_kb=96796 rss_total_kb=426964
+noft load-wiki #74845-0 mem: MemAvailable: 625700 kB SwapTotal: 614396 kB SwapFree: 431648 kB
+nopred load-wiki #74845-0: load_ms=3384 rss_browser_kb=199404 rss_ext_kb=98968 rss_total_kb=453544
+nopred load-wiki #74845-0 mem: MemAvailable: 604200 kB SwapTotal: 614396 kB SwapFree: 428592 kB
+neva load-wiki #74845-0: load_ms=3612 rss_browser_kb=201456 rss_ext_kb=98576 rss_total_kb=457712
+neva load-wiki #74845-0 mem: MemAvailable: 607908 kB SwapTotal: 614396 kB SwapFree: 420956 kB
+all load-wiki #74845-0: load_ms=3665 rss_browser_kb=186808 rss_ext_kb=96536 rss_total_kb=426848
+all load-wiki #74845-0 mem: MemAvailable: 633568 kB SwapTotal: 614396 kB SwapFree: 423132 kB
+base load-wiki #74845-1: load_ms=3504 rss_browser_kb=203484 rss_ext_kb=98376 rss_total_kb=456756
+base load-wiki #74845-1 mem: MemAvailable: 602852 kB SwapTotal: 614396 kB SwapFree: 423192 kB
+noft load-wiki #74845-1: load_ms=3420 rss_browser_kb=189388 rss_ext_kb=96260 rss_total_kb=433004
+noft load-wiki #74845-1 mem: MemAvailable: 620840 kB SwapTotal: 614396 kB SwapFree: 427072 kB
+nopred load-wiki #74845-1: load_ms=3323 rss_browser_kb=197512 rss_ext_kb=98588 rss_total_kb=451948
+nopred load-wiki #74845-1 mem: MemAvailable: 602144 kB SwapTotal: 614396 kB SwapFree: 427120 kB
+neva load-wiki #74845-1: load_ms=3480 rss_browser_kb=207924 rss_ext_kb=98744 rss_total_kb=464592
+neva load-wiki #74845-1 mem: MemAvailable: 596964 kB SwapTotal: 614396 kB SwapFree: 423780 kB
+all load-wiki #74845-1: load_ms=3722 rss_browser_kb=188500 rss_ext_kb=96400 rss_total_kb=427580
+all load-wiki #74845-1 mem: MemAvailable: 623628 kB SwapTotal: 614396 kB SwapFree: 423916 kB
+base load-wiki #74845-2: load_ms=3661 rss_browser_kb=203384 rss_ext_kb=99156 rss_total_kb=458088
+base load-wiki #74845-2 mem: MemAvailable: 596760 kB SwapTotal: 614396 kB SwapFree: 424128 kB
+noft load-wiki #74845-2: load_ms=3913 rss_browser_kb=188220 rss_ext_kb=97016 rss_total_kb=433364
+noft load-wiki #74845-2 mem: MemAvailable: 613380 kB SwapTotal: 614396 kB SwapFree: 424160 kB
+nopred load-wiki #74845-2: load_ms=3493 rss_browser_kb=200252 rss_ext_kb=99064 rss_total_kb=454432
+nopred load-wiki #74845-2 mem: MemAvailable: 599068 kB SwapTotal: 614396 kB SwapFree: 420616 kB
+neva load-wiki #74845-2: load_ms=3451 rss_browser_kb=203172 rss_ext_kb=98864 rss_total_kb=456724
+neva load-wiki #74845-2 mem: MemAvailable: 597452 kB SwapTotal: 614396 kB SwapFree: 420728 kB
+all load-wiki #74845-2: load_ms=3708 rss_browser_kb=184316 rss_ext_kb=96580 rss_total_kb=423996
+all load-wiki #74845-2 mem: MemAvailable: 626288 kB SwapTotal: 614396 kB SwapFree: 420808 kB

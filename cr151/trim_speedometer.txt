@@ -1,0 +1,10 @@
+base speedometer #82230-0: score=0.735 wall_s=113 rss_browser_kb=180596 rss_ext_kb=88976 rss_total_kb=494752
+base speedometer #82230-0 mem: MemAvailable: 632752 kB SwapTotal: 614396 kB SwapFree: 246260 kB
+noft speedometer #82230-0: score=0.717 wall_s=117 rss_browser_kb=147692 rss_ext_kb=85636 rss_total_kb=428948
+noft speedometer #82230-0 mem: MemAvailable: 681952 kB SwapTotal: 614396 kB SwapFree: 247980 kB
+nopred speedometer #82230-0: score=0.719 wall_s=113 rss_browser_kb=179504 rss_ext_kb=88500 rss_total_kb=493952
+nopred speedometer #82230-0 mem: MemAvailable: 634960 kB SwapTotal: 614396 kB SwapFree: 249192 kB
+neva speedometer #82230-0: score=0.737 wall_s=110 rss_browser_kb=194592 rss_ext_kb=88296 rss_total_kb=512004
+neva speedometer #82230-0 mem: MemAvailable: 633708 kB SwapTotal: 614396 kB SwapFree: 251004 kB
+all speedometer #82230-0: score=0.707 wall_s=117 rss_browser_kb=148108 rss_ext_kb=85756 rss_total_kb=426060
+all speedometer #82230-0 mem: MemAvailable: 681788 kB SwapTotal: 614396 kB SwapFree: 251804 kB

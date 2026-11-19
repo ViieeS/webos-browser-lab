@@ -1,0 +1,22 @@
+noft+v8 variations: trials=18 enable_features=17 disable_features=39
+noft+pa variations: trials=10 enable_features=17 disable_features=38
+base speedometer #90696-0: score=0.717 wall_s=116 rss_browser_kb=192508 rss_ext_kb=78936 rss_total_kb=488776
+base speedometer #90696-0 mem: MemAvailable: 454444 kB SwapTotal: 614396 kB SwapFree: 96984 kB
+noft speedometer #90696-0: score=0.716 wall_s=118 rss_browser_kb=143848 rss_ext_kb=85656 rss_total_kb=424376
+noft speedometer #90696-0 mem: MemAvailable: 477392 kB SwapTotal: 614396 kB SwapFree: 139036 kB
+noft+v8 speedometer #90696-0: score=0.728 wall_s=113 rss_browser_kb=147064 rss_ext_kb=86592 rss_total_kb=434668
+noft+v8 speedometer #90696-0 mem: MemAvailable: 461324 kB SwapTotal: 614396 kB SwapFree: 144804 kB
+noft+s speedometer #90696-0: score=0.709 wall_s=117 rss_browser_kb=166520 rss_ext_kb=85924 rss_total_kb=467804
+noft+s speedometer #90696-0 mem: MemAvailable: 448076 kB SwapTotal: 614396 kB SwapFree: 144512 kB
+noft+pa speedometer #90696-0: score=0.722 wall_s=114 rss_browser_kb=147860 rss_ext_kb=86528 rss_total_kb=433660
+noft+pa speedometer #90696-0 mem: MemAvailable: 455888 kB SwapTotal: 614396 kB SwapFree: 145404 kB
+base speedometer #90696-1: score=0.725 wall_s=113 rss_browser_kb=173160 rss_ext_kb=88808 rss_total_kb=479780
+base speedometer #90696-1 mem: MemAvailable: 435128 kB SwapTotal: 614396 kB SwapFree: 118908 kB
+noft speedometer #90696-1: score=0.703 wall_s=117 rss_browser_kb=161504 rss_ext_kb=85508 rss_total_kb=463684
+noft speedometer #90696-1 mem: MemAvailable: 449992 kB SwapTotal: 614396 kB SwapFree: 134120 kB
+noft+v8 speedometer #90696-1: score=0.715 wall_s=114 rss_browser_kb=139116 rss_ext_kb=86076 rss_total_kb=429424
+noft+v8 speedometer #90696-1 mem: MemAvailable: 468108 kB SwapTotal: 614396 kB SwapFree: 118044 kB
+noft+s speedometer #90696-1: score=0.709 wall_s=117 rss_browser_kb=163616 rss_ext_kb=85768 rss_total_kb=465848
+noft+s speedometer #90696-1 mem: MemAvailable: 445796 kB SwapTotal: 614396 kB SwapFree: 139844 kB
+noft+pa speedometer #90696-1: score=0.705 wall_s=115 rss_browser_kb=148216 rss_ext_kb=85552 rss_total_kb=432636
+noft+pa speedometer #90696-1 mem: MemAvailable: 458796 kB SwapTotal: 614396 kB SwapFree: 146600 kB

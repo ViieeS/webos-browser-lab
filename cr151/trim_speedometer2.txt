@@ -1,0 +1,12 @@
+base speedometer #87155-0: score=0.712 wall_s=118 rss_browser_kb=159508 rss_ext_kb=84260 rss_total_kb=434712
+base speedometer #87155-0 mem: MemAvailable: 508840 kB SwapTotal: 614396 kB SwapFree: 53724 kB
+noft speedometer #87155-0: score=0.703 wall_s=118 rss_browser_kb=137212 rss_ext_kb=86012 rss_total_kb=404356
+noft speedometer #87155-0 mem: MemAvailable: 503960 kB SwapTotal: 614396 kB SwapFree: 106808 kB
+noftmisc speedometer #87155-0: score=0.718 wall_s=115 rss_browser_kb=154032 rss_ext_kb=86176 rss_total_kb=426192
+noftmisc speedometer #87155-0 mem: MemAvailable: 484124 kB SwapTotal: 614396 kB SwapFree: 119132 kB
+base speedometer #87155-1: score=0.722 wall_s=116 rss_browser_kb=172060 rss_ext_kb=80724 rss_total_kb=464828
+base speedometer #87155-1 mem: MemAvailable: 464104 kB SwapTotal: 614396 kB SwapFree: 99324 kB
+noft speedometer #87155-1: score=0.701 wall_s=117 rss_browser_kb=143612 rss_ext_kb=85716 rss_total_kb=423644
+noft speedometer #87155-1 mem: MemAvailable: 483916 kB SwapTotal: 614396 kB SwapFree: 141324 kB
+noftmisc speedometer #87155-1: score=0.712 wall_s=115 rss_browser_kb=160892 rss_ext_kb=85644 rss_total_kb=445572
+noftmisc speedometer #87155-1 mem: MemAvailable: 470304 kB SwapTotal: 614396 kB SwapFree: 143528 kB

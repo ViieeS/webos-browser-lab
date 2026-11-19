@@ -678,8 +678,10 @@ Raw: `browser/cr151/ubol_builtin_check.txt`. Details: `browser/cr151/ADBLOCK.md`
 
 ### Chromium TV: the final app id (2026-11-18)
 
-- The browser ships as `com.viiees.chromiumtv`, "Chromium TV" (`cr151/package.sh` default). It replaced
-  `com.viiees.cr151p`, the same build.
+- The browser ships as `com.viiees.chromiumtv` (`cr151/package.sh` default). The project is Chromium TV, the TV
+  shows it as "Chromium" (title changed 2026-11-19). It replaced `com.viiees.cr151p`, the same build.
+- **A reinstall under the same id keeps `data/`**: the profile's Cookies and History kept their size and date
+  through the title change.
 - **Moving a profile to a new app id.** Each app runs as its own uid, set at install (here 5925, cr151p was 6585).
   Launch the new app once, close it, then replace its `data/profile` with a copy of the old one, remove
   `Singleton*` from the copy and `chown -R <new uid>:5000`. Cookies (YouTube's consent included) and history carry
@@ -810,6 +812,30 @@ Details and raw files: `browser/cr151/ADBLOCK.md`.
   written to `/dev/input/event1` every minute resets the idle timer, and the browser does not see it
   (`bench/keepawake.sh`). `event10` exists only while a network remote is connected.
 
+### Runtime trims (2026-11-19)
+
+Details, the candidate list and raw files: `browser/cr151/TRIM_CANDIDATES.md`.
+
+- **Our build runs Google's whole field trial testing config.** Non-Chrome-branded Chromium applies
+  `fieldtrial_testing_config.json` at every start. On the TV that means 659 active trials and 738 enabled features
+  nobody chose for a TV. `--disable-background-networking` does not cover it. `--disable-field-trial-config` does.
+- **Field-trial config off saves memory.**
+  - The browser process is 25–35 MB smaller.
+  - During Speedometer all-Chrome RSS is 66 MB lower.
+  - With 6 heavy tabs zram has 40–50 MB more free.
+  - Wikipedia load does not change.
+  - Speedometer drops about 1.5 % (0.711 against 0.722, medians of 12 and 8 runs).
+- **The whole speed loss is one study, `V8SqrtAllocationLimits`.** It is V8's `--sqrt-allocation-limits`, and the
+  study's params are V8's defaults. With field trials off and this flag on, Speedometer is 0.737: above both. On heavy
+  pages it costs no memory. Halving the studies in groups (`bench/trim_run.py`, `bench/fieldtrial_linux.json`) found it
+  in four Speedometer rounds. That is the way to look for any other study that matters.
+- **Preloading off, LG's neva cache switches and the Privacy Sandbox, Journeys and autofill features showed no gain.**
+  While typing in the omnibox a prerender still starts with the four preloading features off. Only the pref
+  `net.network_prediction_options = 2` stops it.
+- **M151 has no Linux memory-pressure evaluator.** Chrome never discards tabs under pressure on the TV. The tab ceiling
+  is held by TV Tools' tab limit instead: 8 by default from `package.sh`.
+- **GN trimming is nearly worthless in M151.** The args that pass `gn gen` together remove 66 of 18 386 targets.
+
 ## 7. Tooling gotchas
 
 ### Moving files
@@ -849,6 +875,7 @@ Details and raw files: `browser/cr151/ADBLOCK.md`.
 - Before any run check that no other browser runs (`/proc/*/comm`) and that the bench server log is quiet.
 - Close the stock browser, YouTube and the screensaver before measuring. The screensaver pipeline also takes decoders.
 - A run under the screensaver is void (one YouTube run took 16.0 s under it).
+- Chromium TV with heavy tabs needs more than 4 s to exit after `closeByAppId`. A launch before it exits reuses the old browser, so its tabs pile up. Wait until `pidof chrome` is empty (`trim_run.py chrome_gone()`). 25 heavy tabs with SwapFree near 5 MB rebooted the whole TV. After a reboot start tcprelay and keepawake again.
 - A launch right after the previous case sometimes does not start (0 web processes, no LOAD). Rerun.
 - `load` time alone flatters WPE, which fires load before its first full style and layout. Measure time to settle as well.
 - YouTube logged-out home has an empty feed. Different user agents get different payloads (desktop Safari for WPE, Chrome 120 for cr120, a webOS TV UA via TV Tools for cr151).

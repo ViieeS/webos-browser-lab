@@ -5,10 +5,11 @@
 # Output: /work/dist/<APP_ID>_<VERSION>_arm.ipk, /work/dist/browser/ (unpacked, stripped), check-abi report.
 . /opt/cn/container/lib.sh
 need_sysroot   # check-abi compares against the sysroot's TV-SONAMES and glibc
-# The default is the finished browser, Chromium TV. CR151_APP_ID, CR151_APP_TITLE: a test variant next to it under
-# another id. Not APP_ID: lib.sh has already set that from their config.env (org.nativechromium.browser).
+# The default is the finished browser: the project Chromium TV, id com.viiees.chromiumtv, shown on the TV as plain
+# "Chromium". CR151_APP_ID, CR151_APP_TITLE: a test variant next to it under another id. Not APP_ID: lib.sh has
+# already set that from their config.env (org.nativechromium.browser).
 APP_ID=${CR151_APP_ID:-com.viiees.chromiumtv}
-APP_TITLE=${CR151_APP_TITLE:-"Chromium TV"}
+APP_TITLE=${CR151_APP_TITLE:-"Chromium"}
 VERSION=0.0.66
 D=/work/dist; B=$D/browser; rm -rf "$D"; mkdir -p "$B"
 cd "$OUT"
@@ -53,6 +54,18 @@ grep -q OmniboxBundledExperimentV1 "$CN/package/run.sh" ||
 [ "$(grep -c -e "$OMNI_OFF\\\$WEBGPU_OFF" -e 'DisableProviders/201221632' "$CN/package/run.sh")" = 2 ] ||
 	die "run.sh: omnibox trim not added"
 
+# Without this switch a non-Chrome-branded build applies Google's whole field trial testing config at every start:
+# 659 trials, 738 features nobody chose for a TV. Off: browser process 25–35 MB smaller, same speed
+# (TRIM_CANDIDATES.md, "Results"). The omnibox trial above stays: --force-fieldtrials is separate.
+grep -q -- '--disable-field-trial-config' "$CN/package/run.sh" ||
+	sed -i 's|^\t\t--enable-features=NetworkServiceInProcess2|\t\t--disable-field-trial-config \\\n&|' "$CN/package/run.sh"
+[ "$(grep -c -- '^		--disable-field-trial-config \\$' "$CN/package/run.sh")" = 1 ] || die "run.sh: --disable-field-trial-config not added"
+# The one study of that config that made JS faster: V8SqrtAllocationLimits, whose params are V8's own defaults. With
+# it Speedometer is 0.737 against 0.722 with the config on and 0.711 without (TRIM_CANDIDATES.md, "Results").
+grep -q -- '--sqrt-allocation-limits' "$CN/package/run.sh" ||
+	sed -i 's|--js-flags="--max-old-space-size=192 --optimize-for-size"|--js-flags="--max-old-space-size=192 --optimize-for-size --sqrt-allocation-limits"|' "$CN/package/run.sh"
+grep -q -- '--optimize-for-size --sqrt-allocation-limits"' "$CN/package/run.sh" || die "run.sh: --sqrt-allocation-limits not added"
+
 # uBlock Origin Lite (ADBLOCK.md: complete mode blocks as well as full uBO here, MV3, no patch). The official release
 # zip comes from /adblock (a .adblock/ folder next to the repository, mounted read-only; ADBLOCK.md says where to
 # download it), checked against its sha256. It ships as
@@ -89,6 +102,13 @@ if "ext/ubol" not in s:
 PY
 grep -q -- '--load-extension="\$EXT,\$UBOL"' "$CN/package/run.sh" && grep -q '^	UBOL=\$S/ext/ubol$' "$CN/package/run.sh" ||
 	die "run.sh: uBO Lite not added to --load-extension"
+
+# Tab limit 8 by default (TV Tools' own setting, 0 = no limit upstream). Heavy tabs ran out of memory at 15–19
+# (ADBLOCK.md, "Many tabs"), and from the 8th on MemAvailable fell under 300 MB with zram nearly full. A limit the
+# user saved in TV Tools still wins: tvLoad() lays saved settings over these defaults.
+TVT_SETTINGS=$CN/package/ext/tvtools/settings.js
+sed -i 's/^  tabLimit: 0, /  tabLimit: 8, /' "$TVT_SETTINGS"
+grep -q '^  tabLimit: 8, ' "$TVT_SETTINGS" || die "TV Tools: default tab limit not set"
 
 tar --format=posix -C "$D" -cf - browser | zstd -T0 -10 -q -o "$D/browser.tar.zst"
 sed -i "s/^APP_ID=.*/APP_ID=$APP_ID/; s/^APP_TITLE=.*/APP_TITLE=$APP_TITLE/" "$CN/config.env"

@@ -1,0 +1,10 @@
+base heavy #78411-0: s=221 pages=6 ok=6 busy=0 MemAvailable: 336400 kB SwapTotal: 614396 kB SwapFree: 209336 kB rss_browser_kb=197284 rss_ext_kb=40636 rss_total_kb=776180
+noft heavy #78411-0: s=222 pages=6 ok=6 busy=0 MemAvailable: 325072 kB SwapTotal: 614396 kB SwapFree: 248804 kB rss_browser_kb=162040 rss_ext_kb=79056 rss_total_kb=703736
+nopred heavy #78411-0: s=221 pages=6 ok=6 busy=0 MemAvailable: 328616 kB SwapTotal: 614396 kB SwapFree: 233500 kB rss_browser_kb=191456 rss_ext_kb=40776 rss_total_kb=721060
+neva heavy #78411-0: s=221 pages=6 ok=6 busy=0 MemAvailable: 333724 kB SwapTotal: 614396 kB SwapFree: 208044 kB rss_browser_kb=203796 rss_ext_kb=74280 rss_total_kb=792780
+all heavy #78411-0: s=221 pages=6 ok=6 busy=0 MemAvailable: 334784 kB SwapTotal: 614396 kB SwapFree: 249836 kB rss_browser_kb=157588 rss_ext_kb=81076 rss_total_kb=744264
+base heavy #78411-1: s=223 pages=6 ok=6 busy=0 MemAvailable: 363124 kB SwapTotal: 614396 kB SwapFree: 213384 kB rss_browser_kb=194904 rss_ext_kb=40844 rss_total_kb=734416
+noft heavy #78411-1: s=222 pages=6 ok=6 busy=0 MemAvailable: 339120 kB SwapTotal: 614396 kB SwapFree: 265012 kB rss_browser_kb=170320 rss_ext_kb=80132 rss_total_kb=758852
+nopred heavy #78411-1: s=221 pages=6 ok=6 busy=0 MemAvailable: 349452 kB SwapTotal: 614396 kB SwapFree: 184000 kB rss_browser_kb=200992 rss_ext_kb=81004 rss_total_kb=799804
+neva heavy #78411-1: s=221 pages=6 ok=6 busy=0 MemAvailable: 349592 kB SwapTotal: 614396 kB SwapFree: 125432 kB rss_browser_kb=195592 rss_ext_kb=40356 rss_total_kb=800004
+all heavy #78411-1: s=222 pages=6 ok=6 busy=0 MemAvailable: 371752 kB SwapTotal: 614396 kB SwapFree: 207224 kB rss_browser_kb=167088 rss_ext_kb=80156 rss_total_kb=740116

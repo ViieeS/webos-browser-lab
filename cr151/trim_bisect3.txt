@@ -1,0 +1,20 @@
+noft speedometer #96891-0: score=0.710 wall_s=116 rss_browser_kb=166860 rss_ext_kb=85956 rss_total_kb=452788
+noft speedometer #96891-0 mem: MemAvailable: 589192 kB SwapTotal: 614396 kB SwapFree: 186372 kB
+noft+oldgen speedometer #96891-0: score=0.717 wall_s=117 rss_browser_kb=166016 rss_ext_kb=85764 rss_total_kb=466288
+noft+oldgen speedometer #96891-0 mem: MemAvailable: 594692 kB SwapTotal: 614396 kB SwapFree: 186476 kB
+noft+sqrt speedometer #96891-0: score=0.734 wall_s=112 rss_browser_kb=164904 rss_ext_kb=86008 rss_total_kb=481104
+noft+sqrt speedometer #96891-0 mem: MemAvailable: 565588 kB SwapTotal: 614396 kB SwapFree: 186580 kB
+noft+gcrest speedometer #96891-0: score=0.718 wall_s=115 rss_browser_kb=147552 rss_ext_kb=85864 rss_total_kb=426404
+noft+gcrest speedometer #96891-0 mem: MemAvailable: 598908 kB SwapTotal: 614396 kB SwapFree: 186696 kB
+noft+v8gc speedometer #96891-0: score=0.743 wall_s=112 rss_browser_kb=168472 rss_ext_kb=85544 rss_total_kb=481312
+noft+v8gc speedometer #96891-0 mem: MemAvailable: 559652 kB SwapTotal: 614396 kB SwapFree: 190576 kB
+noft speedometer #96891-1: score=0.714 wall_s=117 rss_browser_kb=167756 rss_ext_kb=85444 rss_total_kb=467212
+noft speedometer #96891-1 mem: MemAvailable: 582080 kB SwapTotal: 614396 kB SwapFree: 190904 kB
+noft+oldgen speedometer #96891-1: score=0.703 wall_s=115 rss_browser_kb=150676 rss_ext_kb=85316 rss_total_kb=434336
+noft+oldgen speedometer #96891-1 mem: MemAvailable: 591176 kB SwapTotal: 614396 kB SwapFree: 191028 kB
+noft+sqrt speedometer #96891-1: score=0.738 wall_s=112 rss_browser_kb=167984 rss_ext_kb=85760 rss_total_kb=470844
+noft+sqrt speedometer #96891-1 mem: MemAvailable: 567936 kB SwapTotal: 614396 kB SwapFree: 191908 kB
+noft+gcrest speedometer #96891-1: score=0.726 wall_s=115 rss_browser_kb=148020 rss_ext_kb=85636 rss_total_kb=440892
+noft+gcrest speedometer #96891-1 mem: MemAvailable: 576048 kB SwapTotal: 614396 kB SwapFree: 192156 kB
+noft+v8gc speedometer #96891-1: score=0.724 wall_s=112 rss_browser_kb=167112 rss_ext_kb=85948 rss_total_kb=471540
+noft+v8gc speedometer #96891-1 mem: MemAvailable: 557164 kB SwapTotal: 614396 kB SwapFree: 196356 kB

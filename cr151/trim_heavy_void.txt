@@ -1,0 +1,24 @@
+base heavy #76027-0: s=221 pages=6 ok=6 busy=0 MemAvailable: 228372 kB SwapTotal: 614396 kB SwapFree: 182652 kB rss_browser_kb=386640 rss_ext_kb=64504 rss_total_kb=820900
+noft heavy #76027-0: s=273 pages=11 ok=11 busy=0 MemAvailable: 223512 kB SwapTotal: 614396 kB SwapFree: 109608 kB rss_browser_kb=403764 rss_ext_kb=36372 rss_total_kb=990516
+nopred heavy #76027-0: s=222 pages=16 ok=1 busy=0 MemAvailable: 732780 kB SwapTotal: 614396 kB SwapFree: 257836 kB rss_browser_kb=360420 rss_ext_kb=40064 rss_total_kb=542080
+neva heavy #76027-0: s=246 pages=20 ok=6 busy=0 MemAvailable: 292280 kB SwapTotal: 614396 kB SwapFree: 153348 kB rss_browser_kb=462408 rss_ext_kb=68976 rss_total_kb=1022224
+all heavy #76027-0: s=295 pages=25 ok=11 busy=0 MemAvailable: 220524 kB SwapTotal: 614396 kB SwapFree: 4956 kB rss_browser_kb=396476 rss_ext_kb=61456 rss_total_kb=1017420
+Traceback (most recent call last):
+  File "/Users/vsuntsov/Projects/lg-native-launcher/browser/bench/trim_run.py", line 120, in <module>
+    main()
+    ~~~~^^
+  File "/Users/vsuntsov/Projects/lg-native-launcher/browser/bench/trim_run.py", line 111, in main
+    heavy(variant, br, run)
+    ~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/vsuntsov/Projects/lg-native-launcher/browser/bench/trim_run.py", line 63, in heavy
+    br.call("Target.createTarget", {"url": url})
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/vsuntsov/Projects/lg-native-launcher/browser/bench/uilat.py", line 82, in call
+    msg = json.loads(self.ws.recv())
+                     ~~~~~~~~~~~~^^
+  File "/Users/vsuntsov/Projects/lg-native-launcher/browser/bench/inspector.py", line 50, in recv
+    b0, b1 = self._read(2)
+             ~~~~~~~~~~^^^
+  File "/Users/vsuntsov/Projects/lg-native-launcher/browser/bench/inspector.py", line 31, in _read
+    chunk = self.sock.recv(1 << 16)
+TimeoutError: timed out
