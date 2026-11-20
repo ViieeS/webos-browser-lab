@@ -167,6 +167,10 @@ def start(tag, page=PAGE):
     flags = ["--remote-debugging-port=9225", *(VARIANTS[variant].split() if variant else [])]
     launch = json.dumps({"id": app, "params": {"target": page}})
     fire(f"{close_all()}sleep 4")
+    # closeByAppId does not always end chrome (heavy tabs take seconds, and with the window gone it can stay alive):
+    # a launch would then attach to the old process and its old tabs. Wait for it to end, then kill what is left.
+    bench.tv("i=0; while pidof chrome >/dev/null && [ $i -lt 15 ]; do sleep 1; i=$((i+1)); done; "
+             "pidof chrome >/dev/null && { kill -9 $(pidof chrome); sleep 2; }; true", timeout=40)
     # /tmp/<app> must belong to the app's jail user, so run.sh makes it: after a TV reboot (or for a new app) it
     # is missing, and one plain launch creates it. Made by root, the browser cannot write its log there.
     if "missing" in bench.tv(f"[ -d /tmp/{app} ] || echo missing"):

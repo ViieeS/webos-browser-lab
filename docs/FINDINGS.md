@@ -862,12 +862,36 @@ The owner asked for it: closing the last tab quit Chromium TV and dropped the us
 - **TV check (2026-11-20, `bench/lasttab.py`, IPK sha256 a98e1fce…):** from one example.com tab, Ctrl+W, a page's
   `window.close()` and DevTools `Target.closeTarget` each left `chrome://newtab/` open, and the browser stayed.
   Menu > Exit (Alt+E, Up, Enter) closes the window.
-- **Found on the way, not caused by 0107:** when a New Tab page is open, menu > Exit closes the window, but the
-  `chrome` process stays alive without one (checked after 3, 10 and 30 s). With only example.com open, Exit ends the
-  process within 3 s. The control case opened the NTP with Ctrl+T and closed example.com as a non-last tab, so the
-  0107 hook did not run, and the process still stayed. Since 0107 leaves an NTP after the last tab, this case gets
-  more common. The next launch through webOS ends the old process (run.sh), and the browser starts normally. Why the
-  NTP keeps the process alive is not known yet.
+- **Found on the way, not caused by 0107:** with a New Tab page open, menu > Exit left the `chrome` process alive.
+  The cause and the fix are in the next section (patch 0108).
+
+### Browser process hung at exit: patch 0108 (2026-11-20)
+
+Raw: `browser/bench/exithang.py` (repro and thread states), stacks below.
+
+- **Symptom.** Menu > Exit, or webOS closing the app (`closeByAppId`), removed the window, but the `chrome` process
+  stayed alive. It reproduced every time with the New Tab page and with Google Maps open, and not with example.com.
+  A hung process holds its memory until the next launch, which ends it through run.sh.
+- **Threads** (`/proc/<pid>/task`, 15 s after Exit): main thread in `futex_wait`, a "Shutdown watchdog" thread
+  started, so shutdown had begun.
+- **Stacks** (read from `/proc/<pid>/mem` at the thread's `sp`, code words symbolized with llvm-symbolizer against
+  the unstripped `out/tv/chrome`, same build id; crashpad wrote no dump on SIGABRT this late in shutdown):
+  - main: `Thread::Stop` ← `~WaylandEventWatcherThread` ← `~WaylandConnection` ←
+    `OzonePlatformWayland::PostMainMessageLoopRun` ← `BrowserMainLoop::ShutdownThreadsAndCleanUp`;
+  - `wayland-fd`: `WaitableEvent::TimedWaitImpl` ← `WaylandEventWatcher::WlDisplayDispatchPendingQueue` ←
+    `WatchSourceDispatch` (glib).
+- **Cause, plain Chromium code** (`ui/events/platform/wayland/wayland_event_watcher.cc`). With threaded polling,
+  which Ozone/Wayland turns on for `--in-process-gpu`, the fd-watching thread posts each dispatch to the UI thread
+  and waits for it with no timeout. At shutdown the UI loop stops first and then joins that thread. An event that
+  arrives in between deadlocks both. Pages that keep drawing make such an event likely.
+- `patches/0108-wayland-watcher-no-shutdown-deadlock.patch`: the watcher also waits on a manual-reset
+  `ui_thread_gone_`, which `~WaylandEventWatcher` signals on the UI thread before the join.
+- **TV check (IPK sha256 cc72d997…):** Exit with the NTP 3 times, `closeByAppId` with Maps 2 times, and Exit with
+  example.com: the process ended within 1 s each time. Before, Exit with the NTP still hung after 120 s.
+  `bench/lasttab.py` passes as before, so 0107 is unchanged. Video playback was not rechecked.
+- **Same bug elsewhere:** [electerm#4654](https://github.com/electerm/electerm/issues/4654), Electron on Wayland
+  with in-process GPU: the process never exits after the window closes, with the same two stacks. No fix linked
+  there. The Chromium tracker was not searched (it needs a browser).
 
 ## 7. Tooling gotchas
 
@@ -955,6 +979,7 @@ Submitted rows carry the link; the rest are not submitted.
 | cr151 0105 vizfmp-swap-needs-compositor | [webOS-ports/chromium151](https://github.com/webOS-ports/chromium151) (the neva code is in its base tree), report to WebOS-Chromium | Renderer NULL dereference on adblock-tester.com in 0.0.66 too. No issue or PR in either repository (checked 2026-11-18). PR #17 there touches FCP waiting in viz, not this | [PR #19](https://github.com/sarahahzub/WebOS-Chromium/pull/19) as 0054, [chromium151 #31](https://github.com/webOS-ports/chromium151/issues/31), 2026-11-19 |
 | cr151 0106 webos-hevc-through-ndl | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) | Depends on their NDL renderer (0023) and `$CN_MEDIA_SOCK`. HEVC 4K plays on the C1. No HEVC issue there | [PR #20](https://github.com/sarahahzub/WebOS-Chromium/pull/20) as 0055, 2026-11-19 |
 | cr151 0107 webos-last-tab-close-keeps-window | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) | A TV product behaviour: the last tab no longer quits the app, only menu > Exit does. Plain Chrome UI code, its only webOS part is the `OS_WEBOS` guard. No issue or PR about it there (checked 2026-11-19) | not submitted |
+| cr151 0108 wayland-watcher-no-shutdown-deadlock | [Chromium](https://issues.chromium.org) (Ozone/Wayland, plain Chromium code), copy to WebOS-Chromium | Shutdown deadlock with threaded polling (`--in-process-gpu`): the process outlives Exit. Same stacks reported in [electerm#4654](https://github.com/electerm/electerm/issues/4654). The Chromium tracker was not searched | not submitted |
 | cr151 fonts.conf | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) (package: run.sh + a shipped fonts.conf) | Every family came out as LG Display with full hinting. No issue there | [PR #22](https://github.com/sarahahzub/WebOS-Chromium/pull/22), 2026-11-19 |
 | cr151 omnibox trim (run.sh flags) | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) (run.sh) | Omnibox key to screen 160 → 87 ms, flags only. A TV product choice (fewer providers, 5 rows), so offer it as an option. No issue there | [PR #23](https://github.com/sarahahzub/WebOS-Chromium/pull/23), on by default, media.opts `omnibox=full` turns it off, 2026-11-19 |
 | Platform notes: quoted screensaver timestamp, NDL main-ELF requirement, Mali EGL display | [webosbrew](https://github.com/webosbrew) (documentation) | Knowledge for homebrew authors, not a code patch | not submitted |
