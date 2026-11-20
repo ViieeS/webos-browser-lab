@@ -1,0 +1,71 @@
+# why: On a TV, closing the last tab must not quit the browser.
+Upstream Chrome closes the window with its last tab, and with the last window the browser quits. On webOS there is
+no desktop behind the window, so closing the last tab (X on the tab, Ctrl+W, a page's window.close(), an
+extension's chrome.tabs.remove) threw the user out of the app. Under OS_WEBOS a New Tab page now opens first, in the
+background, and the window stays. The browser quits only through an explicit close: menu > Exit, or webOS closing
+the app. Those set closing_all(), IsAttemptingToCloseBrowser() or browser_shutdown::IsTryingToQuit(), and are left
+alone. The NTP is added where a close starts (CloseWebContentsAt, ExecuteCloseTabsCommand), not in CloseTabs():
+ExecuteCloseTabs() holds the reentrancy guard there, and AddTabAt() would hit its CHECK. Known leftover: when a
+close is cancelled (a beforeunload "Stay", or the dialog for deleting a tab group), the added NTP stays open.
+
+--- a/src/chrome/browser/ui/tabs/tab_strip_model.cc
++++ b/src/chrome/browser/ui/tabs/tab_strip_model.cc
+@@ -55,6 +55,9 @@
+ #include "chrome/browser/ui/browser_window.h"
+ #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+ #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
++#if defined(OS_WEBOS)
++#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
++#endif
+ #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+ #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
+ #include "chrome/browser/ui/tab_ui_helper.h"
+@@ -162,6 +165,28 @@
+                                       ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+ }
+ 
++#if defined(OS_WEBOS)
++// A TV app has no desktop behind its window: closing the last tab must not
++// quit the browser, so a New Tab page opens first and the window stays. Only
++// a window that is closing (menu > Exit, webOS closing the app) closes its
++// last tab. Called where a close starts, before the reentrancy guard is held.
++// The new tab opens in the background: CloseSelectedTabs() reads the selection
++// again after this, and a selected NTP would be closed instead of the old tab.
++void OpenNewTabIfClosingLastTab(TabStripModel* model, size_t closing) {
++  if (closing == 0 || static_cast<int>(closing) != model->count() ||
++      model->closing_all() || browser_shutdown::IsTryingToQuit() ||
++      !model->delegate()->IsNormalWindow()) {
++    return;
++  }
++  BrowserWindowInterface* window =
++      model->delegate()->GetBrowserWindowInterface();
++  if (!window || window->capabilities()->IsAttemptingToCloseBrowser()) {
++    return;
++  }
++  model->delegate()->AddTabAt(GURL(), -1, /*foreground=*/false);
++}
++#endif
++
+ }  // namespace
+ 
+ TabGroupModelFactory::TabGroupModelFactory() {
+@@ -1323,6 +1348,9 @@
+   ReentrancyCheck::ValidateNotReentrant(&reentrancy_guard_);
+ 
+   CHECK(ContainsIndex(index));
++#if defined(OS_WEBOS)
++  OpenNewTabIfClosingLastTab(this, 1);
++#endif
+   CloseTabs({GetWebContentsAt(index)}, close_types);
+ }
+ 
+@@ -3136,6 +3164,9 @@
+         get_tabs_to_close,
+     bool delete_groups) {
+   std::vector<tabs::TabInterface*> tabs_to_close = get_tabs_to_close.Run();
++#if defined(OS_WEBOS)
++  OpenNewTabIfClosingLastTab(this, tabs_to_close.size());
++#endif
+   std::vector<tab_groups::TabGroupId> groups_to_delete =
+       GetGroupsDestroyedFromRemovingTabs(get_tabs_to_close.Run());
+ 

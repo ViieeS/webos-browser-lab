@@ -67,7 +67,8 @@ CPU = jiffies over 8 s (800 = one core), sum of the top threads.
 
 The launcher threads `lxvideodec0:src` and `video-src:src` are LG's decoder pipeline, so all clips decode in
 hardware. Results match cr120's NDL port, which came from this project. YouTube 4K60 was not watched on screen
-today (owner not asked to look).
+that day. Watched on 2026-11-19: smooth after a short unevenness at the start (FINDINGS.md, "Chromium TV: fonts, web
+apps, YouTube 4K60").
 
 ## GPU on the C1
 

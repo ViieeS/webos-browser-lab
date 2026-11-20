@@ -110,6 +110,20 @@ TVT_SETTINGS=$CN/package/ext/tvtools/settings.js
 sed -i 's/^  tabLimit: 0, /  tabLimit: 8, /' "$TVT_SETTINGS"
 grep -q '^  tabLimit: 8, ' "$TVT_SETTINGS" || die "TV Tools: default tab limit not set"
 
+# "Auto" resolution with the full hardware decoder (NDL) is 4K, not upstream's 1080p: on the C1, YouTube 4K60 played
+# at 1.00x, 60 fps, 0 dropped, and the owner saw it smooth on screen after a short unevenness at the start
+# (FINDINGS.md, "Chromium TV: fonts, web apps, YouTube 4K60"). Auto rather than a 2160 default: software decoding
+# and H.264-only decoders keep their lower caps, and a profile that saved "auto" gets 4K too.
+sed -i 's/maxHeight: s.maxRes === "auto" ? (hw ? 1080 : 720)/maxHeight: s.maxRes === "auto" ? (hw \&\& !h264hw ? 2160 : hw ? 1080 : 720)/; s/any codec up to 1080p60 (bigger streams don.t fit the TV.s/any codec up to 2160p60 (Chromium TV, measured on the C1; upstream: 1080p, for the TV'"'"'s/' "$TVT_SETTINGS"
+sed -i 's/if (id === "maxRes") return hw ? "Auto = 1080p" : "Auto = 720p";/if (id === "maxRes") return hw \&\& !h264hw ? "Auto = 4K" : hw ? "Auto = 1080p" : "Auto = 720p";/; s/if it does, go back to Auto or 1080p\./if it does, choose 1080p./' "$CN/package/ext/tvtools/ui.js"
+grep -q 'hw && !h264hw ? 2160 : hw ? 1080 : 720' "$TVT_SETTINGS" && grep -q '"Auto = 4K"' "$CN/package/ext/tvtools/ui.js" &&
+	grep -q 'if it does, choose 1080p\.' "$CN/package/ext/tvtools/ui.js" ||
+	die "TV Tools: Auto resolution not raised to 4K"
+# page.js uses its own copy of the defaults until the extension's settings reach a site for the first time.
+sed -i 's/enabled: true, hardware: true, maxHeight: 1080, maxFps: 60,/enabled: true, hardware: true, maxHeight: 2160, maxFps: 60,/' "$CN/package/ext/tvtools/page.js"
+grep -q 'hardware: true, maxHeight: 2160, maxFps: 60,' "$CN/package/ext/tvtools/page.js" ||
+	die "TV Tools: Auto resolution not raised to 4K"
+
 tar --format=posix -C "$D" -cf - browser | zstd -T0 -10 -q -o "$D/browser.tar.zst"
 sed -i "s/^APP_ID=.*/APP_ID=$APP_ID/; s/^APP_TITLE=.*/APP_TITLE=$APP_TITLE/" "$CN/config.env"
 python3 "$CN/package/mkipk.py" --browser "$D/browser.tar.zst" --version "$VERSION" --launcher "$D/cnrun" \

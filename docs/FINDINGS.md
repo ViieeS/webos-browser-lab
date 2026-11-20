@@ -740,8 +740,13 @@ for hd2160.
 - Stream: `3840x2160@60`, AV1 (itag 401), a short VP9 start. Buffer health 7–11 s.
 - CPU: browser main thread about 12 % of a core, decoding in `lxvideodec` (NDL).
 - **Not measurable from the browser: on-screen pacing.** The video goes to LG's video plane, past Chrome's
-  compositor, so `requestVideoFrameCallback` hardly fires. A look at the screen is still the check for judder.
+  compositor, so `requestVideoFrameCallback` hardly fires. A look at the screen is the check for judder.
 - The one stall in the run was the consent lightbox on the fresh profile.
+- **Watched on screen by the owner (2026-11-19), TV Tools at 4K:** smooth after a short unevenness at the start,
+  no stalls. That start is the stutter TV Tools' own 4K hint warns about.
+- **Decision: 4K is the default.** `cr151/package.sh` makes TV Tools' "Auto" 2160p with the full hardware decoder
+  (upstream: 1080p). Software decoding and H.264-only decoders keep their lower caps. A profile that saved "Auto"
+  gets 4K as well. Upstream's source in `cr151/upstream/` is unchanged.
 
 ### Open items in cr151 before a final browser (2026-11-18)
 
@@ -749,7 +754,7 @@ The tab limit and DRM are left out: the owner set the first aside, and the secon
 
 | Item | Before the final? | Why |
 |---|---|---|
-| YouTube 4K60 not watched on screen (RESULTS.md) | Yes, cheap | Measured on 2026-11-19: 1.00×, 60 fps decoded, 0 dropped (see "Chromium TV: fonts, web apps, YouTube 4K60"). On-screen pacing still needs one minute of the owner's eyes (WebOS-Chromium issue #12: stutter with clean counters) |
+| ~~YouTube 4K60 not watched on screen (RESULTS.md)~~ Closed 2026-11-19 | — | Measured: 1.00×, 60 fps decoded, 0 dropped. The owner watched it on screen: smooth after a short unevenness at the start. 4K is now TV Tools' Auto (see "Chromium TV: fonts, web apps, YouTube 4K60") |
 | VP9 profile 2 (YouTube HDR) unsupported | No | Same kind of type check as HEVC, but HDR output through NDL is untested. YouTube falls back to SDR VP9, so nothing breaks now |
 | HDR colours of HEVC Main 10 (0106) | No | Same unknown as VP9 profile 2. SDR HEVC is checked |
 | E-AC3 unsupported | No | Few web players need it. Stereo AAC and Opus work |
@@ -836,6 +841,34 @@ Details, the candidate list and raw files: `browser/cr151/TRIM_CANDIDATES.md`.
   is held by TV Tools' tab limit instead: 8 by default from `package.sh`.
 - **GN trimming is nearly worthless in M151.** The args that pass `gn gen` together remove 66 of 18 386 targets.
 
+### Closing the last tab keeps the browser: patch 0107 (2026-11-19)
+
+The owner asked for it: closing the last tab quit Chromium TV and dropped the user on LG's Home.
+
+- **An extension cannot do it.** `chrome.tabs.onRemoved` fires after the close, when the window is already going.
+  Opening a new window from there would also undo menu > Exit. So it is a patch.
+- `patches/0107-webos-last-tab-close-keeps-window.patch`, `chrome/browser/ui/tabs/tab_strip_model.cc`, under
+  `OS_WEBOS`: when a close would leave a normal window with no tabs, a New Tab page opens first, in the background.
+- **Covered:** X on the tab, Ctrl+W and the tab menu (`ExecuteCloseTabsCommand`), a page's `window.close()` and
+  `chrome.tabs.remove` (both reach `CloseWebContentsAt` through `Browser::CloseContents`).
+- **Still quits:** menu > Exit (`browser_shutdown::IsTryingToQuit()`), and webOS closing the app or the window
+  (`closing_all()`, `IsAttemptingToCloseBrowser()`). Back does not quit: patch 0017 maps it to Escape, and on a
+  page it focuses the toolbar. So the only exits are the menu and webOS.
+- **Where:** the NTP is added where a close starts, not in `CloseTabs()`. `ExecuteCloseTabs()` holds the tab strip's
+  reentrancy guard there, and `AddTabAt()` would hit its CHECK. Background, not foreground: `CloseSelectedTabs()`
+  reads the selection again after the hook, and a selected NTP would be closed instead of the old tab.
+- **Known leftover:** a cancelled close (a beforeunload "Stay", or the dialog for deleting a tab group) leaves the
+  added NTP open.
+- **TV check (2026-11-20, `bench/lasttab.py`, IPK sha256 a98e1fce…):** from one example.com tab, Ctrl+W, a page's
+  `window.close()` and DevTools `Target.closeTarget` each left `chrome://newtab/` open, and the browser stayed.
+  Menu > Exit (Alt+E, Up, Enter) closes the window.
+- **Found on the way, not caused by 0107:** when a New Tab page is open, menu > Exit closes the window, but the
+  `chrome` process stays alive without one (checked after 3, 10 and 30 s). With only example.com open, Exit ends the
+  process within 3 s. The control case opened the NTP with Ctrl+T and closed example.com as a non-last tab, so the
+  0107 hook did not run, and the process still stayed. Since 0107 leaves an NTP after the last tab, this case gets
+  more common. The next launch through webOS ends the old process (run.sh), and the browser starts normally. Why the
+  NTP keeps the process alive is not known yet.
+
 ## 7. Tooling gotchas
 
 ### Moving files
@@ -921,6 +954,7 @@ Submitted rows carry the link; the rest are not submitted.
 | cr151 0103 spatnav-one-layout-update-per-walk | [Chromium](https://issues.chromium.org) (Blink spatial navigation), copy to WebOS-Chromium | Platform-independent: Down 167 → 115 ms on a Wikipedia article. The same code is in Chromium main on 2026-11-18. The Chromium tracker was not searched | not submitted |
 | cr151 0105 vizfmp-swap-needs-compositor | [webOS-ports/chromium151](https://github.com/webOS-ports/chromium151) (the neva code is in its base tree), report to WebOS-Chromium | Renderer NULL dereference on adblock-tester.com in 0.0.66 too. No issue or PR in either repository (checked 2026-11-18). PR #17 there touches FCP waiting in viz, not this | [PR #19](https://github.com/sarahahzub/WebOS-Chromium/pull/19) as 0054, [chromium151 #31](https://github.com/webOS-ports/chromium151/issues/31), 2026-11-19 |
 | cr151 0106 webos-hevc-through-ndl | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) | Depends on their NDL renderer (0023) and `$CN_MEDIA_SOCK`. HEVC 4K plays on the C1. No HEVC issue there | [PR #20](https://github.com/sarahahzub/WebOS-Chromium/pull/20) as 0055, 2026-11-19 |
+| cr151 0107 webos-last-tab-close-keeps-window | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) | A TV product behaviour: the last tab no longer quits the app, only menu > Exit does. Plain Chrome UI code, its only webOS part is the `OS_WEBOS` guard. No issue or PR about it there (checked 2026-11-19) | not submitted |
 | cr151 fonts.conf | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) (package: run.sh + a shipped fonts.conf) | Every family came out as LG Display with full hinting. No issue there | [PR #22](https://github.com/sarahahzub/WebOS-Chromium/pull/22), 2026-11-19 |
 | cr151 omnibox trim (run.sh flags) | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) (run.sh) | Omnibox key to screen 160 → 87 ms, flags only. A TV product choice (fewer providers, 5 rows), so offer it as an option. No issue there | [PR #23](https://github.com/sarahahzub/WebOS-Chromium/pull/23), on by default, media.opts `omnibox=full` turns it off, 2026-11-19 |
 | Platform notes: quoted screensaver timestamp, NDL main-ELF requirement, Mali EGL display | [webosbrew](https://github.com/webosbrew) (documentation) | Knowledge for homebrew authors, not a code patch | not submitted |
