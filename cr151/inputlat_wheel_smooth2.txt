@@ -1,0 +1,468 @@
+build: com.viiees.chromiumtv, IPK sha256 cc72d997... (patches 0100-0108)
+run.sh before the series: none
+FAILED chromiumtv wiki-wheel 84484-0: RuntimeError no http page target for 30 s: [('page', '')]
+Traceback (most recent call last):
+  File "browser/bench/inputlat.py", line 543, in main
+    run(tag, site, f"{stamp}-{r}")
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "browser/bench/inputlat.py", line 281, in run
+    measure(br, tag, site, rnd)
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "browser/bench/inputlat.py", line 337, in measure
+    if page_eval("""(() => { const b = [...document.querySelectorAll("button")]
+       ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        .find(e => /reject all/i.test(e.textContent)); if (b) { b.click(); return true; } return false; })()"""):
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "browser/bench/inputlat.py", line 130, in page_eval
+    raise RuntimeError(f"no http page target for 30 s: {[(t['type'], t['url'][:60]) for t in targets]}")
+RuntimeError: no http page target for 30 s: [('page', '')]
+INPUTLAT {"tag": "chromiumtv+nosmooth", "site": "wiki-wheel", "round": "84484-0", "keys": 30, "kind": "wheel", "gap": 80, "n": {"wheel": 28, "mousemove": 1, "mouseover": 7, "scroll": 28}, "other": [["pointerover", 27173.59999999404, 27227.59999999404, 27233.79999999702, 104], ["pointerenter", 27173.59999999404, 27233.89999999106, 27233.89999999106, 104], ["pointerenter", 27173.59999999404, 27233.89999999106, 27233.89999999106, 104], ["pointerenter", 27173.59999999404, 27233.89999999106, 27233.89999999106, 104], ["pointerenter", 27173.59999999404, 27233.89999999106, 27233.89999999106, 104], ["pointerenter", 27173.59999999404, 27233.89999999106, 27233.89999999106, 104], ["pointerenter", 27173.59999999404, 27233.89999999106, 27233.89999999106, 104], ["pointerenter", 27173.59999999404, 27233.89999999106, 27233.89999999106, 104], ["pointerenter", 27173.59999999404, 27233.89999999106, 27233.89999999106, 104], ["pointerenter", 27173.59999999404, 27233.89999999106, 27233.89999999106, 104], ["pointerenter", 27173.59999999404, 27233.89999999106, 27233.89999999106, 104], ["pointerenter", 27173.59999999404, 27233.89999999106, 27233.89999999106, 104], ["pointerenter", 27173.59999999404, 27233.89999999106, 27233.89999999106, 104], ["mouseover", 27173.59999999404, 27234, 27235.19999998808, 104], ["pointerout", 29858.5, 29861.39999999106, 29861.39999999106, 48], ["pointerleave", 29858.5, 29861.5, 29861.5, 48], ["pointerover", 29858.5, 29861.5, 29862.69999998808, 48], ["pointerenter", 29858.5, 29862.69999998808, 29862.69999998808, 48], ["mouseout", 29858.5, 29862.69999998808, 29862.89999999106, 48], ["mouseover", 29858.5, 29862.89999999106, 29863.09999999404, 48], ["pointerout", 30063.89999999106, 30067.79999999702, 30067.89999999106, 80], ["pointerleave", 30063.89999999106, 30067.89999999106, 30067.89999999106, 80], ["pointerleave", 30063.89999999106, 30067.89999999106, 30067.89999999106, 80], ["pointerover", 30063.89999999106, 30067.89999999106, 30068.59999999404, 80], ["pointerenter", 30063.89999999106, 30068.59999999404, 30068.59999999404, 80], ["pointerenter", 30063.89999999106, 30068.59999999404, 30068.59999999404, 80], ["pointerenter", 30063.89999999106, 30068.59999999404, 30068.59999999404, 80], ["mouseout", 30063.89999999106, 30068.59999999404, 30068.79999999702, 80], ["mouseover", 30063.89999999106, 30068.79999999702, 30076.39999999106, 80]], "raf": [[19029, 0], [19099, 0], [19186, 0], [19325, 0], [19658, 0], [19702, 0], [19748, 0], [19798, 0], [19834, 0], [19884, 0], [19904, 0], [19937, 0], [19954, 0], [19981, 0], [20029, 0], [20079, 0], [20095, 0], [20112, 0], [20132, 0], [20178, 0], [20221, 0], [20261, 0], [20300, 0], [20339, 0], [20378, 0], [20418, 0], [20457, 0], [20495, 0], [20534, 0], [20573, 0], [20613, 0], [20651, 0], [20690, 0], [20728, 0], [20769, 0], [20812, 0], [20870, 0], [20904, 0], [20944, 0], [20987, 0], [21030, 0], [21069, 0], [21108, 0], [21146, 0], [21185, 0], [21223, 0], [21262, 0], [21300, 0], [21339, 0], [21377, 0], [21417, 0], [21455, 0], [21494, 0], [21533, 0], [21571, 0], [21609, 0], [21648, 0], [21687, 0], [21725, 0], [21764, 0], [21804, 0], [21843, 0], [21882, 0], [21921, 0], [21961, 0], [22001, 0], [22062, 0], [22209, 0], [22299, 0], [22393, 0], [22479, 0], [22496, 0], [22513, 0], [22530, 0], [22546, 0], [22563, 0], [22580, 0], [22596, 0], [22613, 0], [22630, 0], [22646, 0], [22663, 0], [22680, 0], [22697, 0], [22713, 0], [22730, 0], [22746, 0], [22763, 0], [22780, 0], [22797, 0], [22813, 0], [22830, 0], [22846, 0], [22863, 0], [22880, 0], [22896, 0], [22913, 0], [22930, 0], [22946, 0], [22963, 0], [22980, 0], [22997, 0], [23013, 0], [23030, 0], [23046, 0], [23063, 0], [23080, 0], [23096, 0], [23113, 0], [23139, 0], [23176, 0], [23217, 0], [23257, 0], [23298, 0], [23337, 0], [23376, 0], [23416, 0], [23456, 0], [23494, 0], [23533, 0], [23571, 0], [23611, 0], [23650, 0], [23708, 0], [23738, 0], [23802, 0], [23835, 0], [23875, 0], [23931, 0], [23965, 0], [24007, 0], [24048, 0], [24089, 0], [24132, 0], [24172, 0], [24213, 0], [24277, 0], [24311, 0], [24370, 0], [24413, 0], [24454, 0], [24495, 0], [24535, 0], [24576, 0], [24619, 0], [24659, 0], [24701, 0], [24746, 0], [24789, 0], [24831, 0], [24871, 0], [24911, 0], [24950, 0], [24990, 0], [25030, 0], [25070, 0], [25108, 0], [25147, 0], [25186, 0], [25226, 0], [25264, 0], [25303, 0], [25345, 0], [25387, 0], [25403, 0], [25431, 0], [25448, 0], [25464, 0], [25481, 0], [25498, 0], [25514, 0], [25531, 0], [25548, 0], [25564, 0], [25581, 0], [25598, 0], [25614, 0], [25631, 0], [25648, 0], [25664, 0], [25681, 0], [25698, 0], [25714, 0], [25731, 0], [25748, 0], [25764, 0], [25781, 0], [25798, 0], [25814, 0], [25831, 0], [25848, 0], [25864, 0], [25881, 0], [25898, 0], [25915, 0], [25931, 0], [25948, 0], [25964, 0], [25981, 0], [25998, 0], [26014, 0], [26031, 0], [26048, 0], [26064, 0], [26081, 0], [26098, 0], [26120, 0], [26163, 0], [26203, 0], [26241, 0], [26280, 0], [26319, 0], [26358, 0], [26396, 0], [26436, 0], [26477, 0], [26521, 0], [26561, 0], [26600, 0], [26638, 0], [26676, 0], [26714, 0], [26759, 0], [26800, 0], [26838, 0], [26877, 0], [26918, 0], [26956, 0], [26995, 0], [27054, 0], [27085, 0], [27125, 0], [27166, 0], [27206, 120], [27269, 240], [27386, 480], [27419, 480], [27463, 600], [27497, 600], [27541, 600], [27574, 720], [27617, 840], [27650, 840], [27696, 840], [27729, 960], [27773, 1080], [27823, 1080], [27939, 1320], [27989, 1320], [28022, 1440], [28072, 1440], [28115, 1440], [28148, 1440], [28190, 1440], [28224, 1440], [28240, 1440], [28257, 1440], [28274, 1440], [28290, 1440], [28307, 1440], [28324, 1440], [28340, 1440], [28357, 1440], [28374, 1440], [28390, 1440], [28407, 1440], [28424, 1440], [28440, 1440], [28457, 1440], [28474, 1440], [28490, 1440], [28507, 1440], [28524, 1440], [28540, 1440], [28557, 1440], [28574, 1440], [28590, 1440], [28607, 1440], [28624, 1440], [28640, 1440], [28657, 1440], [28674, 1440], [28690, 1440], [28707, 1440], [28724, 1440], [28740, 1440], [28757, 1440], [28774, 1440], [28790, 1440], [28807, 1440], [28824, 1440], [28840, 1440], [28857, 1440], [28874, 1440], [28890, 1440], [28907, 1440], [28924, 1440], [28940, 1440], [28957, 1440], [28974, 1440], [28990, 1440], [29007, 1440], [29024, 1440], [29040, 1440], [29057, 1440], [29074, 1440], [29090, 1440], [29107, 1440], [29124, 1440], [29140, 1440], [29157, 1440], [29174, 1440], [29190, 1440], [29207, 1440], [29224, 1440], [29240, 1440], [29257, 1440], [29274, 1440], [29290, 1440], [29307, 1440], [29324, 1440], [29340, 1440], [29357, 1440], [29374, 1440], [29390, 1440], [29407, 1440], [29424, 1440], [29440, 1440], [29457, 1440], [29474, 1440], [29490, 1440], [29507, 1440], [29524, 1440], [29540, 1440], [29557, 1440], [29574, 1440], [29590, 1440], [29607, 1560], [29645, 1560], [29679, 1560], [29727, 1680], [29760, 1680], [29808, 1800], [29841, 1800], [29892, 1920], [29941, 2040], [30011, 2040], [30056, 2160], [30134, 2280], [30168, 2280], [30212, 2400], [30245, 2400], [30285, 2520], [30367, 2640], [30400, 2640], [30446, 2760], [30479, 2760], [30554, 2880], [30626, 2880], [30667, 2880], [30700, 2880], [30717, 2880], [30733, 2880], [30750, 2880], [30767, 2880], [30783, 2880], [30800, 2880], [30817, 2880], [30833, 2880], [30850, 2880], [30867, 2880], [30883, 2880], [30900, 2880], [30917, 2880], [30933, 2880], [30950, 2880], [30967, 2880], [30983, 2880], [31000, 2880], [31017, 2880], [31033, 2880], [31050, 2880], [31067, 2880], [31083, 2880], [31100, 2880], [31117, 2880], [31133, 2880], [31150, 2880], [31167, 2880], [31183, 2880], [31200, 2880], [31217, 2880], [31233, 2880], [31250, 2880], [31267, 2880], [31283, 2880], [31300, 2880], [31317, 2880], [31333, 2880], [31350, 2880], [31367, 2880], [31383, 2880], [31400, 2880], [31417, 2880], [31500, 2880], [31517, 2880], [31533, 2880], [31550, 2880], [31567, 2880], [31583, 2880], [31600, 2880], [31617, 2880], [31633, 2880], [31650, 2880], [31667, 2880], [31683, 2880], [31700, 2880], [31717, 2880], [31733, 2880], [31750, 2880], [31767, 2880], [31783, 2880], [31800, 2880], [31817, 2880], [31833, 2880], [31850, 2880], [31867, 2880], [31883, 2880], [31900, 2880], [31917, 2880], [31933, 2880], [31950, 2880], [31967, 2880], [31983, 2880], [32000, 2880], [32017, 2880], [32033, 2880], [32050, 2880], [32067, 2760], [32105, 2760], [32138, 2760], [32188, 2640], [32238, 2520], [32272, 2520], [32305, 2520], [32322, 2400], [32349, 2400], [32383, 2400], [32429, 2280], [32462, 2280], [32509, 2160], [32542, 2160], [32559, 2160], [32575, 2160], [32592, 2160], [32609, 2160], [32625, 2160], [32642, 2160], [32659, 2160], [32675, 2160], [32692, 2160], [32709, 2160], [32725, 2160], [32742, 2160], [32759, 2160], [32775, 2160], [32792, 2160], [32809, 2160], [32825, 2160], [32842, 2160], [32859, 2160], [32875, 2160], [32892, 2160], [32909, 2160], [32925, 2160], [32942, 2160], [32959, 2160], [32975, 2160], [32992, 2160], [33009, 2160], [33025, 2160], [33042, 2160], [33059, 2160], [33075, 2160], [33092, 2160], [33109, 2160], [33125, 2160], [33142, 2160], [33159, 2160], [33175, 2160], [33192, 2160], [33209, 2160], [33225, 2160], [33242, 2160], [33259, 2160], [33275, 2160], [33292, 2160], [33309, 2160], [33325, 2160], [33342, 2160], [33359, 2160], [33375, 2160], [33392, 2160], [33409, 2160], [33425, 2160], [33442, 2160], [33459, 2160], [33475, 2160], [33492, 2160], [33509, 2160], [33525, 2160], [33542, 2160], [33559, 2160], [33575, 2160], [33592, 2160], [33609, 2160], [33625, 2160], [33642, 2160], [33659, 2160], [33675, 2160], [33692, 2160], [33709, 2160], [33725, 2160], [33742, 2160], [33759, 2160], [33775, 2160], [33792, 2160], [33809, 2160], [33825, 2160], [33842, 2160], [33859, 2160], [33875, 2160], [33892, 2160], [33909, 2160], [33925, 2160], [33942, 2160], [33959, 2160], [33975, 2160], [33992, 2160], [34009, 2160], [34025, 2160], [34042, 2160], [34059, 2160], [34075, 2160], [34092, 2160], [34109, 2160], [34125, 2160], [34142, 2160], [34159, 2160], [34175, 2160], [34192, 2160], [34209, 2160], [34225, 2160], [34242, 2160], [34259, 2160], [34275, 2160], [34292, 2160], [34309, 2160], [34325, 2160], [34342, 2160], [34359, 2160], [34375, 2160], [34392, 2160], [34409, 2160], [34425, 2160], [34442, 2160], [34459, 2160], [34475, 2160], [34492, 2160], [34509, 2160], [34525, 2160], [34542, 2160], [34559, 2160], [34575, 2160], [34592, 2160], [34609, 2160], [34625, 2160], [34642, 2160], [34659, 2160], [34675, 2160], [34692, 2160], [34709, 2160], [34725, 2160], [34742, 2160], [34759, 2160], [34775, 2160], [34792, 2160], [34809, 2160], [34825, 2160], [34842, 2160], [34859, 2160], [34875, 2160], [34892, 2160], [34909, 2160], [34925, 2160], [34942, 2160], [34959, 2160], [34975, 2160], [34992, 2160], [35009, 2160], [35025, 2160], [35042, 2160], [35059, 2160], [35075, 2160], [35092, 2160], [35109, 2160], [35125, 2160], [35142, 2160], [35159, 2160], [35175, 2160], [35192, 2160], [35209, 2160], [35225, 2160], [35242, 2160], [35259, 2160], [35275, 2160], [35292, 2160], [35309, 2160], [35325, 2160], [35342, 2160], [35359, 2160], [35375, 2160], [35392, 2160], [35409, 2160], [35425, 2160], [35442, 2160], [35459, 2160], [35475, 2160], [35492, 2160], [35509, 2160], [35525, 2160], [35542, 2160], [35559, 2160], [35575, 2160], [35592, 2160], [35609, 2160], [35625, 2160], [35642, 2160], [35659, 2160], [35675, 2160], [35692, 2160], [35709, 2160], [35725, 2160], [35742, 2160], [35759, 2160], [35775, 2160], [35792, 2160], [35809, 2160], [35825, 2160], [35842, 2160], [35859, 2160], [35875, 2160], [35892, 2160], [35909, 2160], [35925, 2160], [35942, 2160], [35959, 2160], [35975, 2160], [35992, 2160], [36009, 2160], [36025, 2160], [36042, 2160], [36059, 2160], [36075, 2160], [36092, 2160], [36109, 2160], [36125, 2160], [36142, 2160], [36159, 2160], [36175, 2160], [36192, 2160], [36209, 2160], [36225, 2160], [36242, 2160], [36259, 2160], [36275, 2160], [36292, 2160], [36309, 2160], [36325, 2160], [36342, 2160], [36358, 2160], [36375, 2160], [36392, 2160], [36409, 2160], [36425, 2160], [36442, 2160], [36459, 2160], [36475, 2160], [36492, 2160], [36509, 2160], [36525, 2160], [36542, 2160], [36558, 2160], [36575, 2160], [36592, 2160], [36609, 2160], [36625, 2160], [36642, 2160], [36658, 2160], [36675, 2160], [36692, 2160], [36709, 2160], [36725, 2160], [36742, 2160], [36759, 2160], [36775, 2160], [36792, 2160], [36809, 2160], [36825, 2160], [36842, 2160], [36859, 2160], [36875, 2160], [36892, 2160], [36909, 2160], [36925, 2160], [36942, 2160], [36959, 2160], [36975, 2160], [36992, 2160], [37009, 2160], [37025, 2160], [37042, 2160], [37059, 2160], [37075, 2160], [37092, 2160], [37109, 2160], [37125, 2160], [37142, 2160], [37158, 2160], [37175, 2160], [37192, 2160], [37209, 2160], [37225, 2160], [37242, 2160], [37258, 2160], [37275, 2160], [37292, 2160], [37309, 2160], [37325, 2160], [37342, 2160], [37358, 2160], [37375, 2160], [37392, 2160], [37408, 2160], [37425, 2160], [37442, 2160], [37458, 2160], [37475, 2160], [37492, 2160], [37509, 2160], [37525, 2160], [37542, 2160], [37558, 2160], [37575, 2160], [37592, 2160], [37608, 2160], [37625, 2160], [37642, 2160], [37659, 2160], [37675, 2160], [37692, 2160], [37709, 2160], [37725, 2160], [37742, 2160], [37758, 2160], [37775, 2160], [37792, 2160], [37809, 2160], [37825, 2160], [37842, 2160], [37859, 2160], [37875, 2160], [37892, 2160], [37908, 2160], [37925, 2160], [37942, 2160], [37958, 2160], [37975, 2160], [37992, 2160], [38008, 2160], [38025, 2160], [38042, 2160], [38058, 2160], [38075, 2160], [38092, 2160], [38109, 2160], [38125, 2160], [38142, 2160], [38158, 2160], [38175, 2160], [38192, 2160], [38208, 2160], [38225, 2160], [38242, 2160], [38258, 2160], [38275, 2160], [38292, 2160], [38308, 2160], [38325, 2160], [38342, 2160], [38358, 2160], [38375, 2160], [38392, 2160], [38408, 2160], [38425, 2160], [38442, 2160], [38458, 2160], [38475, 2160], [38492, 2160], [38508, 2160], [38525, 2160], [38542, 2160], [38558, 2160], [38575, 2160], [38592, 2160], [38608, 2160], [38625, 2160], [38642, 2160], [38658, 2160], [38675, 2160], [38692, 2160], [38708, 2160], [38725, 2160], [38742, 2160], [38758, 2160], [38775, 2160], [38792, 2160], [38808, 2160], [38825, 2160], [38842, 2160], [38858, 2160], [38875, 2160], [38892, 2160], [38908, 2160], [38925, 2160], [38942, 2160], [38958, 2160], [38975, 2160], [38992, 2160], [39008, 2160], [39025, 2160], [39042, 2160], [39058, 2160], [39075, 2160], [39092, 2160], [39108, 2160], [39125, 2160]], "wheel_t": [[27175, 120], [27225, 240], [27382, 480], [27463, 600], [27548, 720], [27623, 840], [27703, 960], [27783, 1080], [27943, 1320], [28024, 1440], [29604, 1560], [29695, 1680], [29776, 1800], [29859, 1920], [29945, 2040], [30037, 2160], [30103, 2280], [30184, 2400], [30255, 2520], [30337, 2640], [30418, 2760], [30497, 2880], [32065, 2760], [32156, 2760], [32239, 2520], [32317, 2400], [32396, 2280], [32476, 2160]], "seconds": 7.9, "drain_s": 2.2, "page": {"url": "https://en.wikipedia.org/wiki/Television", "ua": "Mozilla/5.0 (Web0S; Linux/SmartTV) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 WebAppManager", "nodes": 11814, "scrollY": 0, "heapMB": 9.5, "focused": "BODY", "scrollY_after": 2160, "focused_after": "BODY |  | Jump to content\n\n\t\n\t\t\n\t\t\t\n\t\t\t\t\n\n\t\n\t\n\nMai"}, "cpu": {"ms_by_type": {"renderer": 3050, "browser": 1790}, "top_threads": {"renderer/chrome": 1800, "browser/VizCompositorTh": 1410, "renderer/Compositor": 720, "renderer/ThreadPoolForeg": 500, "browser/chrome": 160, "browser/Chrome_IOThread": 100, "browser/ThreadPoolForeg": 30, "browser/Chrome_InProcGp": 30, "browser/NetworkService": 30, "renderer/ServiceWorker_t": 20, "browser/wayland-fd": 20, "renderer/Chrome_ChildIOT": 10}, "top_other_procs": {"surface-manager:1994": 3420, "nn-proxy:2763": 510, "memchute:1704": 310, "ls-hubd:1627": 270, "pqcontroller:2322": 210, "sh:12458": 200, "legacy-broadcas:1975": 130, "lginput2:32685": 130, "amazon-alexa-ad:5433": 70, "sh:24958": 60}, "ms_all_tv_cpus": 13530, "ms_wall_x4": 41560, "nice": ["browser/Chrome_InProcGp:12", "browser/CompositorTileW:20", "browser/VizCompositorTh:12", "renderer/Compositor:12"], "swap_pages_in": 0, "swap_pages_out": 0, "mem_avail_mb": 707, "swap_free_mb": 179}, "events": [], "prevented": [], "got": 0, "loaf": [{"t": 18952.59999999404, "d": 93.29999999701977, "block": 0, "layout": 2.2999999970197678, "scripts": []}, {"t": 19049.29999999702, "d": 59.099999994039536, "block": 0, "layout": 2.2000000029802322, "scripts": []}, {"t": 19109.69999998808, "d": 86.80000001192093, "block": 0, "layout": 0.7000000029802322, "scripts": []}, {"t": 19199.5, "d": 142.79999999701977, "block": 0, "layout": 0.6000000089406967, "scripts": []}, {"t": 19343.89999999106, "d": 330.79999999701977, "block": 0, "layout": 2.5999999940395355, "scripts": []}, {"t": 22027.39999999106, "d": 55.1000000089407, "block": 0, "layout": 0.7000000029802322, "scripts": []}, {"t": 22083.89999999106, "d": 135.90000000596046, "block": 0, "layout": 0.6000000089406967, "scripts": []}, {"t": 22223.09999999404, "d": 94.20000000298023, "block": 0, "layout": 0.7999999970197678, "scripts": []}, {"t": 22323.39999999106, "d": 76.70000000298023, "block": 0, "layout": 1.2000000029802322, "scripts": []}, {"t": 22403.39999999106, "d": 79.90000000596046, "block": 0, "layout": 0.29999999701976776, "scripts": []}, {"t": 27177.89999999106, "d": 64.29999999701977, "block": 0, "layout": 0.699999988079071, "scripts": [["#document.onpointerover", "", "en.wikipedia.org/load.php?lang=en&modules=jquery&skin=vector", 6, 0]]}, {"t": 27280.5, "d": 120.69999998807907, "block": 0, "layout": 0.8999999910593033, "scripts": []}, {"t": 27845.79999999702, "d": 101.3999999910593, "block": 0, "layout": 0.7999999970197678, "scripts": []}, {"t": 28035.29999999702, "d": 64.20000000298023, "block": 0, "layout": 9.800000011920929, "scripts": [["FrameRequestCallback", "", "", 6, 5]]}, {"t": 29959.5, "d": 68.79999999701977, "block": 0, "layout": 1, "scripts": []}, {"t": 30295.19999998808, "d": 78.70000000298023, "block": 0, "layout": 0.7999999970197678, "scripts": [["IntersectionObserverCallback", "", "en.wikipedia.org/load.php?lang=en&modules=skins.vector.js&sk", 11, 1]]}, {"t": 30494.39999999106, "d": 70.5, "block": 0, "layout": 0.7999999970197678, "scripts": []}, {"t": 30567.29999999702, "d": 71.3999999910593, "block": 0, "layout": 0.699999988079071, "scripts": []}, {"t": 31403.09999999404, "d": 108.09999999403954, "block": 0, "layout": 0.19999998807907104, "scripts": []}], "hist": {"Blink.Compositor.PACUpdateTypeOnScrollCullRectChange": "n=7 mean=3.0 p50>=3", "Event.Jank.ScrollUpdate.FastScroll.MissedVsync.FrameAboveJankyThreshold2": "n=2 mean=79.0 p50>=77", "Event.Scroll.Wheel": "n=3 mean=1216.3 p50>=1262", "Event.ScrollJank.DelayedFramesPercentage.PerScroll": "n=2 mean=0.0 p50>=0", "Event.ScrollJank.DelayedFramesPercentage4.PerScroll": "n=2 mean=90.5 p50>=90", "Event.ScrollJank.MissedVsyncs.PerFrame": "n=28 mean=0.0 p50>=0", "Event.ScrollJank.MissedVsyncsMax.PerScroll": "n=2 mean=0.0 p50>=0", "Event.ScrollJank.MissedVsyncsSum.PerScroll": "n=2 mean=0.0 p50>=0", "EventLatency.FirstGestureScrollUpdate.GenerationToBrowserMain": "n=3 mean=2489.0 p50>=0", "EventLatency.FirstGestureScrollUpdate.TotalLatency2": "n=3 mean=119658.3 p50>=90428", "EventLatency.FirstGestureScrollUpdate.Wheel.TotalLatency2": "n=3 mean=119658.3 p50>=90428", "EventLatency.GestureScrollUpdate.GenerationToBrowserMain": "n=27 mean=539.9 p50>=0", "EventLatency.GestureScrollUpdate.TotalLatency2": "n=27 mean=130817.6 p50>=122282", "EventLatency.GestureScrollUpdate.Wheel.TotalLatency2": "n=27 mean=130817.6 p50>=122282", "EventLatency.TotalLatency": "n=30 mean=129701.6 p50>=109350", "Input.FirstGestureScrollUpdate.DeltaY": "n=1 mean=180.0 p50>=149", "Memory.GPU.PeakMemoryAllocationSource2.Scroll.SharedImageStub": "n=3 mean=35.3 p50>=34", "Memory.GPU.PeakMemoryUsage2.Scroll": "n=3 mean=35.3 p50>=34", "PerformanceManager.InputScenarioChanges.Scroll": "n=3 mean=3.0 p50>=3", "Renderer4.MainThreadWheelScrollReason2": "n=3 mean=0.0 p50>=0", "Renderer4.ScrollingThread.Wheel": "n=3 mean=0.0 p50>=0"}}
+  chromiumtv+nosmooth wiki-wheel: keydown >=16ms 0/30, mean 0 ms (input delay 0, handlers 0, to paint 0); prevented 0/0; LoAF 19 sum 1903 ms; chrome CPU 161 ms/key, TV 451 ms/key; swap in/out 0/0
+    wheel: page got {'wheel': 28, 'mousemove': 1, 'mouseover': 7, 'scroll': 28}, scrollY 0 -> 2160, focus after BODY |  | Jump to content
+
+	
+		
+			
+				
+
+	
+	
+
+Mai
+    threads {'renderer/chrome': 1800, 'browser/VizCompositorTh': 1410, 'renderer/Compositor': 720, 'renderer/ThreadPoolForeg': 500, 'browser/chrome': 160, 'browser/Chrome_IOThread': 100, 'browser/ThreadPoolForeg': 30, 'browser/Chrome_InProcGp': 30, 'browser/NetworkService': 30, 'renderer/ServiceWorker_t': 20, 'browser/wayland-fd': 20, 'renderer/Chrome_ChildIOT': 10}
+    other processes {'surface-manager:1994': 3420, 'nn-proxy:2763': 510, 'memchute:1704': 310, 'ls-hubd:1627': 270, 'pqcontroller:2322': 210, 'sh:12458': 200, 'legacy-broadcas:1975': 130, 'lginput2:32685': 130, 'amazon-alexa-ad:5433': 70, 'sh:24958': 60}
+    EventLatency.TotalLatency n=30 mean=129701.6 p50>=109350
+FAILED chromiumtv reddit-wheel 84484-0: URLError <urlopen error [Errno 51] Network is unreachable>
+Traceback (most recent call last):
+  File "<python>/python3.13/urllib/request.py", line 1318, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+              encode_chunked=req.has_header('Transfer-encoding'))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1386, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1432, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1381, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: [Errno 51] Network is unreachable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "browser/bench/inputlat.py", line 543, in main
+    run(tag, site, f"{stamp}-{r}")
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "browser/bench/inputlat.py", line 268, in run
+    br = uilat.start(f"{base}+{flag_variant}" if flag_variant else base, url)
+  File "browser/bench/uilat.py", line 187, in start
+    br = wait_cdp()
+  File "browser/bench/uilat.py", line 156, in wait_cdp
+    return Browser()
+urllib.error.URLError: <urlopen error [Errno 51] Network is unreachable>
+FAILED chromiumtv+nosmooth reddit-wheel 84484-0: URLError <urlopen error [Errno 51] Network is unreachable>
+Traceback (most recent call last):
+  File "<python>/python3.13/urllib/request.py", line 1318, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+              encode_chunked=req.has_header('Transfer-encoding'))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1386, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1432, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1381, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: [Errno 51] Network is unreachable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "browser/bench/inputlat.py", line 543, in main
+    run(tag, site, f"{stamp}-{r}")
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "browser/bench/inputlat.py", line 268, in run
+    br = uilat.start(f"{base}+{flag_variant}" if flag_variant else base, url)
+  File "browser/bench/uilat.py", line 187, in start
+    br = wait_cdp()
+  File "browser/bench/uilat.py", line 156, in wait_cdp
+    return Browser()
+urllib.error.URLError: <urlopen error [Errno 51] Network is unreachable>
+FAILED chromiumtv news-wheel 84484-0: URLError <urlopen error timed out>
+Traceback (most recent call last):
+  File "<python>/python3.13/urllib/request.py", line 1318, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+              encode_chunked=req.has_header('Transfer-encoding'))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1386, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1432, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1381, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TimeoutError: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "browser/bench/inputlat.py", line 543, in main
+    run(tag, site, f"{stamp}-{r}")
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "browser/bench/inputlat.py", line 268, in run
+    br = uilat.start(f"{base}+{flag_variant}" if flag_variant else base, url)
+  File "browser/bench/uilat.py", line 187, in start
+    br = wait_cdp()
+  File "browser/bench/uilat.py", line 156, in wait_cdp
+    return Browser()
+urllib.error.URLError: <urlopen error timed out>
+FAILED chromiumtv+nosmooth news-wheel 84484-0: URLError <urlopen error timed out>
+Traceback (most recent call last):
+  File "<python>/python3.13/urllib/request.py", line 1318, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+              encode_chunked=req.has_header('Transfer-encoding'))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1386, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1432, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1381, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TimeoutError: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "browser/bench/inputlat.py", line 543, in main
+    run(tag, site, f"{stamp}-{r}")
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "browser/bench/inputlat.py", line 268, in run
+    br = uilat.start(f"{base}+{flag_variant}" if flag_variant else base, url)
+  File "browser/bench/uilat.py", line 187, in start
+    br = wait_cdp()
+  File "browser/bench/uilat.py", line 156, in wait_cdp
+    return Browser()
+urllib.error.URLError: <urlopen error timed out>
+FAILED chromiumtv yt-wheel 84484-0: URLError <urlopen error timed out>
+Traceback (most recent call last):
+  File "<python>/python3.13/urllib/request.py", line 1318, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+              encode_chunked=req.has_header('Transfer-encoding'))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1386, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1432, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1381, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TimeoutError: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "browser/bench/inputlat.py", line 543, in main
+    run(tag, site, f"{stamp}-{r}")
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "browser/bench/inputlat.py", line 268, in run
+    br = uilat.start(f"{base}+{flag_variant}" if flag_variant else base, url)
+  File "browser/bench/uilat.py", line 187, in start
+    br = wait_cdp()
+  File "browser/bench/uilat.py", line 156, in wait_cdp
+    return Browser()
+urllib.error.URLError: <urlopen error timed out>
+FAILED chromiumtv+nosmooth yt-wheel 84484-0: URLError <urlopen error timed out>
+Traceback (most recent call last):
+  File "<python>/python3.13/urllib/request.py", line 1318, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+              encode_chunked=req.has_header('Transfer-encoding'))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1386, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1432, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1381, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TimeoutError: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "browser/bench/inputlat.py", line 543, in main
+    run(tag, site, f"{stamp}-{r}")
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "browser/bench/inputlat.py", line 268, in run
+    br = uilat.start(f"{base}+{flag_variant}" if flag_variant else base, url)
+  File "browser/bench/uilat.py", line 187, in start
+    br = wait_cdp()
+  File "browser/bench/uilat.py", line 156, in wait_cdp
+    return Browser()
+urllib.error.URLError: <urlopen error timed out>
+FAILED chromiumtv wiki-wheel 84484-1: URLError <urlopen error timed out>
+Traceback (most recent call last):
+  File "<python>/python3.13/urllib/request.py", line 1318, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+              encode_chunked=req.has_header('Transfer-encoding'))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1386, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1432, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1381, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TimeoutError: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "browser/bench/inputlat.py", line 543, in main
+    run(tag, site, f"{stamp}-{r}")
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "browser/bench/inputlat.py", line 268, in run
+    br = uilat.start(f"{base}+{flag_variant}" if flag_variant else base, url)
+  File "browser/bench/uilat.py", line 187, in start
+    br = wait_cdp()
+  File "browser/bench/uilat.py", line 156, in wait_cdp
+    return Browser()
+urllib.error.URLError: <urlopen error timed out>
+FAILED chromiumtv+nosmooth wiki-wheel 84484-1: URLError <urlopen error timed out>
+Traceback (most recent call last):
+  File "<python>/python3.13/urllib/request.py", line 1318, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+              encode_chunked=req.has_header('Transfer-encoding'))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1386, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1432, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1381, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TimeoutError: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "browser/bench/inputlat.py", line 543, in main
+    run(tag, site, f"{stamp}-{r}")
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "browser/bench/inputlat.py", line 268, in run
+    br = uilat.start(f"{base}+{flag_variant}" if flag_variant else base, url)
+  File "browser/bench/uilat.py", line 187, in start
+    br = wait_cdp()
+  File "browser/bench/uilat.py", line 156, in wait_cdp
+    return Browser()
+urllib.error.URLError: <urlopen error timed out>
+FAILED chromiumtv reddit-wheel 84484-1: URLError <urlopen error timed out>
+Traceback (most recent call last):
+  File "<python>/python3.13/urllib/request.py", line 1318, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+              encode_chunked=req.has_header('Transfer-encoding'))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1386, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1432, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1381, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TimeoutError: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "browser/bench/inputlat.py", line 543, in main
+    run(tag, site, f"{stamp}-{r}")
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "browser/bench/inputlat.py", line 268, in run
+    br = uilat.start(f"{base}+{flag_variant}" if flag_variant else base, url)
+  File "browser/bench/uilat.py", line 187, in start
+    br = wait_cdp()
+  File "browser/bench/uilat.py", line 156, in wait_cdp
+    return Browser()
+urllib.error.URLError: <urlopen error timed out>
+FAILED chromiumtv+nosmooth reddit-wheel 84484-1: URLError <urlopen error timed out>
+Traceback (most recent call last):
+  File "<python>/python3.13/urllib/request.py", line 1318, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+              encode_chunked=req.has_header('Transfer-encoding'))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1386, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1432, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1381, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TimeoutError: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "browser/bench/inputlat.py", line 543, in main
+    run(tag, site, f"{stamp}-{r}")
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "browser/bench/inputlat.py", line 268, in run
+    br = uilat.start(f"{base}+{flag_variant}" if flag_variant else base, url)
+  File "browser/bench/uilat.py", line 187, in start
+    br = wait_cdp()
+  File "browser/bench/uilat.py", line 156, in wait_cdp
+    return Browser()
+urllib.error.URLError: <urlopen error timed out>
+FAILED chromiumtv news-wheel 84484-1: URLError <urlopen error timed out>
+Traceback (most recent call last):
+  File "<python>/python3.13/urllib/request.py", line 1318, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+              encode_chunked=req.has_header('Transfer-encoding'))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1386, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1432, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1381, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TimeoutError: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "browser/bench/inputlat.py", line 543, in main
+    run(tag, site, f"{stamp}-{r}")
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "browser/bench/inputlat.py", line 268, in run
+    br = uilat.start(f"{base}+{flag_variant}" if flag_variant else base, url)
+  File "browser/bench/uilat.py", line 187, in start
+    br = wait_cdp()
+  File "browser/bench/uilat.py", line 156, in wait_cdp
+    return Browser()
+urllib.error.URLError: <urlopen error timed out>
+FAILED chromiumtv+nosmooth news-wheel 84484-1: URLError <urlopen error timed out>
+Traceback (most recent call last):
+  File "<python>/python3.13/urllib/request.py", line 1318, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+              encode_chunked=req.has_header('Transfer-encoding'))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1386, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1432, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1381, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TimeoutError: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "browser/bench/inputlat.py", line 543, in main
+    run(tag, site, f"{stamp}-{r}")
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "browser/bench/inputlat.py", line 268, in run
+    br = uilat.start(f"{base}+{flag_variant}" if flag_variant else base, url)
+  File "browser/bench/uilat.py", line 187, in start
+    br = wait_cdp()
+  File "browser/bench/uilat.py", line 156, in wait_cdp
+    return Browser()
+urllib.error.URLError: <urlopen error timed out>
+FAILED chromiumtv yt-wheel 84484-1: URLError <urlopen error timed out>
+Traceback (most recent call last):
+  File "<python>/python3.13/urllib/request.py", line 1318, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+              encode_chunked=req.has_header('Transfer-encoding'))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1386, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1432, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1381, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TimeoutError: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "browser/bench/inputlat.py", line 543, in main
+    run(tag, site, f"{stamp}-{r}")
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "browser/bench/inputlat.py", line 268, in run
+    br = uilat.start(f"{base}+{flag_variant}" if flag_variant else base, url)
+  File "browser/bench/uilat.py", line 187, in start
+    br = wait_cdp()
+  File "browser/bench/uilat.py", line 156, in wait_cdp
+    return Browser()
+urllib.error.URLError: <urlopen error timed out>
+FAILED chromiumtv+nosmooth yt-wheel 84484-1: URLError <urlopen error timed out>
+Traceback (most recent call last):
+  File "<python>/python3.13/urllib/request.py", line 1318, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+              encode_chunked=req.has_header('Transfer-encoding'))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1386, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1432, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/python3.13/http/client.py", line 1381, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TimeoutError: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "browser/bench/inputlat.py", line 543, in main
+    run(tag, site, f"{stamp}-{r}")
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "browser/bench/inputlat.py", line 268, in run
+    br = uilat.start(f"{base}+{flag_variant}" if flag_variant else base, url)
+  File "browser/bench/uilat.py", line 187, in start
+    br = wait_cdp()
+  File "browser/bench/uilat.py", line 156, in wait_cdp
+    return Browser()
+urllib.error.URLError: <urlopen error timed out>
