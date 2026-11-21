@@ -1,12 +1,17 @@
 #!/bin/bash
 # patch.sh: put every file that the patch series touches back to git's content, then run upstream apply-patches.py
 # (their patches + ours from browser/cr151/patches). Upstream expects a fresh snapshot each time; this makes a re-run
-# on the same tree safe. Files created by a patch are removed first.
+# on the same tree safe. Files created by a patch are removed first. The paths of the previous run are reset too, so a
+# patch dropped from the series (one that went upstream under another name) leaves nothing behind.
 . /opt/cn/container/lib.sh
-for p in /opt/cn/patches/*.patch; do
-	git -C "$REPO" apply --numstat "$p" 2>/dev/null | cut -f3
-	grep -E '^\+\+\+ b/' "$p" | sed 's|^+++ b/||; s|\t.*||'
-done | sort -u > "$W/patched-paths.txt"
+{
+	cat "$W/patched-paths.txt" 2>/dev/null
+	for p in /opt/cn/patches/*.patch; do
+		git -C "$REPO" apply --numstat "$p" 2>/dev/null | cut -f3
+		grep -E '^\+\+\+ b/' "$p" | sed 's|^+++ b/||; s|\t.*||'
+	done
+} | sort -u > "$W/patched-paths.new"
+mv "$W/patched-paths.new" "$W/patched-paths.txt"
 while read -r f; do
 	[ -n "$f" ] || continue
 	if git -C "$REPO" ls-files --error-unmatch -- "$f" > /dev/null 2>&1; then

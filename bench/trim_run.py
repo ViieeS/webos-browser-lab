@@ -26,6 +26,7 @@ RUNSH_OFF = ("Translate,OptimizationHints,MediaRouter,BackForwardCache,Vulkan,Co
              "OptimizationGuideModelDownloading,IsolateOrigins,site-per-process,WebUIToolbar,WebUIToolbarWebView,"
              "WebUIToolbarInternalWebView,WebUIReloadButton,WebUILocationBar,AudioServiceOutOfProcess,WebUIOmniboxPopup,"
              "WebUIOmniboxAimPopup,WebUIOmniboxFullPopup,DisableLoadExtensionCommandLineSwitch,HardwareMediaKeyHandling,"
+             "NetworkTimeServiceQuerying,"
              "OmniboxDynamicMaxAutocomplete,OmniboxRichAutocompletion,MlUrlScoring,UrlScoringModel,MlUrlScoreCaching,"
              "AimEnabled,AllowAiModeMatches,OmniboxMiaZPS,PreconnectNonSearchOmniboxSuggestions,WebGPUService,"
              "WebGPUBlobCache")
@@ -187,7 +188,8 @@ def main():
     # the variants repeat run.sh's feature list; stop if the installed run.sh no longer has it
     chrome_gone()
     got = bench.tv(f"grep -o -e '--disable-features=[^$]*' {RUNSH}")
-    if RUNSH_OFF.rsplit(",WebGPUService", 1)[0] not in got:
+    # run.sh (upstream 1.0.0) appends the omnibox and WebGPU features through variables, so only the fixed part is compared
+    if RUNSH_OFF.split(",OmniboxDynamicMaxAutocomplete", 1)[0] not in got:
         sys.exit(f"installed run.sh has another --disable-features list, update RUNSH_OFF: {got[:200]!r}")
     names = os.environ.get("TRIM_VARIANTS", ",".join(VARIANTS)).split(",")
     args = sys.argv[1:]

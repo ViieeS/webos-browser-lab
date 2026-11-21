@@ -893,6 +893,213 @@ Raw: `browser/bench/exithang.py` (repro and thread states), stacks below.
   with in-process GPU: the process never exits after the window closes, with the same two stacks. No fix linked
   there. The Chromium tracker was not searched (it needs a browser).
 
+### Cookie banners: auto-reject candidates (2026-11-20)
+
+Raw: `browser/bench/results/consent/effect.jsonl` (per site: banner, the CMP's own consent record, autoconsent's
+report, the state after a reload) and `cost.jsonl`. Scripts: `bench/consent_run.py`, `bench/consent_probe.js`,
+`bench/consent_prep.sh`. Screenshots were taken but not kept in the repository: they show third-party sites.
+
+- **Question.** What rejects GDPR cookie banners with no remote input, at the lowest page cost? A banner that is only
+  hidden does not count as a reject.
+- **Method.**
+  - The finished chromiumtv runs with TV Tools and uBO Lite in complete mode, as shipped. Each variant runs in a
+    throwaway profile (`--user-data-dir` in browser.flags), and cookies and site storage are cleared before each site.
+  - A reject counts only when the CMP's own record says so: the TCF `getTCData` purposes, OneTrust `OptanonConsent`
+    groups together with `OptanonAlertBoxClosed`, `Cookiebot.consent`, the BBC's `ckns_policy`. Otherwise the
+    result comes from the add-on's own report, the screenshot and a reload.
+  - OneTrust writes `C0002:0,C0004:0` before any choice, so the groups alone prove nothing.
+- **Candidates.**
+  - uBO Lite's "EasyList/uBO – Cookie Notices" ruleset (off by default): it is not hide-only. It also clicks
+    buttons and writes consent records.
+  - DuckDuckGo autoconsent 18.9.0: npm `@duckduckgo/autoconsent`, MPL-2.0, the package's prebuilt MV3 add-on
+    (`dist/addon-mv3`). `consent_prep.sh` only turns off its debug logging defaults.
+  - Consent-O-Matic was not measured: the owner chose only autoconsent to download. Its last release is from
+    2025-06, and it fetches about 200 rule files from GitHub at run time.
+- **Sites.** 14 tried from the UK. 11 showed a banner. dm.de, Amazon and the Mirror showed none and are left out.
+
+| Site | CMP | uBO Lite Cookie Notices | autoconsent |
+|---|---|---|---|
+| theguardian.com | Sourcepoint | **accepted all** (11/11 purposes, 96 vendors) | hidden, no choice stored, 0 clicks |
+| independent.co.uk | Sourcepoint | **accepted all** (11/11 purposes, 103 vendors) | hidden, no choice stored, 0 clicks |
+| booking.com | OneTrust | hidden, no choice stored | clicked once; banner still on screen at 20 s, gone after a reload |
+| ikea.com | OneTrust | hidden, no choice stored | **rejected** (closed, groups 2–4 off) |
+| cookiebot.com | Cookiebot | missed | **rejected** (statistics, marketing, preferences off) |
+| 20minutes.fr | Didomi | hidden (the CMP never answered) | missed |
+| usercentrics.com | Usercentrics | hidden | rejected (its report: Usercentrics API, 1 click) |
+| reddit.com | own | hidden | rejected (its rule, 1 click) |
+| bbc.co.uk | own | hidden | **rejected** (`ckns_policy=000`, heuristic reject button) |
+| youtube.com | Google | missed (consent lightbox shown) | rejected (heuristic reject button, 1 click) |
+| google.com | Google | `SOCS` written, the same prefix as autoconsent's | rejected (its rule, 1 click) |
+
+- **Totals, autoconsent.** 7 of 11 rejected: 3 confirmed by the CMP record, 4 by its own report. 2 hidden, 1
+  unclear, 1 missed, none accepted.
+- **Totals, uBO Lite Cookie Notices.** It accepted everything on 2 of 11 sites. It hid the banner without a choice on
+  7 and missed 2. It must stay off: an "accept all" is worse than a banner.
+- **Not checked.**
+  - Whether 20minutes.fr offers a reject at all: it may be a "consent or pay" wall.
+  - What Google's `SOCS` value means. A hand-click calibration in desktop Chrome headless wrote no `SOCS`.
+- **Cost of autoconsent** (median of 6 loads per cell, cleared state, 20 s window, all chrome processes):
+
+  | Site | Load event, s | Renderer task time, s | CPU, all chrome processes, s |
+  |---|---|---|---|
+  | 20minutes.fr (autoconsent did nothing) | 5.4 → 6.2 | 5.4 → 6.8 | 11.8 → 14.6 (+24 %) |
+  | theguardian.com | 6.9 → 9.0 | 9.0 → 10.1 | 19.4 → 22.1 (+14 %) |
+  | booking.com | load rarely fires within 20 s | 19.1 → 19.2 | 37.1 → 38.0 (+2.5 %) |
+
+  - On the Guardian part of the cost is the page itself: without the add-on the Sourcepoint wall covers a page of one
+    screen; with it, 35 screens render.
+  - 20minutes.fr is the clean case: about 2.8 s of CPU and 0.9 s of load per page, with no banner handled.
+  - This is the DuckDuckGo *test* add-on. Its defaults force heuristic detection and a mutation observer on, and every
+    frame's init reads the 516 KB rule set from `chrome.storage`. A build tuned for speed may cost less. Not
+    measured yet.
+- **Lean builds** (`consent_prep.sh`):
+  - `lean`: rules and config kept in service-worker memory, no status icon, no popup mutation observer;
+  - `lean-noh`: also no heuristic detection.
+
+  Raw data: `results/consent/cost_lean.jsonl`. The run was stopped early because the owner needed the TV: 3 loads
+  per cell, the test add-on only 1–2. CPU of all chrome processes over 20 s, in seconds:
+
+  | Site | base | lean | lean-noh | test add-on |
+  |---|---|---|---|---|
+  | 20minutes.fr | 10.9 | 13.3 | 13.9 | 14.7 (n=1) |
+  | theguardian.com | 15.7 | 18.8 | 18.1 | 21.1 (n=2) |
+  | booking.com | 36.7 | 36.5 | 37.1 | 36.5 (n=1) |
+
+  - On 20minutes.fr the lean builds still cost about +22 %, against +24 % for the test add-on. The service worker's
+    storage reads and the heuristics are not where the cost is.
+  - What is left runs in every frame: the 196 KB content script and its CMP detection. 20minutes.fr has many ad
+    frames. This is a guess, not a profile.
+  - The effect of `lean` and `lean-noh` on the 14 sites was not measured: the run ended first.
+- **`lean-frames`** (`consent_frames.py`): `lean` with the content script in main frames only, plus the subframes a
+  rule can act in. Only the Sourcepoint-frame CMP and 20 JSON rules run in subframes: Sourcepoint's message
+  frames are matched by path on any host, and the rules by the hosts in their `urlPattern`. Heuristics run in the
+  main frame only anyway. One rule (sicredi) runs in subframes with no URL pattern, so it is dropped.
+  - **Cost** (`cost_frames.jsonl`; 6 loads per cell; base, lean-frames and lean interleaved). CPU of all chrome
+    processes over 20 s, in seconds:
+
+    | Site | base | lean-frames | lean |
+    |---|---|---|---|
+    | 20minutes.fr | 11.9 | 13.5 (+13 %) | 13.9 (+16 %) |
+    | theguardian.com | 15.8 | 18.4 | 19.0 |
+    | booking.com | 35.5 | 36.9 | 36.6 |
+
+    On 20minutes.fr the load event still comes about 0.8 s later than in base (5.5 → 6.3 s).
+  - **Effect** (`effect_frames.jsonl`): the same as the test add-on on every site. It rejected on IKEA, Cookiebot,
+    BBC, Usercentrics, Reddit, YouTube and Google. Guardian and Independent were hidden without a choice, and
+    20minutes.fr was missed. On booking.com the banner was gone at 20 s this time, but OneTrust stored no closed
+    choice.
+  - What is left is the main-frame content script itself: parsing 196 KB, then CMP detection with retries. It is
+    not profiled.
+- **Decision (owner, 2026-11-20): ship `lean-frames`.** `cr151/package.sh` builds it with `cr151/autoconsent.sh`
+  and loads it from the read-only app folder, the third `--load-extension` entry. That works because it has no
+  declarativeNetRequest rules, so Chrome writes nothing into its folder.
+  - Checked on the TV after the install (`bench/consent_shipped.py`, run.sh's own extension list, throwaway profile):
+    its service worker runs next to TV Tools and uBO Lite. It rejected on IKEA, Cookiebot, BBC and YouTube.
+
+### Input latency on heavy sites: wheel, hover, keys (2026-11-20)
+
+Details and tables: `browser/cr151/INPUT_LATENCY.md`. Raw: `browser/cr151/inputlat_*.txt`. Script: `bench/inputlat.py`.
+
+- **Wheel scrolling runs on the compositor thread on every site tried** (`Renderer4.ScrollingThread.Wheel` = 0), even
+  on Daily Mail, whose main thread is blocked for 4–6 s at a time. A notch takes ~140–230 ms on Wikipedia and Daily
+  Mail, 470–730 ms on reddit and desktop YouTube.
+- **The main cost on heavy sites is the page's main thread.** It does not stop the scroll, but it delays hover, keys
+  and what the page draws after a scroll. Daily Mail got 1 of 120 pointer moves to the page.
+- **`--disable-smooth-scrolling`** cut the notch latency on Wikipedia (196 → 142 ms), YouTube (730 → 556 ms) and Daily
+  Mail (223 → 184 ms), not on reddit (noise 250–700 ms). The owner tried it with the remote and kept it:
+  `cr151/package.sh` adds it to run.sh.
+- **No effect:** `--num-raster-threads=2`, `--disable-low-end-device-mode`, `--disable-gpu-rasterization`, raised
+  thread priorities, GPU out of process.
+- **Floor on light pages:** ~90 % of frames during a scroll are late even on Wikipedia, and each burst of notches
+  starts with ~1 s of 65–94 ms frames that LoAF shows without scripts. Cause not found.
+- **Tooling facts.**
+  - Wheel injection works through `/dev/input/event3` ("LGE M-RCU"), `REL_WHEEL`, 120 px per notch. `event10` passes
+    keys only.
+  - Injected `ABS_X`/`ABS_Y` never reach Wayland: surface-manager sends the pointer position only with the next wheel
+    event. Hover is driven through CDP `Input.dispatchMouseEvent`.
+  - CDP tracing on this build records no `cc`, `viz` or Compositor events with any category list, so EventLatency
+    cannot be split by stage (`browser/cr151/trace_wheel_wiki.json.gz`).
+  - Event Timing has no `wheel` or `mousemove` entries. Chrome coalesces wheel events while the main thread is busy:
+    reddit got 10–17 `wheel` events for 30 notches.
+- **Open.** 11 of 24 runs in the last series lost their page 10–20 s after load (the tab's url turns ""), only on
+  reddit and Daily Mail. No OOM in dmesg. After a Daily Mail run chrome did not exit within 20 s of `closeByAppId`
+  even with patch 0108.
+
+### Chromium TV rebased onto upstream 1.0.0 (7265f39) (2026-11-21)
+
+Raw: `cr151/rebase_speedometer.txt`, `rebase_exit.txt`, `rebase_lasttab.txt`, `rebase_yt4k.txt`, `rebase_omnibox.txt`,
+`rebase_omnibox_ab.txt`. Installed IPK 1.0.0, sha256 `03e8a458…`, with the owner's yes.
+
+- **Base.** `cr151/upstream/source` is now WebOS-Chromium main `7265f39`: 1.0.0 plus our merged PRs #18–#21 and
+  #23. Same Chromium (151.0.7922.108), so the tree in `cr151work` was only re-patched and rebuilt incrementally.
+  1711 ninja steps took 2.5 minutes.
+- **Our patches, dropped because upstream has them:**
+  - 0100 (their 0053);
+  - 0101 (their opt-in 0056, used because our args set `arm_version = 8`; it also moves Rust to the armv7 target,
+    whose std is in `/opt/rust-sysroot`);
+  - 0105 (their 0054);
+  - 0106 (their 0055, with the `CN_NDL_API=old` guard);
+  - 0108 (their 0058-wayland-watcher-exit-hang).
+- **Our patches, kept:** 0102–0104 and 0107. All 55 patches applied with no conflict. Later the same day 0109
+  was added (below).
+- **0107 next to their 0057** (Back and Exit as on a TV): no shared file, since 0057 does not touch
+  `tab_strip_model.cc`.
+- **`patch.sh`** now also resets the paths of the previous run. Without it, a patch dropped from the series could
+  leave its edit in the tree.
+- **`package.sh`:**
+  - the omnibox trim is upstream's `omnibox=lite` path, turned on by default (`media.opts` `omnibox=full` turns it
+    off);
+  - the version is 1.0.0;
+  - the other settings are unchanged (field-trial flags, tab limit 8, 4K Auto, uBO Lite, autoconsent, fonts.conf,
+    `--disable-smooth-scrolling`).
+- **New upstream behaviour that comes along:**
+  - 0057: Back on a tab's first page shows "Press Back again to exit", and a second Back closes the app. Exit asks
+    bin/run to end the app;
+  - 0059: no FCM invalidation listeners, no accounts.google.com calls without API keys, no on-device AI model
+    manifest. run.sh also turns off NetworkTimeServiceQuerying;
+  - 0060: the profile menu says sign-in is unavailable without API keys;
+  - 0061: the remote's arrows move focus in bubbles and dialogs, and chrome://history takes Up and Back.
+- **Checks on the TV:**
+  - Exit with the NTP, and `closeByAppId` with Google Maps: the process ended within 1 s, so their 0058 covers the
+    old 0108 case.
+  - `bench/lasttab.py`: Ctrl+W, `window.close()` and `Target.closeTarget` on the last tab each leave a New Tab page.
+    Menu > Exit ends the browser within 3 s.
+  - Speedometer 3.1: 0.736, 0.751, 0.748. The previous build had 0.737 with the same switches (`trim_bisect3.txt`).
+  - YouTube 4K60 (`aqz-KE-bpKQ`): 3840x2160@60 at 1x, 0 dropped frames in 90 s. YouTube now serves AV1
+    (`av01.0.13M.08`) where the earlier run got VP9.
+- **Omnibox latency regressed with upstream 0058. Fixed by our patch 0109** (2026-11-21).
+  - Seen first: key to screen (`Omnibox.CharTypedToRepaintLatency`) 125–175 ms, paint to present 81–139 ms. The
+    pre-rebase numbers were 94 ms and 62–74 ms. The spread between rounds on the TV is about 40 ms, so only
+    interleaved runs of two installed builds settle it.
+  - The extensions are not the cause: as shipped, without autoconsent, and without both blockers gave the same
+    numbers within each round (`cr151/omnibox_bisect_ext.txt`). The no-sandbox warning bar that 1.0.0's 0027 shows at
+    every start is not the cause either (`omnibox_old_vs_new_nobar.txt`).
+  - Old build against new, interleaved (the pre-rebase tree installed as `com.viiees.cr151p`,
+    `omnibox_old_vs_new.txt`): key to screen 71–109 ms against 126–166 ms, paint to present 19–27 ms against
+    83–136 ms.
+  - Bisect, each step interleaved against the installed 1.0.0: without 0057, 0058 and 0061 the numbers match the
+    old build (`omnibox_bisect_no57_58_61.txt`). Without 0058 only, too (`omnibox_bisect_no58.txt`).
+  - Cause: 0058's exit fix makes the Wayland watcher thread wait for the UI thread's dispatch in 500 ms
+    `TimedWait` steps. Patch 0109 replaces that loop with one untimed `WaitMany` on the dispatch event and a
+    shutdown event that `StopThread()` signals, the way our earlier 0108 did. 0058's join in the GLib watcher's
+    destructor stays. Why a timed wait costs that much on this kernel is not known.
+  - With 0109 (`fix_omnibox.txt`): key to screen 87–107 ms, paint to present 25–35 ms. The bisect build in the same
+    runs had 78–85 ms and 24–28 ms. Exit with the NTP and with Google Maps still ends the process within 1 s
+    (`fix_exit.txt`), and `lasttab.py` passes (`fix_lasttab.txt`).
+- **uBO Lite delayed the browser window by about 5 s. Fixed by installing it packed** (2026-11-21).
+  - `Startup.BrowserWindow.FirstPaint` was 6.2–6.9 s with uBOL loaded, 1.0–1.2 s with only TV Tools
+    (`omnibox_bisect_ext.txt`). autoconsent adds nothing measurable.
+  - Cause, from the code: `UnpackedInstaller::LoadFromCommandLine` runs on the UI thread with blocking allowed, and
+    `IndexAndPersistRulesOnInstall` parses and indexes every static ruleset (`kIncludeAll`). That is all 56 of
+    uBOL's rulesets, 13 MB of JSON, on every start, though only 6 (4.9 MB) are enabled.
+  - Fix: `cr151/package.sh` packs uBOL into a CRX3 (`cr151/crx3.py`) and ships it in `browser/extensions/`, Chrome's
+    external extensions folder next to its binary. Chrome installs it once and indexes its rulesets then. The key
+    in `.adblock/ubol/crx-key.pem` fixes the id (`bbdfhfkcgpkhdkbgpnelelegbhpimcek`). run.sh deletes the old
+    unpacked copy. The user's uBOL settings reset once, because the id changed.
+  - Result: the window shows after 1.3–1.5 s (`fix_omnibox.txt`). A tracker URL opens uBOL's "Page blocked" page,
+    so complete mode is on (`fix_ubol.txt`). Not checked: whether requests on the very first page after a start
+    wait for the rulesets to load.
+
 ## 7. Tooling gotchas
 
 ### Moving files
@@ -973,15 +1180,16 @@ Submitted rows carry the link; the rest are not submitted.
 | cr120 0008 paint-event (first half) | [webosose/chromium120](https://github.com/webosose/chromium120) | Wrong guard on `kFirstContainerResetPaint`. The scanner half is local | not submitted |
 | cr120 0009 pal-pc-factory-signatures | [webosose/chromium120](https://github.com/webosose/chromium120) | PC pal factory drift | not submitted |
 | cr120 0013 neva-media-position-non-webos | [webosose/chromium120](https://github.com/webosose/chromium120) | Non-webOS build of media/neva | not submitted |
-| cr151 0100 webos-no-caption-buttons | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) | Removes minimise/maximise/close on webOS | [PR #18](https://github.com/sarahahzub/WebOS-Chromium/pull/18) as 0053, 2026-11-19, merged 2026-11-20, ships in their 1.1.0 |
-| cr151 0101 arm-cortex-a55-tune-and-fpu | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) | Fixes the overridden `-mfpu` of their 0012; measured with the speed build | [PR #21](https://github.com/sarahahzub/WebOS-Chromium/pull/21) as 0056, opt-in for arm_version 8, 2026-11-19, merged 2026-11-20 |
+| cr151 0100 webos-no-caption-buttons | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) | Removes minimise/maximise/close on webOS | [PR #18](https://github.com/sarahahzub/WebOS-Chromium/pull/18) as 0053, 2026-11-19, merged 2026-11-20, ships in their 1.1.0. Chromium TV takes their 0053 since the rebase onto 7265f39 (2026-11-20) |
+| cr151 0101 arm-cortex-a55-tune-and-fpu | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) | Fixes the overridden `-mfpu` of their 0012; measured with the speed build | [PR #21](https://github.com/sarahahzub/WebOS-Chromium/pull/21) as 0056, opt-in for arm_version 8, 2026-11-19, merged 2026-11-20. Chromium TV sets arm_version 8 and takes their 0056 since the rebase (2026-11-20) |
 | cr151 0103 spatnav-one-layout-update-per-walk | [Chromium](https://issues.chromium.org) (Blink spatial navigation), copy to WebOS-Chromium | Platform-independent: Down 167 → 115 ms on a Wikipedia article. The same code is in Chromium main on 2026-11-18. The Chromium tracker was not searched | not submitted |
-| cr151 0105 vizfmp-swap-needs-compositor | [webOS-ports/chromium151](https://github.com/webOS-ports/chromium151) (the neva code is in its base tree), report to WebOS-Chromium | Renderer NULL dereference on adblock-tester.com in 0.0.66 too. No issue or PR in either repository (checked 2026-11-18). PR #17 there touches FCP waiting in viz, not this | [PR #19](https://github.com/sarahahzub/WebOS-Chromium/pull/19) as 0054, [chromium151 #31](https://github.com/webOS-ports/chromium151/issues/31), 2026-11-19. PR #19 merged 2026-11-20, ships in their 1.1.0. The issue has no answer yet |
-| cr151 0106 webos-hevc-through-ndl | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) | Depends on their NDL renderer (0023) and `$CN_MEDIA_SOCK`. HEVC 4K plays on the C1. No HEVC issue there | [PR #20](https://github.com/sarahahzub/WebOS-Chromium/pull/20) as 0055, 2026-11-19. Owner asked (2026-11-20) to skip HEVC when `CN_NDL_API=old` (webOS 4 has no HEVC decoder there). Done and rebased onto 1.0.0, 2026-11-20 |
+| cr151 0105 vizfmp-swap-needs-compositor | [webOS-ports/chromium151](https://github.com/webOS-ports/chromium151) (the neva code is in its base tree), report to WebOS-Chromium | Renderer NULL dereference on adblock-tester.com in 0.0.66 too. No issue or PR in either repository (checked 2026-11-18). PR #17 there touches FCP waiting in viz, not this | [PR #19](https://github.com/sarahahzub/WebOS-Chromium/pull/19) as 0054, [chromium151 #31](https://github.com/webOS-ports/chromium151/issues/31), 2026-11-19. PR #19 merged 2026-11-20, ships in their 1.1.0. The issue has no answer yet. Chromium TV takes their 0054 since the rebase (2026-11-20) |
+| cr151 0106 webos-hevc-through-ndl | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) | Depends on their NDL renderer (0023) and `$CN_MEDIA_SOCK`. HEVC 4K plays on the C1. No HEVC issue there | [PR #20](https://github.com/sarahahzub/WebOS-Chromium/pull/20) as 0055, 2026-11-19. Owner asked (2026-11-20) to skip HEVC when `CN_NDL_API=old` (webOS 4 has no HEVC decoder there). Done and rebased onto 1.0.0, 2026-11-20. Merged (7265f39). Chromium TV takes their 0055 since the rebase |
 | cr151 0107 webos-last-tab-close-keeps-window | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) | A TV product behaviour: the last tab no longer quits the app, only menu > Exit does. Plain Chrome UI code, its only webOS part is the `OS_WEBOS` guard. No issue or PR about it there (checked 2026-11-19) | not submitted |
-| cr151 0108 wayland-watcher-no-shutdown-deadlock | [Chromium](https://issues.chromium.org) (Ozone/Wayland, plain Chromium code), copy to WebOS-Chromium | Shutdown deadlock with threaded polling (`--in-process-gpu`): the process outlives Exit. Same stacks reported in [electerm#4654](https://github.com/electerm/electerm/issues/4654). The Chromium tracker was not searched | not needed: their 1.0.0 fixed the same deadlock in its own 0058-wayland-watcher-exit-hang (500 ms wait steps), which also joins the thread before its GPollFD is freed: joined later, it corrupted the heap at exit. Check 0108 for that when rebasing onto 1.0.0 |
+| cr151 0108 wayland-watcher-no-shutdown-deadlock | [Chromium](https://issues.chromium.org) (Ozone/Wayland, plain Chromium code), copy to WebOS-Chromium | Shutdown deadlock with threaded polling (`--in-process-gpu`): the process outlives Exit. Same stacks reported in [electerm#4654](https://github.com/electerm/electerm/issues/4654). The Chromium tracker was not searched | not needed: their 1.0.0 fixed the same deadlock in its own 0058-wayland-watcher-exit-hang (500 ms wait steps), which also joins the thread before its GPollFD is freed: joined later, it corrupted the heap at exit. Check 0108 for that when rebasing onto 1.0.0. Chromium TV dropped 0108 for their 0058 in the rebase (2026-11-20) |
+| cr151 0109 wayland-watcher-untimed-wait | WebOS-Chromium (their 0058) | Their 0058's 500 ms `TimedWait` loop made the omnibox's paint to present 4–5x longer on an LG C1. 0109 waits once on the dispatch event and a shutdown event; exit still ends within 1 s ("Omnibox latency regressed with upstream 0058") | candidate, not sent |
 | cr151 fonts.conf | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) (package: run.sh + a shipped fonts.conf) | Every family came out as LG Display with full hinting. No issue there | [PR #22](https://github.com/sarahahzub/WebOS-Chromium/pull/22), 2026-11-19. Owner wants to try it on webOS 4, 5 and 10 first (fonts present, CJK/Arabic/emoji fallback, first-start cache time) |
-| cr151 omnibox trim (run.sh flags) | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) (run.sh) | Omnibox key to screen 160 → 87 ms, flags only. A TV product choice (fewer providers, 5 rows), so offer it as an option. No issue there | [PR #23](https://github.com/sarahahzub/WebOS-Chromium/pull/23), on by default, media.opts `omnibox=full` turns it off, 2026-11-19. Owner asked (2026-11-20) for a rebase onto 1.0.0 and opt-in: stock omnibox by default, `omnibox=lite` for the trim. Done 2026-11-20. Our own build must turn it on itself once it moves to 1.0.0 |
+| cr151 omnibox trim (run.sh flags) | [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) (run.sh) | Omnibox key to screen 160 → 87 ms, flags only. A TV product choice (fewer providers, 5 rows), so offer it as an option. No issue there | [PR #23](https://github.com/sarahahzub/WebOS-Chromium/pull/23), on by default, media.opts `omnibox=full` turns it off, 2026-11-19. Owner asked (2026-11-20) for a rebase onto 1.0.0 and opt-in: stock omnibox by default, `omnibox=lite` for the trim. Done 2026-11-20. Our own build must turn it on itself once it moves to 1.0.0. Merged (7265f39). `cr151/package.sh` turns it on by default (2026-11-20) |
 | Platform notes: quoted screensaver timestamp, NDL main-ELF requirement, Mali EGL display | [webosbrew](https://github.com/webosbrew) (documentation) | Knowledge for homebrew authors, not a code patch | not submitted |
 
 ### Spatial navigation patch 0103 (2026-11-18)

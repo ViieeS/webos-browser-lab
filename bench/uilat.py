@@ -55,10 +55,17 @@ SCENARIOS = {   # evkeys arguments; each press is spaced GAP_MS so one paint end
 # omnibox trimmed for a TV (cr151/UI_LATENCY.md): run.sh's --disable-features list repeated (the last switch wins)
 # plus ours, 5 popup rows, providers off by the DisableProviders mask, suggest after a pause
 TRIM = ("--disable-features=Translate,OptimizationHints,MediaRouter,BackForwardCache,Vulkan,ContextualTasks,ContextualTasksContext,ContextualTasksSidePanel,PreloadTopChromeWebUI,SpareRendererForSitePerProcess,SpareRenderer,OptimizationGuideModelDownloading,IsolateOrigins,site-per-process,WebUIToolbar,WebUIToolbarWebView,WebUIToolbarInternalWebView,WebUIReloadButton,WebUILocationBar,AudioServiceOutOfProcess,WebUIOmniboxPopup,WebUIOmniboxAimPopup,WebUIOmniboxFullPopup,DisableLoadExtensionCommandLineSwitch,HardwareMediaKeyHandling,WebGPUService,WebGPUBlobCache,OmniboxDynamicMaxAutocomplete,OmniboxRichAutocompletion,MlUrlScoring,UrlScoringModel,MlUrlScoreCaching,AimEnabled,AllowAiModeMatches,OmniboxMiaZPS,PreconnectNonSearchOmniboxSuggestions --enable-features=NetworkServiceInProcess2,OmniboxUIExperimentMaxAutocompleteMatches:UIMaxAutocompleteMatches/5 --force-fieldtrials=OmniboxBundledExperimentV1/TV/ --force-fieldtrial-params=OmniboxBundledExperimentV1.TV:DisableProviders/201287168/SuggestPollingDelayMs/400/MeasureSuggestPollingDelayFromLastKeystroke/true")
+CTV = "/media/developer/apps/usr/palm/applications/com.viiees.chromiumtv"
 VARIANTS = {"nosmooth": "--disable-smooth-scrolling",
             "nospatnav": "--blink-settings=spatialNavigationEnabled=false",
             "nogpu": "--disable-gpu",   # the launcher's own fallback when its GPU probe fails: software raster+compositing
             "trim": TRIM,
+            # chromiumtv's extensions in builds that loaded uBOL unpacked (before the CRX): the last --load-extension
+            # wins over run.sh's "$EXT,$UBOL,autoconsent"
+            "noac": f"--load-extension={CTV}/data/ext/tvtools,{CTV}/browser/ext/ubol",
+            "noext": f"--load-extension={CTV}/data/ext/tvtools",
+            # uBOL left to a packed install (External Extensions), autoconsent kept
+            "noubol": f"--load-extension={CTV}/data/ext/tvtools,{CTV}/browser/ext/autoconsent",
             # trim with HistoryFuzzyProvider (1 << 16) left on: typo correction over history hosts
             "trimfuzzy": TRIM.replace("DisableProviders/201287168", "DisableProviders/201221632")}
 assert VARIANTS["trimfuzzy"] != TRIM

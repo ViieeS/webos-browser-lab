@@ -1,0 +1,4 @@
+ntp pages: ['chrome://newtab/']
+ntp: process gone after 1 s
+maps pages: ['https://www.google.com/maps/@<redacted>?entry=ttu&g_ep=EgoyMDI2MTExOC4xIKXMDSoASAFQAw%3D%3D']
+maps: process gone after 1 s

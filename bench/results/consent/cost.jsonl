@@ -1,0 +1,40 @@
+base: uBO Lite {"mode":3,"rulesets":["ublock-filters","easylist","easyprivacy","pgl","ublock-badware","urlhaus-full"]}
+{"variant": "base", "site": "guardian", "round": 0, "dcl": 5315, "load": 9555, "task_ms": 10370, "script_ms": 1162, "cpu_jiffies": 2161}
+{"variant": "base", "site": "booking", "round": 0, "dcl": 4967, "load": 18998, "task_ms": 19135, "script_ms": 7977, "cpu_jiffies": 3707}
+{"variant": "base", "site": "20minutes", "round": 0, "dcl": 4259, "load": 6182, "task_ms": 6196, "script_ms": 2005, "cpu_jiffies": 1380}
+{"variant": "base", "site": "guardian", "round": 1, "dcl": 4174, "load": 7988, "task_ms": 8732, "script_ms": 1099, "cpu_jiffies": 1918}
+{"variant": "base", "site": "booking", "round": 1, "dcl": 4956, "load": 18672, "task_ms": 19356, "script_ms": 7989, "cpu_jiffies": 3787}
+{"variant": "base", "site": "20minutes", "round": 1, "dcl": 3530, "load": 5369, "task_ms": 5253, "script_ms": 1667, "cpu_jiffies": 1148}
+{"variant": "base", "site": "guardian", "round": 2, "dcl": 4200, "load": 6279, "task_ms": 7762, "script_ms": 915, "cpu_jiffies": 1754}
+{"variant": "base", "site": "booking", "round": 2, "dcl": 4221, "load": 20115, "task_ms": 19810, "script_ms": 8152, "cpu_jiffies": 3702}
+{"variant": "base", "site": "20minutes", "round": 2, "dcl": 3727, "load": 4619, "task_ms": 4635, "script_ms": 1254, "cpu_jiffies": 987}
+ac: uBO Lite {"mode":3,"rulesets":["ublock-filters","easylist","easyprivacy","pgl","ublock-badware","urlhaus-full"]}
+{"variant": "ac", "site": "guardian", "round": 0, "dcl": 5484, "load": 7966, "task_ms": 11470, "script_ms": 1165, "cpu_jiffies": 2332}
+{"variant": "ac", "site": "booking", "round": 0, "dcl": 4193, "load": 20059, "task_ms": 19184, "script_ms": 8020, "cpu_jiffies": 3799}
+{"variant": "ac", "site": "20minutes", "round": 0, "dcl": 4070, "load": 7303, "task_ms": 6857, "script_ms": 2097, "cpu_jiffies": 1567}
+{"variant": "ac", "site": "guardian", "round": 1, "dcl": 4541, "load": 9044, "task_ms": 9964, "script_ms": 1038, "cpu_jiffies": 2178}
+{"variant": "ac", "site": "booking", "round": 1, "dcl": 3544, "load": 5262, "task_ms": 19157, "script_ms": 7740, "cpu_jiffies": 3842}
+{"variant": "ac", "site": "20minutes", "round": 1, "dcl": 3647, "load": 6118, "task_ms": 6781, "script_ms": 1548, "cpu_jiffies": 1457}
+{"variant": "ac", "site": "guardian", "round": 2, "dcl": 4628, "load": 6995, "task_ms": 10076, "script_ms": 951, "cpu_jiffies": 2208}
+{"variant": "ac", "site": "booking", "round": 2, "dcl": 4679, "load": 0, "task_ms": 19399, "script_ms": 7827, "cpu_jiffies": 3798}
+{"variant": "ac", "site": "20minutes", "round": 2, "dcl": 4008, "load": 6160, "task_ms": 5424, "script_ms": 1778, "cpu_jiffies": 1406}
+base: uBO Lite {"mode":3,"rulesets":["ublock-filters","easylist","easyprivacy","pgl","ublock-badware","urlhaus-full"]}
+{"variant": "base", "site": "guardian", "round": 0, "dcl": 5173, "load": 6880, "task_ms": 9278, "script_ms": 1136, "cpu_jiffies": 1939}
+{"variant": "base", "site": "booking", "round": 0, "dcl": 4187, "load": 18277, "task_ms": 19104, "script_ms": 8425, "cpu_jiffies": 3705}
+{"variant": "base", "site": "20minutes", "round": 0, "dcl": 4346, "load": 5585, "task_ms": 5602, "script_ms": 1837, "cpu_jiffies": 1231}
+{"variant": "base", "site": "guardian", "round": 1, "dcl": 4665, "load": 6038, "task_ms": 8187, "script_ms": 952, "cpu_jiffies": 1808}
+{"variant": "base", "site": "booking", "round": 1, "dcl": 2536, "load": 4985, "task_ms": 16908, "script_ms": 7043, "cpu_jiffies": 3201}
+{"variant": "base", "site": "20minutes", "round": 1, "dcl": 3760, "load": 4896, "task_ms": 4494, "script_ms": 1139, "cpu_jiffies": 939}
+{"variant": "base", "site": "guardian", "round": 2, "dcl": 4531, "load": 6386, "task_ms": 9038, "script_ms": 929, "cpu_jiffies": 1990}
+{"variant": "base", "site": "booking", "round": 2, "dcl": 2306, "load": 5159, "task_ms": 16842, "script_ms": 6761, "cpu_jiffies": 3173}
+{"variant": "base", "site": "20minutes", "round": 2, "dcl": 3873, "load": 4833, "task_ms": 5369, "script_ms": 1236, "cpu_jiffies": 1178}
+ac: uBO Lite {"mode":3,"rulesets":["ublock-filters","easylist","easyprivacy","pgl","ublock-badware","urlhaus-full"]}
+{"variant": "ac", "site": "guardian", "round": 0, "dcl": 5062, "load": 9510, "task_ms": 11175, "script_ms": 1177, "cpu_jiffies": 2337}
+{"variant": "ac", "site": "booking", "round": 0, "dcl": 4506, "load": 0, "task_ms": 18936, "script_ms": 6991, "cpu_jiffies": 3689}
+{"variant": "ac", "site": "20minutes", "round": 0, "dcl": 4017, "load": 6386, "task_ms": 6827, "script_ms": 1761, "cpu_jiffies": 1463}
+{"variant": "ac", "site": "guardian", "round": 1, "dcl": 4736, "load": 7082, "task_ms": 10136, "script_ms": 1084, "cpu_jiffies": 2092}
+{"variant": "ac", "site": "booking", "round": 1, "dcl": 1606, "load": 0, "task_ms": 19084, "script_ms": 7530, "cpu_jiffies": 3792}
+{"variant": "ac", "site": "20minutes", "round": 1, "dcl": 3018, "load": 5510, "task_ms": 5022, "script_ms": 1509, "cpu_jiffies": 1306}
+{"variant": "ac", "site": "guardian", "round": 2, "dcl": 4299, "load": 9120, "task_ms": 10036, "script_ms": 1222, "cpu_jiffies": 2203}
+{"variant": "ac", "site": "booking", "round": 2, "dcl": 5168, "load": 0, "task_ms": 18720, "script_ms": 6913, "cpu_jiffies": 3682}
+{"variant": "ac", "site": "20minutes", "round": 2, "dcl": 4037, "load": 6245, "task_ms": 5506, "script_ms": 2117, "cpu_jiffies": 1444}

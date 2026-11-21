@@ -10,7 +10,7 @@ need_sysroot   # check-abi compares against the sysroot's TV-SONAMES and glibc
 # already set that from their config.env (org.nativechromium.browser).
 APP_ID=${CR151_APP_ID:-com.viiees.chromiumtv}
 APP_TITLE=${CR151_APP_TITLE:-"Chromium"}
-VERSION=0.0.66
+VERSION=1.0.0
 D=/work/dist; B=$D/browser; rm -rf "$D"; mkdir -p "$B"
 cd "$OUT"
 for f in chrome chrome_crashpad_handler *.pak icudtl.dat snapshot_blob.bin v8_context_snapshot.bin locales \
@@ -44,15 +44,11 @@ grep -q FONTCONFIG_FILE "$CN/package/run.sh" ||
 	sed -i 's|^export LANG=|export FONTCONFIG_FILE=$D/browser/fonts.conf\nexport LANG=|' "$CN/package/run.sh"
 grep -q '^export FONTCONFIG_FILE=' "$CN/package/run.sh" || die "run.sh: FONTCONFIG_FILE line not added"
 
-# Omnibox trimmed for a TV (UI_LATENCY.md: key to screen 160 -> 94 ms): fewer providers, 5 rows, suggest after a
-# pause. The mask keeps HistoryFuzzyProvider (1 << 16): typo matching over history measured at no cost.
-# Appended to run.sh's own feature lists so its WebGPU toggle keeps working.
-OMNI_OFF=OmniboxDynamicMaxAutocomplete,OmniboxRichAutocompletion,MlUrlScoring,UrlScoringModel,MlUrlScoreCaching,AimEnabled,AllowAiModeMatches,OmniboxMiaZPS,PreconnectNonSearchOmniboxSuggestions
-OMNI_ON="OmniboxUIExperimentMaxAutocompleteMatches:UIMaxAutocompleteMatches/5 --force-fieldtrials=OmniboxBundledExperimentV1/TV/ --force-fieldtrial-params=OmniboxBundledExperimentV1.TV:DisableProviders/201221632/SuggestPollingDelayMs/400/MeasureSuggestPollingDelayFromLastKeystroke/true"
-grep -q OmniboxBundledExperimentV1 "$CN/package/run.sh" ||
-	sed -i "s|HardwareMediaKeyHandling\\\$WEBGPU_OFF|HardwareMediaKeyHandling,$OMNI_OFF\$WEBGPU_OFF|; s|--enable-features=NetworkServiceInProcess2 |--enable-features=NetworkServiceInProcess2,$OMNI_ON |" "$CN/package/run.sh"
-[ "$(grep -c -e "$OMNI_OFF\\\$WEBGPU_OFF" -e 'DisableProviders/201221632' "$CN/package/run.sh")" = 2 ] ||
-	die "run.sh: omnibox trim not added"
+# Omnibox trimmed for a TV (UI_LATENCY.md: key to screen 160 -> 94 ms). Upstream has it as an opt-in, media.opts
+# "omnibox=lite"; Chromium TV turns it on by default, and "omnibox=full" in media.opts gives Chrome's own omnibox back.
+sed -i "s|if grep -q 'omnibox=lite' \"\$T/media.opts\" 2>/dev/null; then|if ! grep -q 'omnibox=full' \"\$T/media.opts\" 2>/dev/null; then|" "$CN/package/run.sh"
+grep -q "if ! grep -q 'omnibox=full' \"\$T/media.opts\" 2>/dev/null; then" "$CN/package/run.sh" ||
+	die "run.sh: omnibox trim not turned on by default"
 
 # Without this switch a non-Chrome-branded build applies Google's whole field trial testing config at every start:
 # 659 trials, 738 features nobody chose for a TV. Off: browser process 25–35 MB smaller, same speed
@@ -65,11 +61,15 @@ grep -q -- '--disable-field-trial-config' "$CN/package/run.sh" ||
 grep -q -- '--sqrt-allocation-limits' "$CN/package/run.sh" ||
 	sed -i 's|--js-flags="--max-old-space-size=192 --optimize-for-size"|--js-flags="--max-old-space-size=192 --optimize-for-size --sqrt-allocation-limits"|' "$CN/package/run.sh"
 grep -q -- '--optimize-for-size --sqrt-allocation-limits"' "$CN/package/run.sh" || die "run.sh: --sqrt-allocation-limits not added"
+# Wheel notches land without the scroll animation: notch latency 196 -> 142 ms on Wikipedia, 730 -> 556 ms on
+# YouTube (INPUT_LATENCY.md). The owner tried it with the Magic Remote wheel and kept it.
+grep -q -- '--disable-smooth-scrolling' "$CN/package/run.sh" ||
+	sed -i 's|^\t\t--enable-features=NetworkServiceInProcess2|\t\t--disable-smooth-scrolling \\\n&|' "$CN/package/run.sh"
+[ "$(grep -c -- '^		--disable-smooth-scrolling \\$' "$CN/package/run.sh")" = 1 ] || die "run.sh: --disable-smooth-scrolling not added"
 
 # uBlock Origin Lite (ADBLOCK.md: complete mode blocks as well as full uBO here, MV3, no patch). The official release
 # zip comes from /adblock (a .adblock/ folder next to the repository, mounted read-only; ADBLOCK.md says where to
-# download it), checked against its sha256. It ships as
-# browser/ext/ubol and loads next to TV Tools: Chrome keeps only the last --load-extension, so one comma list.
+# download it), checked against its sha256. It is unpacked and patched here, then packed into a CRX below.
 UBOL_ZIP=/adblock/ubol/uBOLite_2026.1116.1650.chromium.zip
 UBOL_SHA=67e084b34470c51c08fa9314b118b8cb73df3a72e90c6a3b536d041c92e61bbc
 [ -f "$UBOL_ZIP" ] || die "no $UBOL_ZIP: add -v \"\$PWD/../.adblock:/adblock:ro\" to docker run"
@@ -81,27 +81,43 @@ python3 -c 'import sys, zipfile; zipfile.ZipFile(sys.argv[1]).extractall(sys.arg
 sed -i "s|optimal: \[ 'all-urls' \],|optimal: [],|; s|complete: \[\],|complete: [ 'all-urls' ],|" "$B/ext/ubol/js/mode-manager.js"
 grep -q "complete: \[ 'all-urls' \]," "$B/ext/ubol/js/mode-manager.js" && ! grep -q "optimal: \[ 'all-urls' \]," "$B/ext/ubol/js/mode-manager.js" ||
 	die "uBO Lite: default mode not set to complete"
-# uBO Lite runs from a copy in the data folder, as TV Tools does: Chrome writes the indexed declarativeNetRequest
-# rulesets into an unpacked extension's own _metadata/, and the installed app folder is read-only (from there Chrome
-# drops the extension without a word). The copy is refreshed when the shipped uBO Lite version changes.
+# uBO Lite is installed packed, from browser/extensions/ (Chrome's external extensions folder next to its binary):
+# loaded with --load-extension it delayed the browser window by about 5 s, because Chrome parses and indexes all 56
+# of its declarativeNetRequest rulesets (13 MB of JSON, 6 enabled) on the UI thread at every start. Packed, they are
+# indexed once at install (FINDINGS.md, "uBO Lite delays the browser window"). The key fixes the extension id, so a
+# new uBO Lite version updates the same extension and keeps its settings. A new key would install a second one.
+UBOL_KEY=/adblock/ubol/crx-key.pem
+[ -f "$UBOL_KEY" ] || die "no $UBOL_KEY: create it once with: openssl genrsa -out .adblock/ubol/crx-key.pem 2048"
+UV=$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' "$B/ext/ubol/manifest.json")
+mkdir -p "$B/extensions"
+UBOL_ID=$(python3 /cr151/crx3.py "$B/ext/ubol" "$UBOL_KEY" "$B/extensions/ubol.crx") || die "uBO Lite: crx3.py failed"
+printf '{"external_crx": "ubol.crx", "external_version": "%s"}\n' "$UV" > "$B/extensions/$UBOL_ID.json"
+rm -rf "$B/ext/ubol"
+log "uBO Lite $UV packed as $UBOL_ID"
+# Earlier builds copied the unpacked uBO Lite into the data folder; the copy is no longer used.
 python3 - "$CN/package/run.sh" <<'PY'
 import sys
 path = sys.argv[1]
 s = open(path).read()
-if "ext/ubol" not in s:
-    anchor = "\t# GPU check: the launcher sets CN_GPU=off"
-    copy = ('\tUBOL=$S/ext/ubol\n'
-            '\tUV=$(sed -n \'s/.*"version": *"\\([^"]*\\)".*/\\1/p\' "$B/ext/ubol/manifest.json")\n'
-            '\tif [ "$(cat "$S/ext/.ubol" 2>/dev/null)" != "$UV" ] || [ ! -f "$UBOL/manifest.json" ]; then\n'
-            '\t\trm -rf "$UBOL" && mkdir -p "$S/ext" && cp -r "$B/ext/ubol" "$UBOL" && echo "$UV" > "$S/ext/.ubol" ||\n'
-            '\t\t\tUBOL=$B/ext/ubol\n'
-            '\tfi\n')
-    assert s.count(anchor) == 1 and s.count('--load-extension="$EXT" ') == 1, "run.sh anchors changed"
-    s = s.replace(anchor, copy + anchor).replace('--load-extension="$EXT" ', '--load-extension="$EXT,$UBOL" ')
-    open(path, "w").write(s)
+anchor = "\t# GPU check: the launcher sets CN_GPU=off"
+assert s.count(anchor) == 1, "run.sh anchor changed"
+s = s.replace(anchor, '\trm -rf "$S/ext/ubol" "$S/ext/.ubol"\n' + anchor)
+open(path, "w").write(s)
 PY
-grep -q -- '--load-extension="\$EXT,\$UBOL"' "$CN/package/run.sh" && grep -q '^	UBOL=\$S/ext/ubol$' "$CN/package/run.sh" ||
-	die "run.sh: uBO Lite not added to --load-extension"
+grep -q '^	rm -rf "\$S/ext/ubol" "\$S/ext/.ubol"$' "$CN/package/run.sh" || die "run.sh: old uBO Lite copy not removed"
+
+# Cookie banners are rejected by DuckDuckGo autoconsent (MPL-2.0), the lean-frames build from autoconsent.sh
+# (FINDINGS.md, "Cookie banners"). It rejected 7 of 11 banners and accepted none. uBO Lite's own Cookie Notices list
+# stays off: it accepted everything on two sites. The npm package comes from /adblock like uBO Lite, checked against
+# its sha256. The add-on loads from the read-only app folder: it has no declarativeNetRequest rules, so Chrome writes
+# nothing into its folder.
+AC_TGZ=/adblock/autoconsent/autoconsent-18.9.0.tgz
+AC_SHA=04a49d0c180f1fcd8837e10dd45643d9af809608911c5791c7d15323ea89edcb
+[ -f "$AC_TGZ" ] || die "no $AC_TGZ: add -v \"\$PWD/../.adblock:/adblock:ro\" to docker run"
+sh /cr151/autoconsent.sh "$AC_TGZ" "$AC_SHA" lean-frames "$B/ext/autoconsent"
+sed -i 's|--load-extension="$EXT" |--load-extension="$EXT,$B/ext/autoconsent" |' "$CN/package/run.sh"
+grep -q -- '--load-extension="\$EXT,\$B/ext/autoconsent" ' "$CN/package/run.sh" ||
+	die "run.sh: autoconsent not added to --load-extension"
 
 # Tab limit 8 by default (TV Tools' own setting, 0 = no limit upstream). Heavy tabs ran out of memory at 15–19
 # (ADBLOCK.md, "Many tabs"), and from the 8th on MemAvailable fell under 300 MB with zram nearly full. A limit the

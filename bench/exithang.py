@@ -5,6 +5,7 @@ the process for up to 120 s and dumps the state of its threads (comm, state, wch
 usage: exithang.py [ntp|plain|maps]   plain = control without the NTP; maps = Google Maps open, closed by webOS
 (applicationManager/closeByAppId) instead of the menu. Needs TV_HOST, tcprelay 9226 -> 9225, evkeys.
 """
+import re
 import sys
 import time
 
@@ -25,7 +26,8 @@ def main():
     if mode == "ntp":
         uilat.press(["29+20", "w2500", "29+2", "w1000", "29+17"])   # Ctrl+T, Ctrl+1, Ctrl+W
         time.sleep(3)
-    print(mode, "pages:", L.pages(), flush=True)
+    # a Maps URL carries the map position, i.e. roughly where the TV is: not for a public repository
+    print(mode, "pages:", [re.sub(r"/maps/@[^/?]*", "/maps/@<redacted>", u) for u in L.pages()], flush=True)
     br.ws.sock.close()
     time.sleep(2)
     if mode == "maps":

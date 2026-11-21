@@ -1,0 +1,6 @@
+base speedometer #19814-0: score=0.736 wall_s=113 rss_browser_kb=146144 rss_ext_kb=85644 rss_total_kb=434576
+base speedometer #19814-0 mem: MemAvailable: 514408 kB SwapTotal: 614396 kB SwapFree: 130940 kB
+base speedometer #19814-1: score=0.751 wall_s=111 rss_browser_kb=163284 rss_ext_kb=85892 rss_total_kb=474392
+base speedometer #19814-1 mem: MemAvailable: 478924 kB SwapTotal: 614396 kB SwapFree: 139920 kB
+base speedometer #19814-2: score=0.748 wall_s=110 rss_browser_kb=164140 rss_ext_kb=85692 rss_total_kb=477608
+base speedometer #19814-2 mem: MemAvailable: 475576 kB SwapTotal: 614396 kB SwapFree: 141096 kB

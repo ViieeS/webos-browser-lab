@@ -4,7 +4,7 @@
 #   /work = volume cr151work (tree from fetch.sh, sysroot, builtins, out/), /vol = volume cr151vol (their snapshots).
 # usage (from browser/): docker run --rm -v cr151work:/work -v cr151vol:/vol -v "$PWD/cr151:/cr151:ro" cr151 \
 #          bash /cr151/incontainer.sh <step> [args]
-#        step package also needs -v "$PWD/../.adblock:/adblock:ro" (the uBO Lite release zip, see package.sh)
+#        step package also needs -v "$PWD/../.adblock:/adblock:ro" (the uBO Lite release zip and the autoconsent npm package, see package.sh)
 # steps, in order: sysroot, sysroot-compat, prep, builtins, patch, gen, build [targets], collect
 set -euo pipefail
 rm -rf /opt/cn && cp -r /cr151/upstream/source /opt/cn

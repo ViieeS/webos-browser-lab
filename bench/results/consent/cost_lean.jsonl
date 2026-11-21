@@ -1,0 +1,35 @@
+base: uBO Lite {"mode":3,"rulesets":["ublock-filters","easylist","easyprivacy","pgl","ublock-badware","urlhaus-full"]}
+{"variant": "base", "site": "guardian", "round": 0, "dcl": 4907, "load": 7523, "task_ms": 9568, "script_ms": 1236, "cpu_jiffies": 1741}
+{"variant": "base", "site": "booking", "round": 0, "dcl": 5252, "load": 0, "task_ms": 19203, "script_ms": 8002, "cpu_jiffies": 3684}
+{"variant": "base", "site": "20minutes", "round": 0, "dcl": 4143, "load": 6395, "task_ms": 5449, "script_ms": 2351, "cpu_jiffies": 1362}
+{"variant": "base", "site": "guardian", "round": 1, "dcl": 4460, "load": 7488, "task_ms": 8212, "script_ms": 842, "cpu_jiffies": 1571}
+{"variant": "base", "site": "booking", "round": 1, "dcl": 1562, "load": 6178, "task_ms": 18964, "script_ms": 7610, "cpu_jiffies": 3674}
+{"variant": "base", "site": "20minutes", "round": 1, "dcl": 3239, "load": 5244, "task_ms": 4709, "script_ms": 1297, "cpu_jiffies": 1093}
+{"variant": "base", "site": "guardian", "round": 2, "dcl": 4360, "load": 6023, "task_ms": 7659, "script_ms": 723, "cpu_jiffies": 1538}
+{"variant": "base", "site": "booking", "round": 2, "dcl": 4006, "load": 5401, "task_ms": 17455, "script_ms": 7451, "cpu_jiffies": 3269}
+{"variant": "base", "site": "20minutes", "round": 2, "dcl": 3519, "load": 4861, "task_ms": 4624, "script_ms": 1594, "cpu_jiffies": 973}
+lean: uBO Lite {"mode":3,"rulesets":["ublock-filters","easylist","easyprivacy","pgl","ublock-badware","urlhaus-full"]}
+{"variant": "lean", "site": "guardian", "round": 0, "dcl": 5585, "load": 8073, "task_ms": 11196, "script_ms": 1152, "cpu_jiffies": 1998}
+{"variant": "lean", "site": "booking", "round": 0, "dcl": 4316, "load": 0, "task_ms": 19038, "script_ms": 7199, "cpu_jiffies": 3675}
+{"variant": "lean", "site": "20minutes", "round": 0, "dcl": 4946, "load": 6821, "task_ms": 5721, "script_ms": 1823, "cpu_jiffies": 1437}
+{"variant": "lean", "site": "guardian", "round": 1, "dcl": 4668, "load": 6994, "task_ms": 9477, "script_ms": 1112, "cpu_jiffies": 1748}
+{"variant": "lean", "site": "booking", "round": 1, "dcl": 4854, "load": 0, "task_ms": 19123, "script_ms": 7354, "cpu_jiffies": 3629}
+{"variant": "lean", "site": "20minutes", "round": 1, "dcl": 4406, "load": 6139, "task_ms": 5437, "script_ms": 1816, "cpu_jiffies": 1201}
+{"variant": "lean", "site": "guardian", "round": 2, "dcl": 4381, "load": 8248, "task_ms": 9624, "script_ms": 882, "cpu_jiffies": 1883}
+{"variant": "lean", "site": "booking", "round": 2, "dcl": 4803, "load": 0, "task_ms": 19135, "script_ms": 7286, "cpu_jiffies": 3653}
+{"variant": "lean", "site": "20minutes", "round": 2, "dcl": 3627, "load": 6355, "task_ms": 5179, "script_ms": 2134, "cpu_jiffies": 1325}
+leannoh: uBO Lite {"mode":3,"rulesets":["ublock-filters","easylist","easyprivacy","pgl","ublock-badware","urlhaus-full"]}
+{"variant": "leannoh", "site": "guardian", "round": 0, "dcl": 5180, "load": 7603, "task_ms": 10359, "script_ms": 1109, "cpu_jiffies": 1929}
+{"variant": "leannoh", "site": "booking", "round": 0, "dcl": 4516, "load": 0, "task_ms": 18989, "script_ms": 7534, "cpu_jiffies": 3645}
+{"variant": "leannoh", "site": "20minutes", "round": 0, "dcl": 4191, "load": 6577, "task_ms": 5681, "script_ms": 1889, "cpu_jiffies": 1421}
+{"variant": "leannoh", "site": "guardian", "round": 1, "dcl": 4625, "load": 7232, "task_ms": 9288, "script_ms": 1027, "cpu_jiffies": 1748}
+{"variant": "leannoh", "site": "booking", "round": 1, "dcl": 4554, "load": 0, "task_ms": 19381, "script_ms": 7291, "cpu_jiffies": 3714}
+{"variant": "leannoh", "site": "20minutes", "round": 1, "dcl": 3734, "load": 6133, "task_ms": 5491, "script_ms": 1398, "cpu_jiffies": 1302}
+{"variant": "leannoh", "site": "guardian", "round": 2, "dcl": 4822, "load": 6868, "task_ms": 9393, "script_ms": 942, "cpu_jiffies": 1811}
+{"variant": "leannoh", "site": "booking", "round": 2, "dcl": 4397, "load": 19746, "task_ms": 19309, "script_ms": 7616, "cpu_jiffies": 3717}
+{"variant": "leannoh", "site": "20minutes", "round": 2, "dcl": 4270, "load": 5348, "task_ms": 6133, "script_ms": 1680, "cpu_jiffies": 1391}
+ac: uBO Lite {"mode":3,"rulesets":["ublock-filters","easylist","easyprivacy","pgl","ublock-badware","urlhaus-full"]}
+{"variant": "ac", "site": "guardian", "round": 0, "dcl": 5483, "load": 9846, "task_ms": 11157, "script_ms": 1215, "cpu_jiffies": 2105}
+{"variant": "ac", "site": "booking", "round": 0, "dcl": 4450, "load": 0, "task_ms": 18602, "script_ms": 7118, "cpu_jiffies": 3645}
+{"variant": "ac", "site": "20minutes", "round": 0, "dcl": 4581, "load": 6983, "task_ms": 5493, "script_ms": 1890, "cpu_jiffies": 1466}
+{"variant": "ac", "site": "guardian", "round": 1, "dcl": 4343, "load": 6584, "task_ms": 9071, "script_ms": 1060, "cpu_jiffies": 1765}

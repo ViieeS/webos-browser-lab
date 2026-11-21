@@ -34,7 +34,7 @@ Builds ran on an arm64 Mac in Docker (colima, 12 CPUs, 24 GB RAM). Each engine h
 | [webosose/chromium120](https://github.com/webosose/chromium120) | commit `e6a73fffdbe3bcc6f7fc33316c74adc6e7c01853` (Chromium 120.0.6099.269) | cr120 source tree, `git clone --depth 1` |
 | [webosose/meta-webosose](https://github.com/webosose/meta-webosose) | read 2026-11-16 | The OE recipes (`webruntime*.bb`) that build chromium120. Used as the reference for GN args |
 | [01org/ozone-wayland](https://github.com/01org/ozone-wayland) | as vendored in chromium120 | The `wayland_external` ozone backend that OSE uses |
-| [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) | release 0.0.66, commit `1499d397a2c7e31121b4202ca734f4d73518517e` (Chromium 151.0.7922.108) | cr151 itself. The NDL hardware video path (its patches 0023-0026 and `cnrun.c`), ported into cr120 |
+| [sarahahzub/WebOS-Chromium](https://github.com/sarahahzub/WebOS-Chromium) | main after 1.0.0, commit `7265f39572b12546334c320eea4852dca1f44ff0` (Chromium 151.0.7922.108; was release 0.0.66, `1499d397`, until 2026-11-20) | cr151 itself. The NDL hardware video path (its patches 0023-0026 and `cnrun.c`), ported into cr120 |
 | [webOS-ports/chromium151](https://github.com/webOS-ports/chromium151) | as pinned by WebOS-Chromium | Base tree of WebOS-Chromium (LuneOS, derived from OSE chromium120) |
 | [webosbrew/webos-bridge-64to32](https://github.com/webosbrew/webos-bridge-64to32) | v0.0.8 + deten's 12 patches from [issue #1](https://github.com/webosbrew/webos-bridge-64to32/issues/1) | 64-bit EGL/GLES bridge for the frozen 64-bit path |
 | [microsoft/mimalloc](https://github.com/microsoft/mimalloc) | v2.1.7 | Allocator preloaded into WPE's processes |

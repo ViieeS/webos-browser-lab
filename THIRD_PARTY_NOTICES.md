@@ -18,6 +18,7 @@ Shipped in the cr151 IPK built by `cr151/package.sh`, not stored in the reposito
 
 | IPK path | Origin | License |
 |---|---|---|
+| `browser/ext/autoconsent/` | [DuckDuckGo autoconsent](https://github.com/duckduckgo/autoconsent) 18.9.0, npm package `@duckduckgo/autoconsent` (`autoconsent-18.9.0.tgz`, sha256 `04a49d0c…`), its prebuilt `dist/addon-mv3`. Changed by `cr151/autoconsent.sh` (lean-frames): logging off; rules and config cached in memory; no status icon or popup mutation observer; `rules.json` dropped; content script limited to main frames and rule-matched subframes | MPL-2.0, Duck Duck Go, Inc. and contributors. The license text ships in the folder (`LICENSE`). The source is at the origin link, and the changes are the `perl` and `autoconsent_frames.py` steps in `cr151/autoconsent.sh` |
 | `browser/ext/ubol/` | [uBlock Origin Lite](https://github.com/uBlockOrigin/uBOL-home) 2026.1116.1650, official release `uBOLite_2026.1116.1650.chromium.zip`, unpacked. One change: `js/mode-manager.js` defaults to complete filtering mode instead of optimal (`package.sh`) | GPL-3.0, Raymond Hill and contributors. The license text ships in the folder (`LICENSE.txt`). The source is at the origin link, and the change is the `sed` line in `package.sh` |
 
 Not included and fetched separately:

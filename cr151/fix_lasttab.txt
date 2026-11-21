@@ -1,0 +1,6 @@
+Ctrl+W: before ['https://example.com/'] -> after ['chrome://newtab/']
+window.close(): before ['https://example.com/'] -> after ['chrome://newtab/']
+DevTools Target.closeTarget: before ['https://example.com/'] -> after ['chrome://newtab/']
+menu > Exit, 3 s: browser gone
+menu > Exit, 10 s: browser gone
+menu > Exit, 30 s: browser gone
