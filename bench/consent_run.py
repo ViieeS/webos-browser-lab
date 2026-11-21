@@ -9,7 +9,8 @@ Variants (all with TV Tools and uBO Lite in complete mode, as shipped):
   leanfr     lean with its content script in main frames and rule-matched subframes only
 Every variant runs in a throwaway profile (--user-data-dir under /tmp/<app>, wiped before each launch), so the owner's
 profile and its cookies are never touched; cookies and site storage are also cleared before every site.
-uBO Lite runs from its own copy there: an unpacked extension's folder holds the indexed rulesets Chrome writes.
+uBO Lite runs from its own unpacked copy there, taken from the profile folder where Chrome unpacked the shipped CRX.
+--disable-extensions-except keeps that CRX from installing itself a second time into the throwaway profile.
 usage: consent_run.py effect <variant>...           per site: banner, the CMP's consent record, screenshot
        consent_run.py cost <rounds> <variant>...    load time and CPU on COST_SITES, cleared state every load
 Needs TV_HOST, tcprelay <TV LAN ip> 9226 -> 9225, and consent_prep.sh's tars served at $AC_BASE (an http URL of that folder).
@@ -30,13 +31,16 @@ DATA = f"/media/developer/apps/usr/palm/applications/{APP}/data"
 WORK = f"/tmp/{APP}/consent"
 PROFILE = f"{WORK}/profile"
 UBOL = f"{WORK}/ubol"
+# Chromium TV ships uBO Lite as a CRX (package.sh); Chrome keeps the installed copy unpacked under the profile
+UBOL_INSTALLED = f"{DATA}/profile/Default/Extensions/bbdfhfkcgpkhdkbgpnelelegbhpimcek"
 AC = f"{WORK}/autoconsent"
 # autoconsent builds from consent_prep.sh: the test add-on and the two lean ones
 TARS = {"ac": "autoconsent.tar", "lean": "lean.tar", "leannoh": "lean-noh.tar", "leanfr": "lean-frames.tar"}
 EXTS = {"base": [f"{DATA}/ext/tvtools", UBOL], "ubolck": [f"{DATA}/ext/tvtools", UBOL],
         **{v: [f"{DATA}/ext/tvtools", UBOL, AC] for v in TARS}}
 for name, exts in EXTS.items():
-    uilat.VARIANTS["c" + name] = f"--user-data-dir={PROFILE} --load-extension={','.join(exts)}"
+    uilat.VARIANTS["c" + name] = (f"--user-data-dir={PROFILE} --load-extension={','.join(exts)}"
+                                  f" --disable-extensions-except={','.join(exts)}")
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results", "consent")
 PROBE = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "consent_probe.js")).read()
 START_PAGE = "about:blank"
@@ -64,7 +68,8 @@ CPU = r"""for p in $(pidof chrome); do cut -d' ' -f14,15 /proc/$p/stat; done | a
 def setup(variant):
     """Throwaway profile and the variant's extension copies under /tmp/<app>, owned by the app's user."""
     owner = bench.tv(f"stat -c %u:%g /tmp/{APP}").strip()
-    cmd = (f"rm -rf {WORK} && mkdir -p {WORK} && cp -r {DATA}/ext/ubol {UBOL}")
+    cmd = (f"rm -rf {WORK} && mkdir -p {WORK} && cp -r \"$(ls -d {UBOL_INSTALLED}/*/ | tail -1)\" {UBOL}"
+           f" && rm -rf {UBOL}/_metadata && [ -f {UBOL}/manifest.json ]")
     if variant in TARS:
         cmd += f" && mkdir -p {AC} && wget -q -O - {os.environ['AC_BASE']}/{TARS[variant]} | tar -x -C {AC}"
     if "ok" not in bench.tv(f"{cmd} && [ -f {AC}/manifest.json -o {variant!r} = 'base' -o {variant!r} = 'ubolck' ] && chown -R {owner} {WORK} && echo ok"):
