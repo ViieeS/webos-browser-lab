@@ -2,9 +2,11 @@
 """Checks the cookie-banner add-on as the installed Chromium TV ships it: run.sh's own --load-extension list, a
 throwaway profile. Prints the loaded extensions' service workers, then the consent probe on a few sites.
 usage: consent_shipped.py [site name...]     default: ikea cookiebot bbc youtube (names from consent_run.SITES)
+CSHIPPED_EXTRA: more browser flags, e.g. another --load-extension list to test a changed add-on.
 Needs TV_HOST, tcprelay <TV LAN ip> 9226 -> 9225.
 """
 import json
+import os
 import sys
 import time
 
@@ -12,7 +14,7 @@ import adblock_run as ab
 import consent_run as cr
 import uilat
 
-uilat.VARIANTS["cshipped"] = f"--user-data-dir={cr.PROFILE}"
+uilat.VARIANTS["cshipped"] = f"--user-data-dir={cr.PROFILE} {os.environ.get('CSHIPPED_EXTRA', '')}".strip()
 
 
 def main():

@@ -152,6 +152,22 @@ failed to open the page.
 - reddit is noisy: the base ranges from 226 to 631 ms across series. The differences between variants on reddit are
   smaller than this spread.
 
+### autoconsent during a scroll (2026-11-22, GPU on)
+
+autoconsent's `findCmp` retries up to 20 times when it finds no CMP, each after 500 ms and a DOM mutation, and every
+retry reruns all rules' `querySelectorAll` (heuristics on every second one). A scroll mutates the DOM, so the
+retries run during it. `acidle` is a test build of the shipped `lean-frames` add-on in which each retry first waits
+for 1 s without `wheel`, `scroll` or `keydown` (`inputlat_acidle.txt`, 3 runs per cell, Wikipedia):
+
+| Variant | rAF frame on notches, ms | LoAF per notch, ms | `wheel` events seen | rAF frame on the gesture, ms |
+|---|---|---|---|---|
+| shipped | 52.7 | 123 | 45/90 | 20–26 |
+| `acidle` | 26.1 | 66 | 70/90 | 18.4–18.6 |
+| no autoconsent | 17.7 | 8 | 89/90 | 17 |
+
+The rest of the cost in `acidle` falls in the 1.5 s pauses between bursts: a retry starts there, and the next burst
+meets it. Whether `acidle` still rejects: `bench/results/consent/shipped_*.txt`.
+
 ## Hover
 
 A grid of 120 pointer moves. "Move" is the mean of `EventLatency.MouseMoved.TotalLatency`. "mouseover" is the mean of
@@ -210,6 +226,7 @@ Daily Mail is left out: 1 of 120 moves reached the page, the main thread was bus
 | `inputlat_wheel_smooth.txt`, `inputlat_wheel_smooth2.txt`, `inputlat_wheel_smooth3.txt` | wheel: base and no smooth scrolling |
 | `inputlat_hover.txt` | hover: base and no uBO Lite |
 | `inputlat_cdpwheel.txt`, `inputlat_cdpgesture.txt` | late frames check: evdev against CDP notches and a CDP scroll gesture (GPU off) |
+| `inputlat_acidle.txt` | autoconsent whose retries wait for an idle user, against shipped and none |
 | `inputlat_gpu_ext.txt` | the same with the GPU on, with and without autoconsent and all extensions |
 | `scrollperf/*.txt.gz` | system-wide perf during a wheel scroll (`bench/scrollperf.py report <file>`): base, `noext`, `zeroext`, `onlytvt` with the GPU off, `gpu_base` with the GPU on |
 | `trace_wheel_wiki.json.gz` | wheel trace on Wikipedia: it has no `cc` or `viz` events |

@@ -25,7 +25,11 @@ from inspector import WebSocket  # noqa: E402
 
 TV = os.environ["TV_HOST"]
 CDP = f"{TV}:9226"
-EVKEYS = "/media/developer/temp/evkeys /dev/input/event10"
+# Keys go into "LGE Network Input" (event10), which exists only while a network remote is connected; without it
+# (after a reboot) "IoT keypad" (event8) also reaches the compositor. event0 ("CHECK INPUT") is read but its keys
+# never reach a page. Checked 2026-11-22 with a keydown listener.
+EVKEYS = ("/media/developer/temp/evkeys "
+          "$([ -e /sys/class/input/event10 ] && echo /dev/input/event10 || echo /dev/input/event8)")
 APPS = {"cr151own": "com.viiees.cr151", "cr151p": "com.viiees.cr151p",   # cr151p: own build + patch 0103
         "chromiumtv": "com.viiees.chromiumtv",   # the finished browser (cr151/package.sh default)
         "cr151": "org.nativechromium.browser"}
@@ -69,6 +73,8 @@ VARIANTS = {"nosmooth": "--disable-smooth-scrolling",
             # since uBOL ships as a CRX it survives --load-extension: only --disable-extensions-except drops it
             "onlytvt": f"--load-extension={CTV}/data/ext/tvtools --disable-extensions-except={CTV}/data/ext/tvtools",
             "zeroext": "--disable-extensions",
+            # autoconsent whose CMP retries wait for 1 s without wheel, scroll or keys (test copy pushed to the TV)
+            "acidle": f"--load-extension={CTV}/data/ext/tvtools,/media/developer/temp/acidle/autoconsent",
             # trim with HistoryFuzzyProvider (1 << 16) left on: typo correction over history hosts
             "trimfuzzy": TRIM.replace("DisableProviders/201287168", "DisableProviders/201221632")}
 assert VARIANTS["trimfuzzy"] != TRIM

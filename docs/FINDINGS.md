@@ -1021,6 +1021,16 @@ Details and tables: `browser/cr151/INPUT_LATENCY.md`. Raw: `browser/cr151/inputl
   `bad (status 11 after 27 s)`. Software mode composites in Skia's `neon::lowp` pipeline on VizCompositorTh, and
   surface-manager's CPU per scroll grows about 4 times. Check `gpu:` in `/tmp/<app>/media.log` before measuring.
   `gpu=on` in `/tmp/<app>/media.opts` forces the GPU on for a session without touching `gpu.state`.
+- **Every exit with the GPU on crashed (2026-11-22), which is what set `gpu.state`.** `bench/gpuexit.py`: Back twice
+  on a tab's first page and menu > Exit end with status 11 (SIGSEGV) with the GPU on and 0 with it off;
+  `closeByAppId` ends with 0. A core (run.sh has `ulimit -c 0`; `GPUEXIT_CORE=1` lifts it for the run) shows the main
+  thread after `main` returned: `exit()` runs the shared libraries' destructors, and the Mali EGL driver's one calls
+  `wl_proxy_destroy` on Wayland objects of a display Chrome has already disconnected (fault address 0xd4). Before the
+  exit-hang fix (0108, upstream 0058) shutdown never got that far. Patch 0110 leaves with `_exit()` after
+  `ChromeMain`: Chrome has no exit-time destructors and has written its profile by then.
+- **Key injection after a reboot.** `event10` ("LGE Network Input") exists only while a network remote is connected.
+  `event8` ("IoT keypad") also reaches pages; `event0` ("CHECK INPUT") is read by surface-manager, but its keys never
+  reach a page (checked with a `keydown` listener). `uilat.EVKEYS` falls back to `event8`.
 - **autoconsent rescans the page while it scrolls** (2026-11-22). With no CMP found, `findCmp` retries up to 20 times
   (`detectRetries`), each after 500 ms and a DOM mutation, and reruns every rule's `querySelectorAll`. Scrolling
   mutates the DOM. On Wikipedia with the GPU on, rAF frames are 51 ms with autoconsent and 18 ms without it, and

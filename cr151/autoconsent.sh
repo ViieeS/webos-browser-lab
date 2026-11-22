@@ -10,7 +10,8 @@
 #                 full rules.json (opt-in steps only) is dropped.
 #   lean-noh      lean without heuristic detection (the generic "reject" button search)
 #   lean-frames   lean with the content script only in main frames and in the subframes a rule can act in
-#                 (autoconsent_frames.py): 13 % CPU on an ad-heavy page against 24 % for test, same rejects
+#                 (autoconsent_frames.py): 13 % CPU on an ad-heavy page against 24 % for test, same rejects.
+#                 Its CMP detection retries wait until the user has not scrolled or pressed a key for 1 s.
 # usage: autoconsent.sh <autoconsent-X.Y.Z.tgz> <sha256> <variant> <out dir>     the add-on ends up in <out dir>
 set -eu
 TGZ=$1 SHA=$2 VARIANT=$3 OUT=$4
@@ -53,5 +54,14 @@ lean-noh)
 	;;
 lean-frames)
 	python3 "$(dirname "$0")/autoconsent_frames.py" "$OUT"
+	# CMP detection retries (up to 20, each after 500 ms and a DOM mutation) rerun every rule's querySelectorAll, and a
+	# scroll mutates the DOM: on Wikipedia rAF frames were 53 ms during a wheel scroll against 18 ms without the add-on.
+	# Each retry now first waits for 1 s without wheel, scroll or keys (26 ms; same rejects on 7 sites, 2026-11-22).
+	CS=$OUT/content.bundle.js
+	perl -0pi -e '
+s/\n(\s+)return this\.findCmp\(retries - 1\);/\n$1await cnWaitForUserIdle();\n$1return this.findCmp(retries - 1);/;
+s/^("use strict";\n\(\(\) => \{\n)/$1  var cnLastInput = 0;\n  for (const t of ["wheel", "scroll", "keydown"]) addEventListener(t, () => { cnLastInput = performance.now(); }, { capture: true, passive: true });\n  async function cnWaitForUserIdle() { while (performance.now() - cnLastInput < 1e3) await new Promise((r) => setTimeout(r, 250)); }\n/;
+' "$CS"
+	[ "$(grep -c cnWaitForUserIdle "$CS")" = 2 ] || die "lean-frames: the idle wait did not apply"
 	;;
 esac

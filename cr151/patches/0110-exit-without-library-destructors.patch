@@ -1,0 +1,31 @@
+# why: With the GPU on, every Chrome exit on an LG C1 ended in SIGSEGV (status 11). After ChromeMain returns, exit()
+runs the shared libraries' destructors, and the Mali EGL driver's destructor destroys its Wayland proxies
+(wl_proxy_destroy) after Chrome has already disconnected the wl_display. The launcher reads a crash within 60 s of a
+GPU-on start as a GPU failure and turns the GPU off for every later start (data/gpu.state). Chrome has already
+written its profile and has no exit-time destructors of its own, so the process leaves with _exit() and skips the
+library destructors.
+
+--- a/src/chrome/app/chrome_exe_main_aura.cc
++++ b/src/chrome/app/chrome_exe_main_aura.cc
+@@ -4,6 +4,9 @@
+
+ #include "build/build_config.h"
+
++#include <stdio.h>
++#include <unistd.h>
++
+ // The entry point for all invocations of Chromium, browser and renderer. On
+ // windows, this does nothing but load chrome.dll and invoke its entry point in
+ // order to make it easy to update the app from GoogleUpdate. We don't need
+@@ -14,5 +17,10 @@ int ChromeMain(int argc, const char** argv);
+ }
+
+ int main(int argc, const char** argv) {
+-  return ChromeMain(argc, argv);
++  int rv = ChromeMain(argc, argv);
++  // chromium-native (webOS): leave without the shared libraries' destructors.
++  // The Mali EGL driver's one touches Wayland objects of a display Chrome has
++  // already disconnected, and crashes every exit with the GPU on.
++  fflush(nullptr);
++  _exit(rv);
+ }

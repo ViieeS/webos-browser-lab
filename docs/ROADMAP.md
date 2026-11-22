@@ -8,7 +8,7 @@ Shipped as `com.viiees.chromiumtv` ("Chromium"), rebased onto WebOS-Chromium 1.0
 after the rebase, 0.737 before it (`cr151/rebase_speedometer.txt`). The build history and numbers are in `cr151/RESULTS.md` and
 [FINDINGS.md](FINDINGS.md).
 
-- **Our patches on 1.0.0:** 0102–0104, 0107 and 0109. The others went upstream: see the upstream table in
+- **Our patches on 1.0.0:** 0102–0104, 0107, 0109 and 0110 (0110 built, not installed yet). The others went upstream: see the upstream table in
   [FINDINGS.md](FINDINGS.md#8-upstream-candidates).
 - **Rebase recipe.** Replace `cr151/upstream/source` with `git archive <sha> source` of WebOS-Chromium, record the
   commit in `cr151/upstream/COMMIT`, then run the `incontainer.sh` steps `patch`, `gen`, `build chrome` and `package`.
@@ -26,11 +26,15 @@ Measured with Chromium's own histograms (`cr151/UI_LATENCY.md`, `cr151/INPUT_LAT
 - **Arrow keys in pages.** Patch 0103 takes Down from 167 to 115 ms. Left: the spatial-navigation walk over all
   elements, about 80 ms on a long page. Next step, if wanted: skip offscreen locked sections (this changes which
   elements are candidates).
-- **GPU off by a crash.** One SIGSEGV with the GPU on (2026-11-21, status 11 after 27 s) made the launcher turn the
-  GPU off for every later start (`data/gpu.state`). In software mode scrolling is several times slower. Next: find the
-  crash with the GPU on, and decide whether one crash should disable the GPU for good.
-- **autoconsent while scrolling.** Its CMP detection retries rescan the DOM during the scroll: rAF frames 51 ms with
-  it, 18 ms without it. Next: cap the retries in time or pause them while the user scrolls, then check the rejects.
+- **GPU off by a crash.** Found 2026-11-22: every exit with the GPU on crashed (the Mali driver's destructor touches
+  the already closed Wayland display in `exit()`), and the launcher then turned the GPU off for every later start
+  (`data/gpu.state`). Patch 0110 exits with `_exit()`; built with the autoconsent change below (IPK sha256 `7b65d4d6…`), not installed. Next: install
+  it, delete `data/gpu.state`, confirm with `bench/gpuexit.py` that exits end with status 0, then report upstream: their
+  launcher has the same rule.
+- **autoconsent while scrolling.** Its CMP detection retries rescan the DOM during the scroll. A test build whose
+  retries wait for 1 s without wheel, scroll or keys (`acidle`) halves the cost: rAF 26 ms against 53 ms, Long Animation
+  Frames 66 against 123 ms per notch (no autoconsent: 18 ms and 8 ms). Next: confirm it still rejects, then ship it
+  through `cr151/autoconsent.sh`.
 - **Wheel scrolling.** `--disable-smooth-scrolling` ships. Its measurements (notch 142 ms on Wikipedia, was 196) were
   made with the GPU off, so the choice needs a recheck with the GPU on. On heavy sites the page's main thread is the
   limit.

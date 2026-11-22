@@ -99,7 +99,7 @@ HOOKS = {"prio"}
 # run.sh switches that have no negating switch: the variant drops the switch from the installed run.sh for that one
 # launch. The file is copied to run.sh.ab first and put back after the run (and at the next start if a run died).
 RUNSH = "/media/developer/apps/usr/palm/applications/com.viiees.chromiumtv/bin/run.sh"
-RUNSH_DROP = {"gpuproc": "--in-process-gpu", "noppsite": "--process-per-site"}
+RUNSH_DROP = {"gpuproc": "--in-process-gpu", "noppsite": "--process-per-site", "smooth": "--disable-smooth-scrolling"}
 PROFILES = {"lite": {"lite": True}}
 
 OBSERVE = """(() => { const r = window.__il = {ev: [], other: [], loaf: [], prevented: [], got: 0,
