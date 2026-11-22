@@ -23,7 +23,8 @@ Measured with Chromium's own histograms (`cr151/UI_LATENCY.md`, `cr151/INPUT_LAT
 
 - **Omnibox.** Done. The trim (fewer providers and rows, suggest after a pause, no ML scoring or AI Mode) is on by
   default, and `omnibox=full` in `media.opts` turns it off. Patch 0109 removes the slowdown that upstream 0058 brought:
-  key to screen 87–107 ms, paint to present 25–35 ms (was 160 ms on 0.0.66).
+  key to screen 87–107 ms, paint to present 25–35 ms (was 160 ms on 0.0.66). Rechecked 2026-11-22 with the GPU on:
+  105–108 ms and 34–36 ms; with the GPU off 168–173 ms and 135–136 ms (`cr151/uilat_omnibox_gpu.txt`).
 - **Arrow keys in pages.** Patch 0103 takes Down from 167 to 115 ms. Left: the spatial-navigation walk over all
   elements, about 80 ms on a long page. Next step, if wanted: skip offscreen locked sections (this changes which
   elements are candidates).
