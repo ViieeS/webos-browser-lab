@@ -25,9 +25,12 @@ The owner scrolls with the Magic Remote wheel and moves the pointer. Keys are a 
    wheel and kept it. The notch is faster on Wikipedia (196 → 142 ms), YouTube (730 → 556 ms) and Daily Mail
    (223 → 184 ms). No difference on reddit (474 → 539 ms, with 250–700 ms spread between runs). The cost: no scroll
    animation, the page jumps 120 px per notch.
-2. **YouTube: the desktop site instead of the TV one.** With TV Tools' TV user agent, `youtube.com/tv` redirects to
-   the desktop site (`?app=desktop`). Desktop YouTube is heavy: rAF frames of ~230–250 ms, hover ~400–800 ms per
-   move. Try another user agent for youtube.com that keeps leanback (`/tv`). Not measured.
+2. **YouTube: the desktop site instead of the TV one, sometimes.** Rechecked 2026-11-22 (`bench/ytua.py`,
+   `ytua_launch.txt`): opened after the start, `youtube.com/tv` stays on the TV interface (leanback, `ytlr-*`) every
+   time, with TV Tools and with any TV user agent set through CDP (TV Tools', webOS WAM, Tizen, Cobalt, PS4). Launched
+   straight onto `/tv`, it went to the desktop site (`?app=desktop`) in 1 of 6 launches. A guess, not proven: the first
+   request of a fresh start goes out before TV Tools' dynamic user-agent rule is in place. A static ruleset in TV
+   Tools, or `--user-agent` in `run.sh`, would close that gap. Desktop YouTube is heavy: rAF frames of ~230–250 ms.
 3. **Heavy scripts of single sites.** Daily Mail blocks the main thread for seconds, and uBO Lite in complete mode does
    not prevent it: the site injects its heavy obfuscated scripts at run time. Only site-specific blocking rules can
    help. That is work per site, not a system fix.
@@ -236,6 +239,7 @@ Daily Mail is left out: 1 of 120 moves reached the page, the main thread was bus
 
 | File | Contents |
 |---|---|
+| `ytua_launch.txt` | `/tv` launched directly, 4 launches (2 more in the session log: 1 desktop, 1 TV) |
 | `inputlat_probe.txt`, `inputlat_probe_ytredirect.txt` | first key runs, the `youtube.com/tv` redirect to desktop |
 | `inputlat_spatnav.txt`, `inputlat_ab_spatnav_ubol.txt` | keys: base, no spatnav, no uBO Lite |
 | `inputlat_wheel_base.txt` | wheel, base on 4 sites |

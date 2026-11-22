@@ -40,7 +40,9 @@ Measured with Chromium's own histograms (`cr151/UI_LATENCY.md`, `cr151/INPUT_LAT
   the page's main thread is the limit.
 - **Late frames.** Closed: the ~90 % was v4 reading late evdev timestamps, plus software mode. With the GPU on the
   compositor drops 0–4 % of frames.
-- **YouTube.** With the TV user agent, `youtube.com/tv` redirects to the desktop site, so there is no TV interface.
+- **YouTube.** `youtube.com/tv` keeps its TV interface when opened after the start. Launched straight onto `/tv`
+  it went to the desktop site in 1 of 6 launches, likely before TV Tools' user-agent rule was in place. Next: a
+  static ruleset in TV Tools or `--user-agent` in `run.sh`, then launch onto `/tv` 10 times.
 
 ## 3. Smaller gaps
 
