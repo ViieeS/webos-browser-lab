@@ -9,7 +9,7 @@ GPU on: 0.756–0.779, against 0.725–0.731 with it off (2026-11-22, `cr151/spe
 costs ~80 MB more browser memory). The rebase run (0.736–0.751, `cr151/rebase_speedometer.txt`) had the GPU off: its
 browser memory matches. The build history and numbers are in `cr151/RESULTS.md` and [FINDINGS.md](FINDINGS.md).
 
-- **Our patches on 1.0.0:** 0102–0104, 0107, 0109 and 0110 (0110 built, not installed yet). The others went upstream: see the upstream table in
+- **Our patches on 1.0.0:** 0102–0104, 0107, 0109 and 0110. The others went upstream: see the upstream table in
   [FINDINGS.md](FINDINGS.md#8-upstream-candidates).
 - **Rebase recipe.** Replace `cr151/upstream/source` with `git archive <sha> source` of WebOS-Chromium, record the
   commit in `cr151/upstream/COMMIT`, then run the `incontainer.sh` steps `patch`, `gen`, `build chrome` and `package`.
@@ -28,15 +28,14 @@ Measured with Chromium's own histograms (`cr151/UI_LATENCY.md`, `cr151/INPUT_LAT
 - **Arrow keys in pages.** Patch 0103 takes Down from 167 to 115 ms. Left: the spatial-navigation walk over all
   elements, about 80 ms on a long page. Next step, if wanted: skip offscreen locked sections (this changes which
   elements are candidates).
-- **GPU off by a crash.** Found 2026-11-22: every exit with the GPU on crashed (the Mali driver's destructor touches
+- **GPU off by a crash.** Fixed 2026-11-22: every exit with the GPU on crashed (the Mali driver's destructor touches
   the already closed Wayland display in `exit()`), and the launcher then turned the GPU off for every later start
-  (`data/gpu.state`). Patch 0110 exits with `_exit()`; built with the autoconsent change below (IPK sha256 `7b65d4d6…`), not installed. Next: install
-  it, delete `data/gpu.state`, confirm with `bench/gpuexit.py` that exits end with status 0, then report upstream: their
-  launcher has the same rule.
-- **autoconsent while scrolling.** Its CMP detection retries rescan the DOM during the scroll. A test build whose
-  retries wait for 1 s without wheel, scroll or keys (`acidle`) halves the cost: rAF 26 ms against 53 ms, Long Animation
-  Frames 66 against 123 ms per notch (no autoconsent: 18 ms and 8 ms). Next: confirm it still rejects, then ship it
-  through `cr151/autoconsent.sh`.
+  (`data/gpu.state`). Patch 0110 exits with `_exit()`; installed (IPK sha256 `7b65d4d6…`), and Back and menu > Exit
+  now end with status 0 (`cr151/gpuexit_0110.txt`). Next: delete `data/gpu.state` (owner's yes), then the upstream PR:
+  their launcher has the same rule.
+- **autoconsent while scrolling.** Done 2026-11-22: its CMP detection retries wait for 1 s without wheel, scroll or
+  keys. rAF frames 26 ms against 53 ms during a Wikipedia scroll (no autoconsent: 18 ms). The installed build still
+  rejects on IKEA, Cookiebot, YouTube and Google (`bench/results/consent/shipped_0110.txt`).
 - **Wheel scrolling.** `--disable-smooth-scrolling` ships, rechecked with the GPU on (2026-11-22): no difference on
   Wikipedia, and better on reddit (first notch 18 against 193 ms) and YouTube (rAF 174 against 234 ms). On heavy sites
   the page's main thread is the limit.
