@@ -1,0 +1,6 @@
+base speedometer #17001-0: score=0.731 wall_s=113 rss_browser_kb=164808 rss_ext_kb=85596 rss_total_kb=476840
+base speedometer #17001-0 mem: MemAvailable: 544204 kB SwapTotal: 614396 kB SwapFree: 291920 kB
+base speedometer #17001-1: score=0.726 wall_s=112 rss_browser_kb=165096 rss_ext_kb=85076 rss_total_kb=480688
+base speedometer #17001-1 mem: MemAvailable: 538728 kB SwapTotal: 614396 kB SwapFree: 292316 kB
+base speedometer #17001-2: score=0.725 wall_s=113 rss_browser_kb=165340 rss_ext_kb=84756 rss_total_kb=476044
+base speedometer #17001-2 mem: MemAvailable: 544028 kB SwapTotal: 614396 kB SwapFree: 292560 kB

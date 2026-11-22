@@ -4,9 +4,10 @@ Open work in priority order. The status of each item is current as of 2026-11-21
 
 ## 1. Chromium TV: our WebOS-Chromium 151 build
 
-Shipped as `com.viiees.chromiumtv` ("Chromium"), rebased onto WebOS-Chromium 1.0.0 on 2026-11-21. Speedometer 0.748
-after the rebase, 0.737 before it (`cr151/rebase_speedometer.txt`). The build history and numbers are in `cr151/RESULTS.md` and
-[FINDINGS.md](FINDINGS.md).
+Shipped as `com.viiees.chromiumtv` ("Chromium"), rebased onto WebOS-Chromium 1.0.0 on 2026-11-21. Speedometer with the
+GPU on: 0.756–0.779, against 0.725–0.731 with it off (2026-11-22, `cr151/speedometer_gpu_on.txt`, `_off.txt`; the GPU
+costs ~80 MB more browser memory). The rebase run (0.736–0.751, `cr151/rebase_speedometer.txt`) had the GPU off: its
+browser memory matches. The build history and numbers are in `cr151/RESULTS.md` and [FINDINGS.md](FINDINGS.md).
 
 - **Our patches on 1.0.0:** 0102–0104, 0107, 0109 and 0110 (0110 built, not installed yet). The others went upstream: see the upstream table in
   [FINDINGS.md](FINDINGS.md#8-upstream-candidates).
