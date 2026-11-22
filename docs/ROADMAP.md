@@ -35,9 +35,9 @@ Measured with Chromium's own histograms (`cr151/UI_LATENCY.md`, `cr151/INPUT_LAT
   retries wait for 1 s without wheel, scroll or keys (`acidle`) halves the cost: rAF 26 ms against 53 ms, Long Animation
   Frames 66 against 123 ms per notch (no autoconsent: 18 ms and 8 ms). Next: confirm it still rejects, then ship it
   through `cr151/autoconsent.sh`.
-- **Wheel scrolling.** `--disable-smooth-scrolling` ships. Its measurements (notch 142 ms on Wikipedia, was 196) were
-  made with the GPU off, so the choice needs a recheck with the GPU on. On heavy sites the page's main thread is the
-  limit.
+- **Wheel scrolling.** `--disable-smooth-scrolling` ships, rechecked with the GPU on (2026-11-22): no difference on
+  Wikipedia, and better on reddit (first notch 18 against 193 ms) and YouTube (rAF 174 against 234 ms). On heavy sites
+  the page's main thread is the limit.
 - **Late frames.** Closed: the ~90 % was v4 reading late evdev timestamps, plus software mode. With the GPU on the
   compositor drops 0–4 % of frames.
 - **YouTube.** With the TV user agent, `youtube.com/tv` redirects to the desktop site, so there is no TV interface.

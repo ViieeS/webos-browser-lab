@@ -168,6 +168,23 @@ for 1 s without `wheel`, `scroll` or `keydown` (`inputlat_acidle.txt`, 3 runs pe
 The rest of the cost in `acidle` falls in the 1.5 s pauses between bursts: a retry starts there, and the next burst
 meets it. Whether `acidle` still rejects: `bench/results/consent/shipped_*.txt`.
 
+### Smooth scrolling again, with the GPU on (2026-11-22)
+
+`smooth` removes `--disable-smooth-scrolling` from the installed `run.sh` for one launch (`inputlat_smooth_gpu.txt`,
+3 runs per cell). The notch columns come from evdev timestamps, which run late, so compare them only between
+variants:
+
+| Site | Variant | Notch, ms | First notch, ms | rAF frame, ms | Wheel → frame p50, ms |
+|---|---|---|---|---|---|
+| Wikipedia | no smooth (shipped) | 13 | 24 | 54.5 | 89 |
+| Wikipedia | smooth | 13 | 21 | 53.7 | 85 |
+| reddit | no smooth (shipped) | 30 | 18 | 71.0 | 123 |
+| reddit | smooth | 74 | 193 | 94.5 | 137 |
+| YouTube, search | no smooth (shipped) | 16 | 20 | 173.8 | 156 |
+| YouTube, search | smooth | 14 | 19 | 233.8 | 190 |
+
+Keep `--disable-smooth-scrolling`: no difference on Wikipedia, better on reddit and YouTube.
+
 ## Hover
 
 A grid of 120 pointer moves. "Move" is the mean of `EventLatency.MouseMoved.TotalLatency`. "mouseover" is the mean of
@@ -226,6 +243,7 @@ Daily Mail is left out: 1 of 120 moves reached the page, the main thread was bus
 | `inputlat_wheel_smooth.txt`, `inputlat_wheel_smooth2.txt`, `inputlat_wheel_smooth3.txt` | wheel: base and no smooth scrolling |
 | `inputlat_hover.txt` | hover: base and no uBO Lite |
 | `inputlat_cdpwheel.txt`, `inputlat_cdpgesture.txt` | late frames check: evdev against CDP notches and a CDP scroll gesture (GPU off) |
+| `inputlat_smooth_gpu.txt` | smooth scrolling on and off with the GPU on |
 | `inputlat_acidle.txt` | autoconsent whose retries wait for an idle user, against shipped and none |
 | `inputlat_gpu_ext.txt` | the same with the GPU on, with and without autoconsent and all extensions |
 | `scrollperf/*.txt.gz` | system-wide perf during a wheel scroll (`bench/scrollperf.py report <file>`): base, `noext`, `zeroext`, `onlytvt` with the GPU off, `gpu_base` with the GPU on |
