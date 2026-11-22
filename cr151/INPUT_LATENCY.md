@@ -13,7 +13,9 @@ The owner scrolls with the Magic Remote wheel and moves the pointer. Keys are a 
 - **Browser flags change almost nothing.** Of the flags tried, only `--disable-smooth-scrolling` helped noticeably,
   and not on every site.
 - **Even on light Wikipedia** ~90 % of frames during a scroll are late, and each burst of notches starts with ~1 s of
-  65–94 ms frames. This is a floor of the platform or the build, not of the sites. The cause is not found.
+  65–94 ms frames. This is real frame dropping, not a metric artifact: the compositor drops 44–66 % of frames during a
+  wheel scroll, and rAF runs at ~40 ms (25 fps) while the page scrolls. A synthetic CDP scroll with Chrome's own
+  timestamps shows the same, so the webOS input path is not the cause. Which stage runs at 40 ms is not found yet.
 
 ## What to fix (most useful first)
 
@@ -29,8 +31,8 @@ The owner scrolls with the Magic Remote wheel and moves the pointer. Keys are a 
    help. That is work per site, not a system fix.
 4. **Find the cause of late frames on light pages.** ~200 ms per notch and ~90 % late frames on Wikipedia are a floor
    for all sites. CDP tracing in this build records no `cc` or `viz` events, so the latency could not be split by
-   stage. Next step: `perf` on the compositor and viz threads during a scroll, or a check whether the presentation
-   timestamp from webOS arrives late.
+   stage. The frames are really dropped (see "Late frames: real or a metric?" below), so a late presentation timestamp
+   alone does not explain it. Next step: `perf` on the compositor, raster and viz threads during a scroll.
 
 **No effect** (no visible difference on Wikipedia and reddit): `--num-raster-threads=2`,
 `--disable-low-end-device-mode`, `--disable-gpu-rasterization`, raised thread priorities (variant `prio`), GPU out of
@@ -101,7 +103,29 @@ Variants tried only on Wikipedia and reddit, 1–2 runs (`inputlat_wheel_ab1.txt
 - **reddit.** The wheel reaches the page in batches: 10–17 `wheel` events for 30 notches. Chrome coalesces events
   while the main thread is busy.
 - **Wikipedia.** Each burst of notches starts with ~1 s of 65–94 ms frames. The Long Animation Frames of these
-  frames (50–400 ms) have no scripts, so this is rendering. After that, frames are steady at 16–17 ms.
+  frames (50–400 ms) have no scripts, so this is rendering. After that, rAF frames come every ~40 ms while the
+  page scrolls, and every 16–17 ms only when the scroll stops.
+
+### Late frames: real or a metric?
+
+Only `DelayedFramesPercentage4` (v4) showed the ~90 %. Legacy `DelayedFramesPercentage` and `MissedVsyncs` were 0, so
+the first suspect was v4 itself, or the input timestamps that evdev and Wayland give it. Three input kinds, interleaved,
+3 runs each, Wikipedia, Chromium TV 1.0.0 (`inputlat_cdpwheel.txt`, `inputlat_cdpgesture.txt`):
+
+| Input | Scrolls per run | v4, % | Legacy, % | Compositor `WheelScroll` dropped, % | rAF dropped, % |
+|---|---|---|---|---|---|
+| evdev notches (`wiki-wheel`) | 2 | 90.5–91 | 0 | 44–45 | 74–77 |
+| CDP `mouseWheel` notches (`wiki-cdpwheel`) | 14–18 | 0 | 0 | — | — |
+| CDP `synthesizeScrollGesture` (`wiki-cdpgesture`) | 3 | 94 | 16–27 | 66 (1 run of 3) | 87 (1 run of 3) |
+
+The Smoothness histograms reached the browser in only one gesture run.
+
+- CDP `mouseWheel` notches are never latched into one scroll: each notch is a scroll of one frame, and v4 is 0 for
+  those by construction. Desktop Chrome on a Mac does the same (`bench/deskjank.py`). That run is no control.
+- `synthesizeScrollGesture` makes one long scroll with timestamps from Chrome itself. It is as late as evdev, so the
+  webOS input timestamps are not the cause.
+- `Graphics.Smoothness.PercentDroppedFrames3` counts presented frames on the compositor. It drops 44–66 % during a
+  scroll and ~32 % even for compositor-only animations. The frames are really lost.
 - reddit is noisy: the base ranges from 226 to 631 ms across series. The differences between variants on reddit are
   smaller than this spread.
 
@@ -162,6 +186,7 @@ Daily Mail is left out: 1 of 120 moves reached the page, the main thread was bus
 | `inputlat_wheel_ab1.txt` | wheel: raster2, nolowend, nogpuraster, prio, gpuproc, noubol |
 | `inputlat_wheel_smooth.txt`, `inputlat_wheel_smooth2.txt`, `inputlat_wheel_smooth3.txt` | wheel: base and no smooth scrolling |
 | `inputlat_hover.txt` | hover: base and no uBO Lite |
+| `inputlat_cdpwheel.txt`, `inputlat_cdpgesture.txt` | late frames check: evdev against CDP notches and a CDP scroll gesture |
 | `trace_wheel_wiki.json.gz` | wheel trace on Wikipedia: it has no `cc` or `viz` events |
 
 The tables come from `TV_HOST=x bench/inputlat.py show <files>`. `show` does not need the TV.

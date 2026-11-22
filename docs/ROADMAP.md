@@ -28,7 +28,9 @@ Measured with Chromium's own histograms (`cr151/UI_LATENCY.md`, `cr151/INPUT_LAT
   elements are candidates).
 - **Wheel scrolling.** `--disable-smooth-scrolling` ships: a notch takes 142 ms on Wikipedia (was 196). On heavy sites
   (reddit, YouTube) 470–730 ms go to the page's main thread, and no flag helps.
-- **Late frames.** About 90 % of scroll frames are late even on Wikipedia. The cause is not found.
+- **Late frames.** About 90 % of scroll frames are late even on Wikipedia. This is real: the compositor drops 44–66 %
+  of frames and the page draws at ~25 fps while it scrolls. Input timestamps and thread priority are ruled out. Next:
+  `perf` on the compositor, raster and viz threads during a scroll.
 - **YouTube.** With the TV user agent, `youtube.com/tv` redirects to the desktop site, so there is no TV interface.
 
 ## 3. Smaller gaps

@@ -62,11 +62,23 @@ SITES["yt-wheel"] = (YT_LIST, 80, WHEEL)
 SITES["yt-hover"] = (YT_LIST, 10, HOVER)
 # a long, light article: the floor for wheel scrolling
 SITES["wiki-wheel"] = ("https://en.wikipedia.org/wiki/Television", 80, WHEEL)
+# The same notches through CDP Input.dispatchMouseEvent instead of evdev: Chrome stamps them itself, so the scroll
+# jank metrics see no webOS input timestamps. "c8:-1" is one notch down, at the middle of the 1272x595 viewport.
+CDP_WHEEL = ["w1000"] + ["c8:-1"] * 12 + ["w1500"] + ["c8:-1"] * 12 + ["w1500"] + ["c8:1"] * 6
+SITES["wiki-cdpwheel"] = (SITES["wiki-wheel"][0], 80, CDP_WHEEL)
+# One long synthetic scroll per gesture (CDP Input.synthesizeScrollGesture, mouse source): many frames in one scroll,
+# like the latched evdev notches, but with timestamps Chrome makes itself. "g<px>:<px per s>", negative px = down.
+SITES["wiki-cdpgesture"] = (SITES["wiki-wheel"][0], 80, ["w1000", "g-1440:800", "w1500", "g-1440:800", "w1500", "g720:800"])
 
 
 def inputs(tokens):
     """(kind, count) of a token list: keys (keydown), wheel notches, or pointer moves (hover)."""
     notches = sum(1 for t in tokens if str(t).startswith("r8:"))
+    if any(str(t).startswith("g") for t in tokens):
+        return "cdpwheel", sum(1 for t in tokens if str(t).startswith("g"))
+    cdp_notches = sum(1 for t in tokens if str(t).startswith("c8:"))
+    if cdp_notches:
+        return "cdpwheel", cdp_notches
     moves = sum(1 for t in tokens if str(t).startswith("a"))
     keys = sum(1 for t in tokens if isinstance(t, int) or str(t)[0].isdigit())
     return ("wheel", notches) if notches else ("key", keys) if keys else ("hover", moves)
@@ -288,7 +300,8 @@ def run(tag, site, rnd):
 
 def cdp_pointer(tokens, gap):
     """Mouse moves through CDP on the page target, one per gap; the replies are read after the sweep, so a busy main
-    thread does not slow the sender down (a real remote does not wait either)."""
+    thread does not slow the sender down (a real remote does not wait either). Also takes CDP_WHEEL's tokens:
+    "c8:<n>" is one wheel notch (n=-1 down), "w<ms>" a pause."""
     page = None
     for _ in range(15):
         targets = json.load(urllib.request.urlopen(f"http://{uilat.CDP}/json/list", timeout=20))
@@ -298,13 +311,28 @@ def cdp_pointer(tokens, gap):
         time.sleep(2)
     assert page, f"no http page target: {[(t['type'], t['url'][:60]) for t in targets]}"
     ws = WebSocket(uilat.CDP, "/devtools/page/" + page["id"])
-    for i, t in enumerate(tokens):
-        x, y = map(int, t[1:].split(","))
-        ws.send(json.dumps({"id": i + 1, "method": "Input.dispatchMouseEvent",
-                            "params": {"type": "mouseMoved", "x": x, "y": y}}))
+    sent = 0
+    for t in tokens:
+        if t.startswith("w"):
+            time.sleep(int(t[1:]) / 1000)
+            continue
+        if t.startswith("g"):
+            px, speed = map(int, t[1:].split(":"))
+            sent += 1
+            ws.send(json.dumps({"id": sent, "method": "Input.synthesizeScrollGesture", "params": {
+                "x": 636, "y": 297, "yDistance": px, "speed": speed, "gestureSourceType": "mouse"}}))
+            time.sleep(abs(px) / speed + 0.3)
+            continue
+        if t.startswith("c8:"):
+            params = {"type": "mouseWheel", "x": 636, "y": 297, "deltaX": 0, "deltaY": -120 * int(t[3:])}
+        else:
+            x, y = map(int, t[1:].split(","))
+            params = {"type": "mouseMoved", "x": x, "y": y}
+        sent += 1
+        ws.send(json.dumps({"id": sent, "method": "Input.dispatchMouseEvent", "params": params}))
         time.sleep(gap / 1000)
     done = 0
-    while done < len(tokens):
+    while done < sent:
         if "id" in json.loads(ws.recv()):
             done += 1
     ws.sock.close()
@@ -345,7 +373,7 @@ def measure(br, tag, site, rnd):
     before = snapshot()
     t = time.time()
     kind, count = inputs(keys)
-    if kind == "hover":
+    if kind in ("hover", "cdpwheel"):
         cdp_pointer(keys, gap)
     else:
         dev = f"/media/developer/temp/evkeys {WHEEL_DEV}" if kind == "wheel" else uilat.EVKEYS
@@ -364,7 +392,7 @@ def measure(br, tag, site, rnd):
                 break
             still = still + 1 if n == last else 0
             last = n
-            if kind == "wheel" and still >= 2:
+            if kind in ("wheel", "cdpwheel") and still >= 2:
                 break
         except Exception:   # an evaluate timed out on the blocked thread
             pass

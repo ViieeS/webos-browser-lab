@@ -1011,7 +1011,10 @@ Details and tables: `browser/cr151/INPUT_LATENCY.md`. Raw: `browser/cr151/inputl
 - **No effect:** `--num-raster-threads=2`, `--disable-low-end-device-mode`, `--disable-gpu-rasterization`, raised
   thread priorities, GPU out of process.
 - **Floor on light pages:** ~90 % of frames during a scroll are late even on Wikipedia, and each burst of notches
-  starts with ~1 s of 65–94 ms frames that LoAF shows without scripts. Cause not found.
+  starts with ~1 s of 65–94 ms frames that LoAF shows without scripts. Checked 2026-11-21: the frames are really
+  dropped (compositor 44–66 %, rAF ~40 ms while scrolling), and a CDP scroll gesture with Chrome's own timestamps is
+  as late, so the webOS input path is not the cause. The slow stage is not found
+  ([INPUT_LATENCY.md](../cr151/INPUT_LATENCY.md#late-frames-real-or-a-metric)).
 - **Tooling facts.**
   - Wheel injection works through `/dev/input/event3` ("LGE M-RCU"), `REL_WHEEL`, 120 px per notch. `event10` passes
     keys only.
