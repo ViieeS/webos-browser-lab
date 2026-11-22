@@ -1010,11 +1010,21 @@ Details and tables: `browser/cr151/INPUT_LATENCY.md`. Raw: `browser/cr151/inputl
   `cr151/package.sh` adds it to run.sh.
 - **No effect:** `--num-raster-threads=2`, `--disable-low-end-device-mode`, `--disable-gpu-rasterization`, raised
   thread priorities, GPU out of process.
-- **Floor on light pages:** ~90 % of frames during a scroll are late even on Wikipedia, and each burst of notches
-  starts with ~1 s of 65–94 ms frames that LoAF shows without scripts. Checked 2026-11-21: the frames are really
-  dropped (compositor 44–66 %, rAF ~40 ms while scrolling), and a CDP scroll gesture with Chrome's own timestamps is
-  as late, so the webOS input path is not the cause. The slow stage is not found
-  ([INPUT_LATENCY.md](../cr151/INPUT_LATENCY.md#late-frames-real-or-a-metric)).
+- **"Floor on light pages" was software mode and a metric artifact** (corrected 2026-11-22). The ~90 % late frames
+  come only from v4 (`DelayedFramesPercentage4`), which reads evdev event timestamps that run 15–30 ms late: a notch's
+  `EventLatency` is 11–13 ms, less than one frame. With the GPU on, the compositor drops 0–4 % of frames and a CDP scroll
+  gesture is 0–3 % late. The 2026-11-21 runs and, by their CPU profile, the wheel series of 2026-11-19/20 ran with the
+  GPU off ([INPUT_LATENCY.md](../cr151/INPUT_LATENCY.md#late-frames-an-artifact-plus-software-mode-2026-11-21-to-2026-11-22)).
+- **Chromium TV silently runs without the GPU after one GPU-on crash.** The launcher (`cnrun.c`, EGL 1.4 path) writes
+  `bad` into `<app>/data/gpu.state` when Chrome dies soon after an automatic GPU-on start, and every later start adds
+  `--disable-gpu`. The file survives reinstalls of the same version. On the C1 it was written 2026-11-21 13:14 UTC:
+  `bad (status 11 after 27 s)`. Software mode composites in Skia's `neon::lowp` pipeline on VizCompositorTh, and
+  surface-manager's CPU per scroll grows about 4 times. Check `gpu:` in `/tmp/<app>/media.log` before measuring.
+  `gpu=on` in `/tmp/<app>/media.opts` forces the GPU on for a session without touching `gpu.state`.
+- **autoconsent rescans the page while it scrolls** (2026-11-22). With no CMP found, `findCmp` retries up to 20 times
+  (`detectRetries`), each after 500 ms and a DOM mutation, and reruns every rule's `querySelectorAll`. Scrolling
+  mutates the DOM. On Wikipedia with the GPU on, rAF frames are 51 ms with autoconsent and 18 ms without it, and
+  Long Animation Frames grow from 6 to 124 ms per notch.
 - **Tooling facts.**
   - Wheel injection works through `/dev/input/event3` ("LGE M-RCU"), `REL_WHEEL`, 120 px per notch. `event10` passes
     keys only.

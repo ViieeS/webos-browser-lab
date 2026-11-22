@@ -66,6 +66,9 @@ VARIANTS = {"nosmooth": "--disable-smooth-scrolling",
             "noext": f"--load-extension={CTV}/data/ext/tvtools",
             # uBOL left to a packed install (External Extensions), autoconsent kept
             "noubol": f"--load-extension={CTV}/data/ext/tvtools,{CTV}/browser/ext/autoconsent",
+            # since uBOL ships as a CRX it survives --load-extension: only --disable-extensions-except drops it
+            "onlytvt": f"--load-extension={CTV}/data/ext/tvtools --disable-extensions-except={CTV}/data/ext/tvtools",
+            "zeroext": "--disable-extensions",
             # trim with HistoryFuzzyProvider (1 << 16) left on: typo correction over history hosts
             "trimfuzzy": TRIM.replace("DisableProviders/201287168", "DisableProviders/201221632")}
 assert VARIANTS["trimfuzzy"] != TRIM

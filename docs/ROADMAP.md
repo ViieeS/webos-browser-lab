@@ -26,11 +26,16 @@ Measured with Chromium's own histograms (`cr151/UI_LATENCY.md`, `cr151/INPUT_LAT
 - **Arrow keys in pages.** Patch 0103 takes Down from 167 to 115 ms. Left: the spatial-navigation walk over all
   elements, about 80 ms on a long page. Next step, if wanted: skip offscreen locked sections (this changes which
   elements are candidates).
-- **Wheel scrolling.** `--disable-smooth-scrolling` ships: a notch takes 142 ms on Wikipedia (was 196). On heavy sites
-  (reddit, YouTube) 470–730 ms go to the page's main thread, and no flag helps.
-- **Late frames.** About 90 % of scroll frames are late even on Wikipedia. This is real: the compositor drops 44–66 %
-  of frames and the page draws at ~25 fps while it scrolls. Input timestamps and thread priority are ruled out. Next:
-  `perf` on the compositor, raster and viz threads during a scroll.
+- **GPU off by a crash.** One SIGSEGV with the GPU on (2026-11-21, status 11 after 27 s) made the launcher turn the
+  GPU off for every later start (`data/gpu.state`). In software mode scrolling is several times slower. Next: find the
+  crash with the GPU on, and decide whether one crash should disable the GPU for good.
+- **autoconsent while scrolling.** Its CMP detection retries rescan the DOM during the scroll: rAF frames 51 ms with
+  it, 18 ms without it. Next: cap the retries in time or pause them while the user scrolls, then check the rejects.
+- **Wheel scrolling.** `--disable-smooth-scrolling` ships. Its measurements (notch 142 ms on Wikipedia, was 196) were
+  made with the GPU off, so the choice needs a recheck with the GPU on. On heavy sites the page's main thread is the
+  limit.
+- **Late frames.** Closed: the ~90 % was v4 reading late evdev timestamps, plus software mode. With the GPU on the
+  compositor drops 0–4 % of frames.
 - **YouTube.** With the TV user agent, `youtube.com/tv` redirects to the desktop site, so there is no TV interface.
 
 ## 3. Smaller gaps

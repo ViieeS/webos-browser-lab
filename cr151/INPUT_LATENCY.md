@@ -12,10 +12,12 @@ The owner scrolls with the Magic Remote wheel and moves the pointer. Keys are a 
   itself. It delays everything else: hover, keys, feed loading, and what the page draws after a scroll.
 - **Browser flags change almost nothing.** Of the flags tried, only `--disable-smooth-scrolling` helped noticeably,
   and not on every site.
-- **Even on light Wikipedia** ~90 % of frames during a scroll are late, and each burst of notches starts with ~1 s of
-  65–94 ms frames. This is real frame dropping, not a metric artifact: the compositor drops 44–66 % of frames during a
-  wheel scroll, and rAF runs at ~40 ms (25 fps) while the page scrolls. A synthetic CDP scroll with Chrome's own
-  timestamps shows the same, so the webOS input path is not the cause. Which stage runs at 40 ms is not found yet.
+- **Correction (2026-11-22): the GPU was off.** The launcher turns the GPU off for good after one crash with the GPU
+  on (`data/gpu.state`). It did so on 2026-11-21, and the wheel tables below look like the same software mode: notch
+  147–224 ms, surface-manager 100+ ms per notch. With the GPU on, a Wikipedia notch costs a fraction of that, the
+  compositor drops 0–4 % of frames, and a CDP scroll gesture is 0–3 % late. See "Late frames: an artifact" below.
+- **The "~90 % late frames" is a metric artifact.** v4 reads it from evdev event timestamps that run 15–30 ms late.
+- **autoconsent loads the main thread while the page scrolls.** rAF frames are 51 ms with it and 18 ms without it.
 
 ## What to fix (most useful first)
 
@@ -29,10 +31,11 @@ The owner scrolls with the Magic Remote wheel and moves the pointer. Keys are a 
 3. **Heavy scripts of single sites.** Daily Mail blocks the main thread for seconds, and uBO Lite in complete mode does
    not prevent it: the site injects its heavy obfuscated scripts at run time. Only site-specific blocking rules can
    help. That is work per site, not a system fix.
-4. **Find the cause of late frames on light pages.** ~200 ms per notch and ~90 % late frames on Wikipedia are a floor
-   for all sites. CDP tracing in this build records no `cc` or `viz` events, so the latency could not be split by
-   stage. The frames are really dropped (see "Late frames: real or a metric?" below), so a late presentation timestamp
-   alone does not explain it. Next step: `perf` on the compositor, raster and viz threads during a scroll.
+4. **Keep the GPU on.** One crash with the GPU on puts every later start into software mode, silently. That made
+   scrolling several times slower. Find the crash (status 11 after 27 s on 2026-11-21), and check `gpu:` in
+   `media.log` before any measurement.
+5. **Stop autoconsent rescanning while the page scrolls.** Its CMP detection retries up to 20 times, each after
+   500 ms and a DOM mutation. Scrolling mutates the DOM, so it reruns every rule's `querySelectorAll` during the scroll.
 
 **No effect** (no visible difference on Wikipedia and reddit): `--num-raster-threads=2`,
 `--disable-low-end-device-mode`, `--disable-gpu-rasterization`, raised thread priorities (variant `prio`), GPU out of
@@ -104,13 +107,14 @@ Variants tried only on Wikipedia and reddit, 1–2 runs (`inputlat_wheel_ab1.txt
   while the main thread is busy.
 - **Wikipedia.** Each burst of notches starts with ~1 s of 65–94 ms frames. The Long Animation Frames of these
   frames (50–400 ms) have no scripts, so this is rendering. After that, rAF frames come every ~40 ms while the
-  page scrolls, and every 16–17 ms only when the scroll stops.
+  page scrolls, and every 16–17 ms only when the scroll stops. (Software mode, see the correction above.)
 
-### Late frames: real or a metric?
+### Late frames: an artifact, plus software mode (2026-11-21 to 2026-11-22)
 
-Only `DelayedFramesPercentage4` (v4) showed the ~90 %. Legacy `DelayedFramesPercentage` and `MissedVsyncs` were 0, so
-the first suspect was v4 itself, or the input timestamps that evdev and Wayland give it. Three input kinds, interleaved,
-3 runs each, Wikipedia, Chromium TV 1.0.0 (`inputlat_cdpwheel.txt`, `inputlat_cdpgesture.txt`):
+Only `DelayedFramesPercentage4` (v4) showed the ~90 %. Legacy `DelayedFramesPercentage` and `MissedVsyncs` were 0.
+Wikipedia, Chromium TV 1.0.0, interleaved runs.
+
+**First series, GPU off without anyone noticing** (`inputlat_cdpwheel.txt`, `inputlat_cdpgesture.txt`, 3 runs each):
 
 | Input | Scrolls per run | v4, % | Legacy, % | Compositor `WheelScroll` dropped, % | rAF dropped, % |
 |---|---|---|---|---|---|
@@ -118,14 +122,33 @@ the first suspect was v4 itself, or the input timestamps that evdev and Wayland 
 | CDP `mouseWheel` notches (`wiki-cdpwheel`) | 14–18 | 0 | 0 | — | — |
 | CDP `synthesizeScrollGesture` (`wiki-cdpgesture`) | 3 | 94 | 16–27 | 66 (1 run of 3) | 87 (1 run of 3) |
 
-The Smoothness histograms reached the browser in only one gesture run.
+**Second series, GPU forced on** with `gpu=on` in `/tmp/com.viiees.chromiumtv/media.opts`
+(`inputlat_gpu_ext.txt`, 3 runs per cell; `noext` drops autoconsent, `zeroext` drops all extensions):
 
-- CDP `mouseWheel` notches are never latched into one scroll: each notch is a scroll of one frame, and v4 is 0 for
-  those by construction. Desktop Chrome on a Mac does the same (`bench/deskjank.py`). That run is no control.
-- `synthesizeScrollGesture` makes one long scroll with timestamps from Chrome itself. It is as late as evdev, so the
-  webOS input timestamps are not the cause.
-- `Graphics.Smoothness.PercentDroppedFrames3` counts presented frames on the compositor. It drops 44–66 % during a
-  scroll and ~32 % even for compositor-only animations. The frames are really lost.
+| Input | Variant | v4, % | Legacy, % | Compositor dropped, % | rAF dropped, % | Notch `EventLatency`, ms | rAF frame, ms |
+|---|---|---|---|---|---|---|---|
+| evdev notches | base | 91 | 0 | — | — | 13 | 50.8 |
+| evdev notches | no autoconsent | 91 | 0 | 3–4 | 4–4.5 | 13 | 17.8 |
+| evdev notches | no extensions | 91 | 0 | 2 | 4–5 | 11–13 | 17.4 |
+| CDP gesture | base | 1–3 | 1.5–3.5 | 0 | 43 (1 run) | — | — |
+| CDP gesture | no autoconsent | 0.3–1 | 0–1.5 | 0–1 | 7.5–12.5 | 27–46 | — |
+| CDP gesture | no extensions | 0–0.7 | 0–0.5 | 0 | 0–7.5 | 27–31 | — |
+
+The Smoothness histograms do not reach the browser in every run, so some cells have fewer runs. One base wheel run
+failed to open the page.
+
+- **With the GPU on, scrolling is smooth.** The compositor drops 0–4 % of frames, and the gesture is 0–3 % late.
+- **v4 on evdev notches is an artifact.** It stays at 91 % while almost no frame is dropped. The notch's
+  `EventLatency` is 11–13 ms, less than one frame, against 27–46 ms for the gesture. So the evdev and Wayland event
+  timestamps run 15–30 ms late, and v4 judges frames from them. Do not use v4 with evdev input on this TV.
+- **CDP `mouseWheel` notches are no control.** They are never latched into one scroll: each notch is a scroll of one
+  frame, and v4 is 0 for those by construction. Desktop Chrome on a Mac does the same (`bench/deskjank.py`).
+- **autoconsent slows the page's frames while it scrolls.** With it, rAF frames are 51 ms on evdev notches and 43 % of
+  them drop on the gesture. Long Animation Frames grow from 6 to 124 ms per notch. perf names the work:
+  `SelectorQuery::ExecuteSearch` and `SelectorChecker::MatchSelector` take most of the renderer main thread
+  (`bench/scrollperf.py`, `cr151/scrollperf/`).
+- **Software mode** (GPU off): VizCompositorTh composites in Skia's software pipeline (`neon::lowp::*`), and
+  surface-manager's CPU per scroll grows about 4 times.
 - reddit is noisy: the base ranges from 226 to 631 ms across series. The differences between variants on reddit are
   smaller than this spread.
 
@@ -186,7 +209,9 @@ Daily Mail is left out: 1 of 120 moves reached the page, the main thread was bus
 | `inputlat_wheel_ab1.txt` | wheel: raster2, nolowend, nogpuraster, prio, gpuproc, noubol |
 | `inputlat_wheel_smooth.txt`, `inputlat_wheel_smooth2.txt`, `inputlat_wheel_smooth3.txt` | wheel: base and no smooth scrolling |
 | `inputlat_hover.txt` | hover: base and no uBO Lite |
-| `inputlat_cdpwheel.txt`, `inputlat_cdpgesture.txt` | late frames check: evdev against CDP notches and a CDP scroll gesture |
+| `inputlat_cdpwheel.txt`, `inputlat_cdpgesture.txt` | late frames check: evdev against CDP notches and a CDP scroll gesture (GPU off) |
+| `inputlat_gpu_ext.txt` | the same with the GPU on, with and without autoconsent and all extensions |
+| `scrollperf/*.txt.gz` | system-wide perf during a wheel scroll (`bench/scrollperf.py report <file>`): base, `noext`, `zeroext`, `onlytvt` with the GPU off, `gpu_base` with the GPU on |
 | `trace_wheel_wiki.json.gz` | wheel trace on Wikipedia: it has no `cc` or `viz` events |
 
 The tables come from `TV_HOST=x bench/inputlat.py show <files>`. `show` does not need the TV.

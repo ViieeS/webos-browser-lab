@@ -531,7 +531,7 @@ def show(paths):
     for r in recs:
         # Wheel: Chrome coalesces wheel events while the main thread is busy (reddit: 10-17 events for 30 notches with
         # the whole scroll done), so a wheel run counts when the page scrolled at all.
-        got = {"key": r.get("got", r["keys"]), "wheel": r.get("n", {}).get("scroll", 0) and r["keys"],
+        got = {"key": r.get("got", r["keys"]), "wheel": r.get("n", {}).get("scroll", 0) and r["keys"], "cdpwheel": r.get("n", {}).get("scroll", 0) and r["keys"],
                "hover": r.get("n", {}).get("mousemove", 0)}[r.get("kind", "key")]
         if got * 2 < r["keys"] and r.get("kind") != "hover" or got == 0:
             dropped[(r["site"], r["tag"])] = dropped.get((r["site"], r["tag"]), 0) + 1
