@@ -1,0 +1,3 @@
+GPUEXIT way=back gpu_compositing=enabled dwell=12 -> 0 | 6117.443 gpu: on (media.opts gpu=on)
+GPUEXIT way=menu gpu_compositing=enabled dwell=12 -> 0 | 6159.375 gpu: on (media.opts gpu=on)
+GPUEXIT way=close gpu_compositing=enabled dwell=12 -> 15 | 6202.243 gpu: on (media.opts gpu=on)

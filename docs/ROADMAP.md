@@ -4,12 +4,14 @@ Open work in priority order. The status of each item is current as of 2026-11-23
 
 ## 1. Chromium TV: our WebOS-Chromium 151 build
 
-Shipped as `com.viiees.chromiumtv` ("Chromium"), rebased onto WebOS-Chromium 1.0.0 on 2026-11-21. Speedometer with the
-GPU on: 0.756–0.779, against 0.725–0.731 with it off (2026-11-22, `cr151/speedometer_gpu_on.txt`, `_off.txt`; the GPU
-costs ~80 MB more browser memory). The rebase run (0.736–0.751, `cr151/rebase_speedometer.txt`) had the GPU off: its
-browser memory matches. The build history and numbers are in `cr151/RESULTS.md` and [FINDINGS.md](FINDINGS.md).
+Shipped as `com.viiees.chromiumtv` ("Chromium"), rebased onto WebOS-Chromium 1.1.0 (`6071897`) on 2026-11-23 and
+installed with the owner's yes. Speedometer with the GPU on: 0.781–0.799 on 1.1.0 (`cr151/speedometer_110.txt`),
+0.756–0.779 on 1.0.0, and 0.725–0.731 with the GPU off (`cr151/speedometer_gpu_on.txt`, `_off.txt`; the GPU costs ~80
+MB more browser memory). After the 1.1.0 install: exits with the GPU on end with status 0, the GPU probe passes on a
+normal start, autoconsent still rejects, omnibox key to screen 99–104 ms, and 1.1.0's V8 lite mode stays off on the C1
+(747 MB free at start). The build history and numbers are in `cr151/RESULTS.md` and [FINDINGS.md](FINDINGS.md).
 
-- **Our patches on 1.0.0:** 0102–0104, 0107, 0109 and 0110. The others went upstream: see the upstream table in
+- **Our patches on 1.1.0:** 0102–0104, 0107 and 0110. 0109 is their 0062 since 1.1.0. The others went upstream: see the upstream table in
   [FINDINGS.md](FINDINGS.md#8-upstream-candidates).
 - **Rebase recipe.** Replace `cr151/upstream/source` with `git archive <sha> source` of WebOS-Chromium, record the
   commit in `cr151/upstream/COMMIT`, then run the `incontainer.sh` steps `patch`, `gen`, `build chrome` and `package`.
