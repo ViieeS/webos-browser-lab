@@ -10,7 +10,7 @@ need_sysroot   # check-abi compares against the sysroot's TV-SONAMES and glibc
 # already set that from their config.env (org.nativechromium.browser).
 APP_ID=${CR151_APP_ID:-com.viiees.chromiumtv}
 APP_TITLE=${CR151_APP_TITLE:-"Chromium"}
-VERSION=1.0.0
+VERSION=1.1.0
 D=/work/dist; B=$D/browser; rm -rf "$D"; mkdir -p "$B"
 cd "$OUT"
 for f in chrome chrome_crashpad_handler *.pak icudtl.dat snapshot_blob.bin v8_context_snapshot.bin locales \
@@ -59,8 +59,8 @@ grep -q -- '--disable-field-trial-config' "$CN/package/run.sh" ||
 # The one study of that config that made JS faster: V8SqrtAllocationLimits, whose params are V8's own defaults. With
 # it Speedometer is 0.737 against 0.722 with the config on and 0.711 without (TRIM_CANDIDATES.md, "Results").
 grep -q -- '--sqrt-allocation-limits' "$CN/package/run.sh" ||
-	sed -i 's|--js-flags="--max-old-space-size=192 --optimize-for-size"|--js-flags="--max-old-space-size=192 --optimize-for-size --sqrt-allocation-limits"|' "$CN/package/run.sh"
-grep -q -- '--optimize-for-size --sqrt-allocation-limits"' "$CN/package/run.sh" || die "run.sh: --sqrt-allocation-limits not added"
+	sed -i 's|--js-flags="--max-old-space-size=192 --optimize-for-size$JS_LITE"|--js-flags="--max-old-space-size=192 --optimize-for-size --sqrt-allocation-limits$JS_LITE"|' "$CN/package/run.sh"
+grep -q -- '--optimize-for-size --sqrt-allocation-limits\$JS_LITE"' "$CN/package/run.sh" || die "run.sh: --sqrt-allocation-limits not added"
 # Wheel notches land without the scroll animation: notch latency 196 -> 142 ms on Wikipedia, 730 -> 556 ms on
 # YouTube (INPUT_LATENCY.md). The owner tried it with the Magic Remote wheel and kept it.
 grep -q -- '--disable-smooth-scrolling' "$CN/package/run.sh" ||
