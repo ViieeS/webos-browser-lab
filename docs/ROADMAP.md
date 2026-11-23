@@ -1,6 +1,6 @@
 # Roadmap
 
-Open work in priority order. The status of each item is current as of 2026-11-21.
+Open work in priority order. The status of each item is current as of 2026-11-23.
 
 ## 1. Chromium TV: our WebOS-Chromium 151 build
 
@@ -32,7 +32,7 @@ Measured with Chromium's own histograms (`cr151/UI_LATENCY.md`, `cr151/INPUT_LAT
   the already closed Wayland display in `exit()`), and the launcher then turned the GPU off for every later start
   (`data/gpu.state`). Patch 0110 exits with `_exit()`; installed (IPK sha256 `7b65d4d6…`), and Back and menu > Exit
   now end with status 0 (`cr151/gpuexit_0110.txt`). `data/gpu.state` deleted with the owner's yes: the GPU probe passed
-  and a Back exit 50 s after start left no new file. Sent upstream as PR #30 (their 0063), 2026-11-22.
+  and a Back exit 50 s after start left no new file. Sent upstream as PR #30 (their 0066), 2026-11-22.
 - **autoconsent while scrolling.** Done 2026-11-22: its CMP detection retries wait for 1 s without wheel, scroll or
   keys. rAF frames 26 ms against 53 ms during a Wikipedia scroll (no autoconsent: 18 ms). The installed build still
   rejects on IKEA, Cookiebot, YouTube and Google (`bench/results/consent/shipped_0110.txt`).
@@ -51,7 +51,7 @@ Measured with Chromium's own histograms (`cr151/UI_LATENCY.md`, `cr151/INPUT_LAT
 - **Cookie banners.** autoconsent (lean-frames) rejects 7 of 11 tested banners. `bench/consent_run.py` was changed
   for the packed uBO Lite. Only its setup was checked on the TV, not a full run.
 - **Upstream PRs waiting:** WebOS-Chromium #22 (fonts.conf, waits for the owner's tests on webOS 4, 5 and 10) #27
-  (0109 as their 0062) and #30 (0110 as their 0063). See [FINDINGS.md](FINDINGS.md#8-upstream-candidates).
+  (0109 as their 0062) and #30 (0110 as their 0066); #27 merged into their 1.1.0. See [FINDINGS.md](FINDINGS.md#8-upstream-candidates).
 - **Upstream the WebKit fixes** listed in [FINDINGS.md](FINDINGS.md#8-upstream-candidates):
   - the ARMv7 RegExp JIT fixes (0010-0012);
   - SystemHeap alignment (0013);
