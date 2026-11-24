@@ -19,7 +19,9 @@ uilat.VARIANTS["cshipped"] = f"--user-data-dir={cr.PROFILE} {os.environ.get('CSH
 
 def main():
     names = sys.argv[1:] or ["ikea", "cookiebot", "bbc", "youtube"]
-    cr.bench.tv(f"rm -rf {cr.WORK} && mkdir -p {cr.WORK} && chown $(stat -c %u:%g /tmp/{cr.APP}) {cr.WORK}")
+    # after a TV reboot /tmp/<app> is missing: leave it to uilat.start, since a root-made one locks the browser out
+    cr.bench.tv(f"[ ! -d /tmp/{cr.APP} ] || {{ rm -rf {cr.WORK} && mkdir {cr.WORK}"
+                f" && chown $(stat -c %u:%g /tmp/{cr.APP}) {cr.WORK}; }}")
     uilat.start("chromiumtv+cshipped", cr.START_PAGE)
     time.sleep(5)
     workers = sorted({t["url"].split("/")[2] + " " + t["url"].split("/")[-1] for t in ab.targets()

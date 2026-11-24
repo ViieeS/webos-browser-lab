@@ -1,0 +1,11 @@
+LAUNCH 0 {"url": "https://www.youtube.com/?app=desktop&sbb=1&feature=BgoGAQkEAwwGCAwNBAcGAQ", "title": "YouTube", "ytlr": 0, "desktop": false}
+LAUNCH 1 {"url": "https://www.youtube.com/?app=desktop&sbb=1&feature=BgoGAQkEAwwGCAwNBAcGAQ", "title": "YouTube", "ytlr": 0, "desktop": true}
+LAUNCH 2 {"url": "https://www.youtube.com/tv#/", "title": "YouTube on TV", "ytlr": 1, "desktop": false}
+LAUNCH 3 {"url": "https://www.youtube.com/tv#/", "title": "YouTube on TV", "ytlr": 1, "desktop": false}
+LAUNCH 4 {"url": "https://www.youtube.com/tv#/", "title": "YouTube on TV", "ytlr": 1, "desktop": false}
+LAUNCH 5 {"url": "https://www.youtube.com/tv#/", "title": "YouTube on TV", "ytlr": 1, "desktop": false}
+LAUNCH 6 {"url": "https://www.youtube.com/tv#/", "title": "YouTube on TV", "ytlr": 1, "desktop": false}
+LAUNCH 7 {"url": "https://www.youtube.com/tv#/", "title": "YouTube on TV", "ytlr": 1, "desktop": false}
+LAUNCH 8 {"url": "https://www.youtube.com/tv#/", "title": "YouTube on TV", "ytlr": 1, "desktop": false}
+LAUNCH 9 {"url": "https://www.youtube.com/tv#/", "title": "YouTube on TV", "ytlr": 1, "desktop": false}
+LAUNCH 10 {"url": "https://www.youtube.com/tv#/", "title": "YouTube on TV", "ytlr": 1, "desktop": false}

@@ -1,0 +1,3 @@
+LAUNCH 0 {"url": "https://www.youtube.com/?app=desktop&sbb=1&feature=BgoGAQkEAwwGCAwNBAcGAQ", "title": "YouTube", "ytlr": 0, "desktop": true, "tabs": ["https://www.youtube.com/?app=desktop&sbb=1&feature=BgoGAQkEA"]}
+LAUNCH 1 {"url": "https://www.youtube.com/tv#/", "title": "YouTube on TV", "ytlr": 1, "desktop": false, "tabs": ["https://www.youtube.com/tv#/"]}
+LAUNCH 2 {"url": "https://www.youtube.com/tv#/", "title": "YouTube on TV", "ytlr": 1, "desktop": false, "tabs": ["https://www.youtube.com/tv#/"]}

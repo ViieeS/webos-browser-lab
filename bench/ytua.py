@@ -5,6 +5,9 @@ header), sets each candidate with CDP Emulation.setUserAgentOverride (header and
 where it ended up and whether leanback's ytlr-* elements are there. A screenshot per candidate goes to build/ytua/.
 usage: ytua.py [candidate name...]     YTUA_TAG: the launch tag (default chromiumtv+zeroext; "chromiumtv" keeps the
 shipped extensions, with candidate "desktop" = no override, TV Tools decides)
+       ytua.py launch <n>                 n fresh launches straight onto /tv (luna target) with the shipped extensions
+                                          in a profile of its own (each launch adds a tab, and TV Tools closes the oldest
+                                          above 8). Launch 0 is that profile's first start, so TV Tools' rules are new.
 Needs TV_HOST, tcprelay <TV LAN ip> 9226 -> 9225.
 """
 import base64
@@ -54,7 +57,27 @@ class Page:
         raise TimeoutError(method)
 
 
+def launches(n):
+    profile = f"/tmp/{uilat.APPS['chromiumtv']}/ytprofile"
+    uilat.VARIANTS["ytprof"] = f"--user-data-dir={profile}"
+    uilat.bench.tv(f"rm -rf {profile}")
+    for i in range(n):
+        uilat.start("chromiumtv+ytprof", "https://www.youtube.com/tv").ws.sock.close()
+        time.sleep(20)
+        page = Page()
+        probe = json.loads(page.call("Runtime.evaluate", {"expression": PROBE, "returnByValue": True})["result"]["value"])
+        probe.pop("text")
+        # the profile restores earlier tabs: list them all, so a restored desktop tab is not taken for this launch
+        tabs = [t["url"][:60] for t in json.load(urllib.request.urlopen(f"http://{uilat.CDP}/json/list", timeout=20))
+                if t["type"] == "page"]
+        print("LAUNCH", i, json.dumps({**probe, "tabs": tabs}, ensure_ascii=False), flush=True)
+        page.ws.sock.close()
+    uilat.fire(uilat.close_all())
+
+
 def main():
+    if sys.argv[1:2] == ["launch"]:
+        return launches(int(sys.argv[2]))
     names = sys.argv[1:] or list(CANDIDATES)
     os.makedirs(OUT, exist_ok=True)
     for name in names:

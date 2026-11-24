@@ -43,15 +43,17 @@ Measured with Chromium's own histograms (`cr151/UI_LATENCY.md`, `cr151/INPUT_LAT
   the page's main thread is the limit.
 - **Late frames.** Closed: the ~90 % was v4 reading late evdev timestamps, plus software mode. With the GPU on the
   compositor drops 0–4 % of frames.
-- **YouTube.** `youtube.com/tv` keeps its TV interface when opened after the start. Launched straight onto `/tv`
-  it went to the desktop site in 1 of 6 launches, likely before TV Tools' user-agent rule was in place. Next: a
-  static ruleset in TV Tools or `--user-agent` in `run.sh`, then launch onto `/tv` 10 times.
+- **YouTube.** Closed 2026-11-24: `youtube.com/tv` keeps its TV interface. Launched straight onto `/tv`, only a new
+  profile's first starts went to the desktop site (3 of 4), then 12 of 12 TV (`cr151/ytua_launch_110*.txt`). No fix
+  unless it shows up on the owner's profile; it would belong in TV Tools, not `--user-agent` in `run.sh`.
 
 ## 3. Smaller gaps
 
 - **HEVC.** Plays through NDL, 4K included (upstream 0055, our PR #20). HDR colours are not checked.
-- **Cookie banners.** autoconsent (lean-frames) rejects 7 of 11 tested banners. `bench/consent_run.py` was changed
-  for the packed uBO Lite. Only its setup was checked on the TV, not a full run.
+- **Cookie banners.** autoconsent (lean-frames) rejects 7 of 11 tested banners. Rechecked on the installed 1.1.0 over
+  all 14 sites (2026-11-24, `bench/results/consent/shipped_110_all.txt`): every consent record matches the lean-frames
+  run. Rejected: IKEA, Cookiebot, Booking, Usercentrics, BBC, YouTube, Google. Not handled: Sourcepoint (Guardian,
+  Independent), Didomi on 20minutes (banner still shown), dm.de, Mirror, Amazon. reddit: clicked, but its self-test failed.
 - **Upstream PRs waiting:** WebOS-Chromium #22 (fonts.conf, waits for the owner's tests on webOS 4, 5 and 10) #27
   (0109 as their 0062) and #30 (0110 as their 0066); #27 merged into their 1.1.0. See [FINDINGS.md](FINDINGS.md#8-upstream-candidates).
 - **Upstream the WebKit fixes** listed in [FINDINGS.md](FINDINGS.md#8-upstream-candidates):
