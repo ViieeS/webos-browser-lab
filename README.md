@@ -63,6 +63,36 @@ fonts.conf, uBO Lite in complete mode (installed packed, from a CRX) and DuckDuc
 
 Each frozen directory has a `STATUS.md`: what works, what was measured, and where to resume.
 
+## Reusable in other projects
+
+Parts that work on their own, outside this browser:
+
+- **ARMv7 fixes for WebKit's JavaScriptCore** ([`buildroot/patches/wpewebkit`](buildroot/patches/wpewebkit), WPE
+  2.52.6):
+  - 0006, 0009: the softfp JIT and the `pcs` attribute that GCC drops through templates;
+  - 0010, 0012: two Yarr RegExp JIT bugs;
+  - 0011: a deadlock in the concurrent RegExp fallback;
+  - 0013: SystemHeap alignment;
+  - 0015: an ARMv7 backend for the CSS selector JIT.
+
+  WebKit 2.54 no longer builds the 32-bit JIT, so they apply to 2.52 and older.
+- **Sticky scroll fix for WebKit** (0014): no relayout of sticky elements on every scroll. Not tied to ARM.
+- **Chromium 120 OSE outside LG's OE build** ([`cr120/patches`](cr120/patches)): softfp, clang 18, a content_shell
+  without the full app runtime, plus hardware H.264 through NDL. The NDL renderer is in
+  [`cr120/extra`](cr120/extra).
+- **webOS platform notes** in [docs/FINDINGS.md](docs/FINDINGS.md):
+  - EGL and Mali;
+  - app environment variables that break a bundled stack;
+  - the screensaver;
+  - the resource manager, NDL and uMediaServer, with the rule that NDL works only from the app's main ELF.
+
+  They are useful to any homebrew author on webOS 5–6.
+- **Benchmark harness** ([`bench/`](bench)): drives a browser on the TV over telnet and DevTools, injects remote keys
+  through evdev, reads Chromium's latency histograms.
+
+These were not sent upstream: the engines are frozen and WebKit dropped the 32-bit JIT. Licenses:
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
 ## Upstream projects
 
 | Upstream | Used for |

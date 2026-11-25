@@ -17,6 +17,8 @@ normal start, autoconsent still rejects, omnibox key to screen 99–104 ms, and 
   commit in `cr151/upstream/COMMIT`, then run the `incontainer.sh` steps `patch`, `gen`, `build chrome` and `package`.
   With the same Chromium version the rebuild is incremental. After a rebase, rerun the harness, the video test and
   the omnibox A/B (`bench/uilat.py`). Compare interleaved runs only: the TV's round-to-round spread is about 40 ms.
+- **Rebase onto 1.1.1** (released 2026-11-24): it contains our 0110 as their 0066, so the series shrinks to
+  0102–0104 and 0107. Not started, the rest of 1.1.1 is not read yet.
 - **Open:** a second build with their exact args for a byte-level trust check (needs the owner's go).
 - **PGO.** Checked 2026-11-25 (FINDINGS): no arm32 Linux profile exists. The x64 Linux profile (88 MB download, needs
   the owner's yes) would cover only the code that is the same on arm32, and a full rebuild follows. Our own profile
@@ -70,7 +72,7 @@ Measured with Chromium's own histograms (`cr151/UI_LATENCY.md`, `cr151/INPUT_LAT
   ([FINDINGS.md](FINDINGS.md)). Installed 2026-11-25 (`bench/results/consent/shipped_110_cop.txt`). A Sourcepoint consent-or-pay rule waits for a site
   that shows one.
 - **Upstream PRs waiting:** WebOS-Chromium #22 (fonts.conf, waits for the owner's tests on webOS 4, 5 and 10) #27
-  (0109 as their 0062) and #30 (0110 as their 0066); #27 merged into their 1.1.0. See [FINDINGS.md](FINDINGS.md#8-upstream-candidates).
+  (0109 as their 0062) and #30 (0110 as their 0066). #27 merged into their 1.1.0, #30 into their 1.1.1 (2026-11-24). See [FINDINGS.md](FINDINGS.md#8-upstream-candidates).
 - **Upstream the WebKit fixes** listed in [FINDINGS.md](FINDINGS.md#8-upstream-candidates):
   - the ARMv7 RegExp JIT fixes (0010-0012);
   - SystemHeap alignment (0013);
