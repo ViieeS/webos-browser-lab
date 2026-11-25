@@ -52,8 +52,14 @@ Measured with Chromium's own histograms (`cr151/UI_LATENCY.md`, `cr151/INPUT_LAT
 - **HEVC.** Plays through NDL, 4K included (upstream 0055, our PR #20). HDR colours are not checked.
 - **Cookie banners.** autoconsent (lean-frames) rejects 7 of 11 tested banners. Rechecked on the installed 1.1.0 over
   all 14 sites (2026-11-24, `bench/results/consent/shipped_110_all.txt`): every consent record matches the lean-frames
-  run. Rejected: IKEA, Cookiebot, Booking, Usercentrics, BBC, YouTube, Google. Not handled: Sourcepoint (Guardian,
-  Independent), Didomi on 20minutes (banner still shown), dm.de, Mirror, Amazon. reddit: clicked, but its self-test failed.
+  run. Rejected: IKEA, Cookiebot, Booking, Usercentrics, BBC, YouTube, Google. The rest need no fix (screenshots of the
+  2026-11-20 lean-frames run): Guardian, Mirror, Amazon and reddit show no banner, Independent shows a membership
+  pop-up, not a cookie banner. Only 20minutes blocks the page: its Didomi banner is consent-or-pay ("Refuser et
+  s'abonner"), and autoconsent's Sourcepoint rule likewise stands back when a subscribe button is there. No free
+  reject exists, so nothing is clicked and no consent is stored. The owner chose to hide them (2026-11-25): our
+  autoconsent rule hides Didomi's consent-or-pay banner and unlocks scrolling, checked on the TV from a temp folder
+  ([FINDINGS.md](FINDINGS.md)). Installed 2026-11-25 (`bench/results/consent/shipped_110_cop.txt`). A Sourcepoint consent-or-pay rule waits for a site
+  that shows one.
 - **Upstream PRs waiting:** WebOS-Chromium #22 (fonts.conf, waits for the owner's tests on webOS 4, 5 and 10) #27
   (0109 as their 0062) and #30 (0110 as their 0066); #27 merged into their 1.1.0. See [FINDINGS.md](FINDINGS.md#8-upstream-candidates).
 - **Upstream the WebKit fixes** listed in [FINDINGS.md](FINDINGS.md#8-upstream-candidates):

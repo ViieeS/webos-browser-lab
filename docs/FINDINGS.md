@@ -995,6 +995,19 @@ report, the state after a reload) and `cost.jsonl`. Scripts: `bench/consent_run.
   declarativeNetRequest rules, so Chrome writes nothing into its folder.
   - Checked on the TV after the install (`bench/consent_shipped.py`, run.sh's own extension list, throwaway profile):
     its service worker runs next to TV Tools and uBO Lite. It rejected on IKEA, Cookiebot, BBC and YouTube.
+- **Consent-or-pay banners are hidden, not answered (owner's decision, 2026-11-25).** 20minutes.fr's Didomi banner
+  offers "Refuser et s'abonner" instead of a free reject. autoconsent's own didomi rule stands back there on purpose,
+  so the banner covered the page and Didomi's `didomi-popup-open` class on `body` set `overflow: hidden`.
+  - Our rule `cr151/autoconsent-rules/didomi-consent-or-pay.json` is a cosmetic rule in upstream's format. It
+    matches only when the disagree button names a subscription or a price (the same test the didomi rule uses), hides
+    `#didomi-host` and removes the class. Nothing is clicked and no consent is stored, so it repeats on every visit.
+  - `cr151/autoconsent.sh` adds it to every variant with `autoconsent_rules.cjs`, which re-encodes the compact rule
+    set with the package's own `encodeRules`: the content script trusts the generic, frame and site ranges.
+  - Placed in autoconsent, not in uBO Lite or TV Tools: autoconsent already tells a consent-or-pay notice from one
+    with a free reject, a plain uBO Lite filter would hide both, and TV Tools is upstream's code.
+  - On the TV (installed 1.1.0, test add-on from a temp folder, `bench/results/consent/cop_110_all.txt`): on
+    20minutes.fr the banner is gone, wheel scrolling works (`scrollY` 1200 after three notches) and Didomi still
+    records no choice. The other 13 sites give the same records as `shipped_110_all.txt`.
 
 ### Input latency on heavy sites: wheel, hover, keys (2026-11-20)
 

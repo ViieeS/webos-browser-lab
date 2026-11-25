@@ -1,0 +1,19 @@
+{
+    "name": "didomi-consent-or-pay",
+    "comment": "Hides the Didomi notices that autoconsent's didomi rule leaves alone because rejecting costs a subscription. Nothing is clicked and no consent is stored: the banner is hidden again on every visit.",
+    "cosmetic": true,
+    "minimumRuleStepVersion": 2,
+    "detectCmp": [{ "exists": "#didomi-host" }],
+    "detectPopup": [
+        {
+            "visible": "#didomi-popup, #didomi-notice, .didomi-popup-notice, .didomi-notice-banner, #didomi-host:not([aria-hidden=\"true\"]):not(:empty)",
+            "check": "any"
+        },
+        {
+            "exists": "xpath///button[@id='didomi-notice-disagree-button'][contains(., '€') or contains(., '£') or contains(., '$') or contains(., 'uscri') or contains(., 'ubscri') or contains(., 'bonn') or contains(., 'bbon')]"
+        }
+    ],
+    "optIn": [{ "hide": "#didomi-host" }, { "removeClass": "didomi-popup-open", "selector": "body", "optional": true }],
+    "optOut": [{ "hide": "#didomi-host" }, { "removeClass": "didomi-popup-open", "selector": "body", "optional": true }],
+    "test": [{ "visible": "#didomi-popup, #didomi-notice, .didomi-popup-notice", "check": "none" }]
+}

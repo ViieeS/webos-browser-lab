@@ -24,6 +24,9 @@ trap 'rm -rf "$X"' EXIT
 tar -xzf "$TGZ" -C "$X"
 rm -rf "$OUT" && mkdir -p "$(dirname "$OUT")" && cp -R "$X/package/dist/addon-mv3" "$OUT"
 cp "$X/package/LICENSE" "$OUT/LICENSE"   # MPL-2.0: the add-on carries its license text
+# every variant gets our rules (autoconsent-rules/): today only hiding Didomi's consent-or-pay notices
+node "$(dirname "$0")/autoconsent_rules.cjs" "$X/package" "$OUT"
+grep -q '"didomi-consent-or-pay"' "$OUT/compact-rules.json" || die "our rules were not added"
 BG=$OUT/background.bundle.js
 
 perl -0pi -e 's/lifecycle: true,\n(\s+)rulesteps: true,\n(\s+)detectionsteps: false,\n(\s+)evals: true,\n(\s+)errors: true,\n(\s+)messages: false,\n(\s+)waits: true/lifecycle: false,\n$1rulesteps: false,\n$2detectionsteps: false,\n$3evals: false,\n$4errors: true,\n$5messages: false,\n$6waits: false/; s/storedConfig\.performanceLoggingEnabled = true;/storedConfig.performanceLoggingEnabled = false;/' "$BG"
