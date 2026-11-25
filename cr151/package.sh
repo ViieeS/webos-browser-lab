@@ -140,6 +140,67 @@ sed -i 's/enabled: true, hardware: true, maxHeight: 1080, maxFps: 60,/enabled: t
 grep -q 'hardware: true, maxHeight: 2160, maxFps: 60,' "$CN/package/ext/tvtools/page.js" ||
 	die "TV Tools: Auto resolution not raised to 4K"
 
+# Spotify gets the desktop user agent: with the TV one open.spotify.com serves a mobile "Open App" page with no web
+# player (FINDINGS.md, "Which sites serve a TV version"). tvLoad() lays saved settings over the defaults, and a saved
+# desktopSites list would hide a new default, so a profile without the marker gets spotify.com added on every load.
+# The marker is saved with the next settings change, and from then on the user's list (spotify.com in it) wins.
+sed -i 's/^  desktopSites: \[\],     /  desktopSites: ["spotify.com"], /' "$TVT_SETTINGS"
+python3 - "$TVT_SETTINGS" <<'PY' || die "TV Tools: spotify.com not added to the saved desktop sites"
+import sys
+path = sys.argv[1]
+s = open(path).read()
+anchor = "    s.lite = tvLiteSetting(s.lite);\n"
+assert s.count(anchor) == 1, "tvLoad anchor changed"
+s = s.replace(anchor, anchor + (
+    "    if (!s.ctvDesktopSpotify) {\n"
+    "      if (!tvHostIn(\"open.spotify.com\", s.desktopSites)) s.desktopSites = s.desktopSites.concat([\"spotify.com\"]);\n"
+    "      s.ctvDesktopSpotify = true;\n"
+    "    }\n"))
+open(path, "w").write(s)
+PY
+grep -q '^  desktopSites: \["spotify.com"\], ' "$TVT_SETTINGS" && grep -q 's.ctvDesktopSpotify = true;' "$TVT_SETTINGS" ||
+	die "TV Tools: spotify.com not in the default desktop sites"
+
+# Dark theme, on by default so white pages do not wear the OLED panel. TV Tools' "Dark theme" setting: On (dark
+# browser UI, prefers-color-scheme: dark, and WebContentsForceDark darkens pages that have no dark design of their
+# own), "Only sites' own" (no forced darkening, for pages it spoils) or Off. Both are start-up switches, so run.sh
+# reads the setting from TV Tools' LevelDB like Lite mode, and a change applies the next time the browser opens.
+# The feature goes into the existing --enable-features list: a second --enable-features switch would replace it.
+python3 - "$TVT_SETTINGS" "$CN/package/ext/tvtools/ui.js" "$CN/package/run.sh" <<'PY' || die "dark theme not added"
+import sys
+def edit(path, anchor, new):
+    s = open(path).read()
+    assert s.count(anchor) == 1, f"{path}: anchor changed: {anchor!r}"
+    open(path, "w").write(s.replace(anchor, new))
+settings, ui, run = sys.argv[1:4]
+edit(settings, "  pauseHidden: false ",
+     '  darkTheme: "on",     // "on" | "sites" | "off": read by run.sh when the browser starts\n  pauseHidden: false ')
+edit(ui, '  {\n    id: "uaMode",', (
+    '  {\n'
+    '    id: "darkTheme", title: "Dark theme", section: "browsing",\n'
+    '    help: "Keeps bright white off the OLED screen. On: dark browser, and pages without a dark design are " +\n'
+    '      "darkened too. Only sites\' own: pages turn dark only when the site has a dark design. " +\n'
+    '      "Changes the next time the browser opens.",\n'
+    '    options: [["on", "On"], ["sites", "Only sites\' own"], ["off", "Off"]]\n'
+    '  },\n'
+    '  {\n    id: "uaMode",'))
+edit(run, "\tJS_LITE=\n", (
+    "\t# Dark theme (TV Tools' \"Dark theme\", default On), read the same way as Lite mode. Added by package.sh.\n"
+    "\tDARK_SET=on\n"
+    "\tfor f in $(cd \"$LX\" 2>/dev/null && ls -t -- *.log *.ldb 2>/dev/null); do\n"
+    "\t\tv=$(grep -a -o -E '\"darkTheme\":\"(on|sites|off)\"' \"$LX/$f\" 2>/dev/null | tail -1)\n"
+    "\t\t[ -n \"$v\" ] || continue\n"
+    "\t\tcase \"$v\" in *'\"sites\"') DARK_SET=sites ;; *'\"off\"') DARK_SET=off ;; esac\n"
+    "\t\tbreak\n"
+    "\tdone\n"
+    "\tDARK_UI=; DARK_PAGES=\n"
+    "\tcase \"$DARK_SET\" in on) DARK_UI=--force-dark-mode DARK_PAGES=,WebContentsForceDark ;; sites) DARK_UI=--force-dark-mode ;; esac\n"
+    "\tJS_LITE=\n"))
+edit(run, "--enable-features=NetworkServiceInProcess2$OMNI_ON ",
+     "--enable-features=NetworkServiceInProcess2$DARK_PAGES$OMNI_ON ")
+edit(run, "--enable-spatial-navigation ", "--enable-spatial-navigation $DARK_UI ")
+PY
+
 tar --format=posix -C "$D" -cf - browser | zstd -T0 -10 -q -o "$D/browser.tar.zst"
 sed -i "s/^APP_ID=.*/APP_ID=$APP_ID/; s/^APP_TITLE=.*/APP_TITLE=$APP_TITLE/" "$CN/config.env"
 python3 "$CN/package/mkipk.py" --browser "$D/browser.tar.zst" --version "$VERSION" --launcher "$D/cnrun" \
