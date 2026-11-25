@@ -1316,7 +1316,18 @@ the switches. `run.sh` reads it from TV Tools' LevelDB the same way as Lite mode
 `WebContentsForceDark` must go into the existing `--enable-features` list: a second `--enable-features` switch
 replaces the first. Checked in the owner's profile: dark tab strip and omnibox, the local Wikipedia page dark with
 readable links, `matchMedia("(prefers-color-scheme: dark)")` true. Forced darkening does not change computed styles
-(`body` still reports `rgb(248, 249, 250)`), so check it with a screen capture. Speed was not measured.
+(`body` still reports `rgb(248, 249, 250)`), so check it with a screen capture.
+
+Speed: no measurable cost (`cr151/darktheme_ab.txt`). Interleaved A/B in the owner's profile, 4 rounds per mode, GPU
+on, 20 keys per run, the flags checked in the browser's `/proc` cmdline before each run:
+
+| Mean key to screen | On | Off |
+|---|---|---|
+| Down on the local Wikipedia page | 120–125 ms (avg 123) | 121–132 ms (avg 128) |
+| Tab focus moves | 162–284 ms (avg 239) | 190–274 ms (avg 239) |
+| Dropped frames, all sequences | 10–12 % | 10–11 % |
+
+The medians are the same in both modes (109 and 70 ms buckets). The Tab means swing on single slow keys in both.
 
 ### cr151 UI font (2026-11-18)
 

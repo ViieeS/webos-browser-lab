@@ -1,0 +1,57 @@
+### round 1 dark=on saved=on
+dark=on keyscroll #1 flags: WebContentsForceDark force-dark-mode 
+
+dark=on keyscroll #1: EventLatency.KeyPressed.TotalLatency n=20 mean=120078.9 p50>=109350; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+dark=on keyfocus #1 flags: WebContentsForceDark force-dark-mode 
+
+dark=on keyfocus #1: EventLatency.KeyPressed.TotalLatency n=19 mean=266207.1 p50>=70350; Graphics.Smoothness.PercentDroppedFrames3.AllSequences n=3 mean=10.0 p50>=10; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+### round 1 dark=off saved=off
+dark=off keyscroll #1 flags: 
+
+dark=off keyscroll #1: EventLatency.KeyPressed.TotalLatency n=20 mean=127609.2 p50>=109350; Graphics.Smoothness.PercentDroppedFrames3.AllSequences n=3 mean=11.3 p50>=11; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+dark=off keyfocus #1 flags: 
+
+dark=off keyfocus #1: EventLatency.KeyPressed.TotalLatency n=19 mean=190422.4 p50>=70350; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+### round 2 dark=off saved=off
+dark=off keyscroll #2 flags: 
+
+dark=off keyscroll #2: EventLatency.KeyPressed.TotalLatency n=20 mean=131376.1 p50>=109350; Graphics.Smoothness.PercentDroppedFrames3.AllSequences n=3 mean=11.0 p50>=11; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+dark=off keyfocus #2 flags: 
+
+dark=off keyfocus #2: EventLatency.KeyPressed.TotalLatency n=20 mean=274436.4 p50>=70350; Graphics.Smoothness.PercentDroppedFrames3.AllSequences n=3 mean=10.3 p50>=10; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+### round 2 dark=on saved=on
+dark=on keyscroll #2 flags: WebContentsForceDark force-dark-mode 
+
+dark=on keyscroll #2: EventLatency.KeyPressed.TotalLatency n=20 mean=125292.0 p50>=109350; Graphics.Smoothness.PercentDroppedFrames3.AllSequences n=2 mean=10.5 p50>=10; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+dark=on keyfocus #2 flags: WebContentsForceDark force-dark-mode 
+
+dark=on keyfocus #2: EventLatency.KeyPressed.TotalLatency n=20 mean=284443.3 p50>=70350; Graphics.Smoothness.PercentDroppedFrames3.AllSequences n=3 mean=11.0 p50>=10; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+### round 3 dark=on saved=on
+dark=on keyscroll #3 flags: WebContentsForceDark force-dark-mode 
+
+dark=on keyscroll #3: EventLatency.KeyPressed.TotalLatency n=20 mean=125161.9 p50>=109350; Graphics.Smoothness.PercentDroppedFrames3.AllSequences n=3 mean=11.0 p50>=10; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+dark=on keyfocus #3 flags: WebContentsForceDark force-dark-mode 
+
+dark=on keyfocus #3: EventLatency.KeyPressed.TotalLatency n=20 mean=244419.7 p50>=70350; Graphics.Smoothness.PercentDroppedFrames3.AllSequences n=2 mean=10.0 p50>=10; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+### round 3 dark=off saved=off
+dark=off keyscroll #3 flags: 
+
+dark=off keyscroll #3: EventLatency.KeyPressed.TotalLatency n=20 mean=132209.5 p50>=126669; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+dark=off keyfocus #3 flags: 
+
+dark=off keyfocus #3: EventLatency.KeyPressed.TotalLatency n=20 mean=254138.6 p50>=70350; Graphics.Smoothness.PercentDroppedFrames3.AllSequences n=3 mean=10.3 p50>=10; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+### round 4 dark=off saved=off
+dark=off keyscroll #4 flags: 
+
+dark=off keyscroll #4: EventLatency.KeyPressed.TotalLatency n=20 mean=120829.9 p50>=109350; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+dark=off keyfocus #4 flags: 
+
+dark=off keyfocus #4: EventLatency.KeyPressed.TotalLatency n=19 mean=238084.9 p50>=70350; Graphics.Smoothness.PercentDroppedFrames3.AllSequences n=3 mean=10.0 p50>=10; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+### round 4 dark=on saved=on
+dark=on keyscroll #4 flags: WebContentsForceDark force-dark-mode 
+
+dark=on keyscroll #4: EventLatency.KeyPressed.TotalLatency n=20 mean=122500.7 p50>=109350; Graphics.Smoothness.PercentDroppedFrames3.AllSequences n=3 mean=11.7 p50>=11; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+dark=on keyfocus #4 flags: WebContentsForceDark force-dark-mode 
+
+dark=on keyfocus #4: EventLatency.KeyPressed.TotalLatency n=16 mean=161587.4 p50>=70350; Graphics.Smoothness.PercentDroppedFrames3.AllSequences n=2 mean=10.0 p50>=9; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+### restored dark=on

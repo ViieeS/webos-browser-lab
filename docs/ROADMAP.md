@@ -56,7 +56,8 @@ Measured with Chromium's own histograms (`cr151/UI_LATENCY.md`, `cr151/INPUT_LAT
   turned into a mobile landing page with the TV user agent. Fixed 2026-11-25: `spotify.com` is in the default
   `desktopSites` (`package.sh`).
 - **Dark theme.** On by default since 2026-11-25, switchable in TV Tools (FINDINGS, "Dark theme against OLED wear").
-  Open: the cost of `WebContentsForceDark` in paint time was not measured.
+  Measured 2026-11-25: On and Off are the same for arrow scrolling, Tab focus and dropped frames
+  (`cr151/darktheme_ab.txt`).
 
 ## 3. Smaller gaps
 
