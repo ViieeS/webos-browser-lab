@@ -17,7 +17,10 @@ normal start, autoconsent still rejects, omnibox key to screen 99–104 ms, and 
   commit in `cr151/upstream/COMMIT`, then run the `incontainer.sh` steps `patch`, `gen`, `build chrome` and `package`.
   With the same Chromium version the rebuild is incremental. After a rebase, rerun the harness, the video test and
   the omnibox A/B (`bench/uilat.py`). Compare interleaved runs only: the TV's round-to-round spread is about 40 ms.
-- **Open:** a second build with their exact args for a byte-level trust check (needs the owner's go), PGO.
+- **Open:** a second build with their exact args for a byte-level trust check (needs the owner's go).
+- **PGO.** Checked 2026-11-25 (FINDINGS): no arm32 Linux profile exists. The x64 Linux profile (88 MB download, needs
+  the owner's yes) would cover only the code that is the same on arm32, and a full rebuild follows. Our own profile
+  needs a clean exit, which 0110 removes. Not started.
 
 ## 2. Input latency
 
@@ -27,9 +30,10 @@ Measured with Chromium's own histograms (`cr151/UI_LATENCY.md`, `cr151/INPUT_LAT
   default, and `omnibox=full` in `media.opts` turns it off. Patch 0109 removes the slowdown that upstream 0058 brought:
   key to screen 87–107 ms, paint to present 25–35 ms (was 160 ms on 0.0.66). Rechecked 2026-11-22 with the GPU on:
   105–108 ms and 34–36 ms; with the GPU off 168–173 ms and 135–136 ms (`cr151/uilat_omnibox_gpu.txt`).
-- **Arrow keys in pages.** Patch 0103 takes Down from 167 to 115 ms. Left: the spatial-navigation walk over all
-  elements, about 80 ms on a long page. Next step, if wanted: skip offscreen locked sections (this changes which
-  elements are candidates).
+- **Arrow keys in pages.** Patch 0103 takes Down from 167 to 115 ms. Left: about 80 ms per key inside the
+  handler on a long page. Patch 0111 (skip offscreen locked sections) cut the visited elements by 30 % with the same
+  focus, but the time only by about 4 ms, so it is shelved (`cr151/UI_LATENCY.md`). The cost is outside the per-element
+  visit. Next step, if wanted: a sampling profile of the renderer during arrow keys.
 - **GPU off by a crash.** Fixed 2026-11-22: every exit with the GPU on crashed (the Mali driver's destructor touches
   the already closed Wayland display in `exit()`), and the launcher then turned the GPU off for every later start
   (`data/gpu.state`). Patch 0110 exits with `_exit()`; installed (IPK sha256 `7b65d4d6…`), and Back and menu > Exit
@@ -46,6 +50,11 @@ Measured with Chromium's own histograms (`cr151/UI_LATENCY.md`, `cr151/INPUT_LAT
 - **YouTube.** Closed 2026-11-24: `youtube.com/tv` keeps its TV interface. Launched straight onto `/tv`, only a new
   profile's first starts went to the desktop site (3 of 4), then 12 of 12 TV (`cr151/ytua_launch_110*.txt`). No fix
   unless it shows up on the owner's profile; it would belong in TV Tools, not `--user-agent` in `run.sh`.
+- **TV versions of other sites.** Checked 2026-11-25 on 20 sites (FINDINGS): only `youtube.com/tv` has one. Spotify
+  turned into a mobile landing page with the TV user agent. Fixed 2026-11-25: `spotify.com` is in the default
+  `desktopSites` (`package.sh`).
+- **Dark theme.** On by default since 2026-11-25, switchable in TV Tools (FINDINGS, "Dark theme against OLED wear").
+  Open: the cost of `WebContentsForceDark` in paint time was not measured.
 
 ## 3. Smaller gaps
 

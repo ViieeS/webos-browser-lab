@@ -1,0 +1,33 @@
+wiki_chromiumtv_0.json: walks 20 keys 20 elements 233371 skipped 0 HandleInputEvent total 1535.9 ms p50 77.19 max 105.15
+wiki_chromiumtv_fill0.json: walks 20 keys 20 elements 233371 skipped 0 HandleInputEvent total 1663.5 ms p50 85.22 max 116.57
+wiki_chromiumtv_fill2.json: walks 19 keys 19 elements 221682 skipped 0 HandleInputEvent total 1586.9 ms p50 81.95 max 119.98
+wiki_chromiumtv_fill6.json: walks 20 keys 20 elements 233351 skipped 0 HandleInputEvent total 1565.6 ms p50 81.33 max 96.30
+wiki_cr151p_0.json: walks 20 keys 20 elements 164511 skipped 1080 HandleInputEvent total 1533.0 ms p50 75.44 max 102.94
+wiki_cr151p_1.json: walks 20 keys 20 elements 164530 skipped 1080 HandleInputEvent total 1488.9 ms p50 71.90 max 107.77
+wiki_cr151p_2.json: walks 20 keys 20 elements 164531 skipped 1080 HandleInputEvent total 1568.2 ms p50 81.98 max 114.03
+20 keys, total 1533.001 ms
+  self   1259.2 ms  total   1533.0 ms  WebFrameWidgetImpl::HandleInputEvent
+  self     66.8 ms  total     66.8 ms  HitTest
+  self     54.2 ms  total    151.3 ms  EventHandler::handleMouseMoveEvent
+  self     51.0 ms  total     51.0 ms  Document::recalcStyle
+  self     34.8 ms  total     35.3 ms  Blink.CompositingInputs.UpdateTime
+  self     15.2 ms  total     15.2 ms  Blink.PrePaint.UpdateTime
+  self     13.5 ms  total     13.5 ms  LocalFrameView::performLayout
+  self      7.0 ms  total     58.0 ms  Document::updateStyle
+  self      5.3 ms  total     41.1 ms  LocalFrameView::UpdateStyleAndLayout
+  self      4.3 ms  total    114.8 ms  LayoutView::HitTest
+  self      3.3 ms  total     64.6 ms  UpdateLayoutTree
+  self      3.0 ms  total      3.0 ms  AnimationTimeline::serviceAnimations
+20 keys, total 1535.864 ms
+  self   1228.2 ms  total   1535.9 ms  WebFrameWidgetImpl::HandleInputEvent
+  self     66.6 ms  total     66.6 ms  HitTest
+  self     58.8 ms  total    155.1 ms  EventHandler::handleMouseMoveEvent
+  self     47.5 ms  total     47.5 ms  Document::recalcStyle
+  self     34.8 ms  total     35.0 ms  Blink.CompositingInputs.UpdateTime
+  self     14.7 ms  total     14.7 ms  LocalFrameView::performLayout
+  self     14.0 ms  total     54.2 ms  LocalFrameView::UpdateStyleAndLayout
+  self     13.9 ms  total     13.9 ms  Blink.PrePaint.UpdateTime
+  self     12.7 ms  total     76.4 ms  Document::UpdateStyleAndLayout
+  self     10.3 ms  total     63.7 ms  Blink.ForcedStyleAndLayout.UpdateTime
+  self      6.9 ms  total    115.3 ms  LayoutView::HitTest
+  self      6.4 ms  total     53.9 ms  Document::updateStyle

@@ -1,0 +1,62 @@
+Spatial navigation: skip offscreen locked subtrees in the candidate walk.
+
+After 0103 the walk still visits every element of the page: 11 672 on a Wikipedia article, about 80 ms of a Down
+press on the LG C1. Most of them sit under locked display locks (content-visibility: auto sections away from the
+viewport, 54 on that page). ConsiderForBestCandidate() drops offscreen candidates, and a locked subtree that is
+offscreen as a whole holds nothing that could win, so the walk now skips such a subtree without checking its
+elements. Only while the document is clean (0103's fast path), since IsOffscreen() reads layout. The CandidateWalk
+trace event reports skipped_subtrees.
+
+diff --git a/src/third_party/blink/renderer/core/page/spatial_navigation_controller.cc b/src/third_party/blink/renderer/core/page/spatial_navigation_controller.cc
+--- a/src/third_party/blink/renderer/core/page/spatial_navigation_controller.cc
++++ b/src/third_party/blink/renderer/core/page/spatial_navigation_controller.cc
+@@ -9,6 +9,7 @@
+ #include "third_party/blink/renderer/core/css/style_change_reason.h"
+ #include "third_party/blink/renderer/core/css/css_property_names.h"
+ #include "base/trace_event/trace_event.h"
++#include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
+ #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
+ #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+ #include "third_party/blink/renderer/core/dom/document.h"
+@@ -427,16 +428,27 @@
+     document.UpdateStyleAndLayout(DocumentUpdateReason::kSpatialNavigation);
+   bool skip_updates = is_clean();
+   const Element* forced_lock = nullptr;
+-  int elements = 0, forced = 0;
++  int elements = 0, forced = 0, skipped_subtrees = 0;
+ 
+   FocusCandidate best_candidate, previous_best_candidate;
+   double previous_best_distance = kMaxDistance;
+   double best_distance = kMaxDistance;
+-  for (; element;
+-       element =
+-           IsScrollableAreaOrDocument(element, direction)
++  Element* next = nullptr;
++  for (; element; element = next) {
++    // An offscreen locked display lock (content-visibility: auto away from the
++    // viewport, or hidden) leaves nothing in its subtree that could win:
++    // ConsiderForBestCandidate drops offscreen candidates. On a long article
++    // most elements sit under such locks, so the walk skips them unchecked.
++    const DisplayLockContext* lock = element->GetDisplayLockContext();
++    if (skip_updates && lock && lock->IsLocked() && IsOffscreen(element)) {
++      ++skipped_subtrees;
++      next = ElementTraversal::NextSkippingChildren(*element, &container);
++      continue;
++    }
++    next = IsScrollableAreaOrDocument(element, direction)
+                ? ElementTraversal::NextSkippingChildren(*element, &container)
+-               : ElementTraversal::Next(*element, &container)) {
++               : ElementTraversal::Next(*element, &container);
++
+     if (element == interest_child_in_container)
+       continue;
+ 
+@@ -474,7 +486,7 @@
+   }
+   TRACE_EVENT_INSTANT("blink", "SpatialNavigation::CandidateWalk", "elements",
+                       elements, "forced_updates", forced, "stayed_clean",
+-                      skip_updates);
++                      skip_updates, "skipped_subtrees", skipped_subtrees);
+ 
+   return best_candidate;
+ }

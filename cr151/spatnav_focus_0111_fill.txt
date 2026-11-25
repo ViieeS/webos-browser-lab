@@ -1,0 +1,42 @@
+### cr151p+freshcr151p http://127.0.0.1:8099/pages/spatnav.html
+cr151p+freshcr151p 1 key 108: g3 | A | g3 wide | #g3 | 0 | 0
+cr151p+freshcr151p 2 key 108: g6 | A | g6 | #g6 | 0 | 0
+cr151p+freshcr151p 3 key 108: g11 | A | g11 | #g11 | 0 | 0
+cr151p+freshcr151p 4 key 106: g12 | A | g12 wide | #g12 | 0 | 0
+cr151p+freshcr151p 5 key 106: g12 | A | g12 wide | #g12 | 0 | 0
+cr151p+freshcr151p 6 key 108: f3 | SELECT | onetwo |  | 0 | 0
+cr151p+freshcr151p 7 key 108: f3 | SELECT | onetwo |  | 40 | 0
+cr151p+freshcr151p 8 key 108: f3 | SELECT | onetwo |  | 80 | 0
+cr151p+freshcr151p 9 key 108: f3 | SELECT | onetwo |  | 120 | 0
+cr151p+freshcr151p 10 key 108: f3 | SELECT | onetwo |  | 160 | 0
+cr151p+freshcr151p 11 key 108: f3 | SELECT | onetwo |  | 200 | 0
+cr151p+freshcr151p 12 key 108: f3 | SELECT | onetwo |  | 240 | 0
+cr151p+freshcr151p 13 key 108: f3 | SELECT | onetwo |  | 280 | 0
+cr151p+freshcr151p 14 key 108: f3 | SELECT | onetwo |  | 320 | 0
+cr151p+freshcr151p 15 key 108: f3 | SELECT | onetwo |  | 360 | 0
+cr151p+freshcr151p 16 key 108: f3 | SELECT | onetwo |  | 400 | 0
+cr151p+freshcr151p 17 key 105: f2 | BUTTON | button |  | 400 | 0
+cr151p+freshcr151p 18 key 103: f2 | BUTTON | button |  | 360 | 0
+cr151p+freshcr151p 19 key 103: f2 | BUTTON | button |  | 320 | 0
+cr151p+freshcr151p 20 key 103: f2 | BUTTON | button |  | 280 | 0
+### chromiumtv+freshchromiumtv http://127.0.0.1:8099/pages/spatnav.html
+chromiumtv+freshchromiumtv 1 key 108: g3 | A | g3 wide | #g3 | 0 | 0
+chromiumtv+freshchromiumtv 2 key 108: g6 | A | g6 | #g6 | 0 | 0
+chromiumtv+freshchromiumtv 3 key 108: g11 | A | g11 | #g11 | 0 | 0
+chromiumtv+freshchromiumtv 4 key 106: g12 | A | g12 wide | #g12 | 0 | 0
+chromiumtv+freshchromiumtv 5 key 106: g12 | A | g12 wide | #g12 | 0 | 0
+chromiumtv+freshchromiumtv 6 key 108: f3 | SELECT | onetwo |  | 0 | 0
+chromiumtv+freshchromiumtv 7 key 108: f3 | SELECT | onetwo |  | 40 | 0
+chromiumtv+freshchromiumtv 8 key 108: f3 | SELECT | onetwo |  | 80 | 0
+chromiumtv+freshchromiumtv 9 key 108: f3 | SELECT | onetwo |  | 120 | 0
+chromiumtv+freshchromiumtv 10 key 108: f3 | SELECT | onetwo |  | 160 | 0
+chromiumtv+freshchromiumtv 11 key 108: f3 | SELECT | onetwo |  | 200 | 0
+chromiumtv+freshchromiumtv 12 key 108: f3 | SELECT | onetwo |  | 240 | 0
+chromiumtv+freshchromiumtv 13 key 108: f3 | SELECT | onetwo |  | 280 | 0
+chromiumtv+freshchromiumtv 14 key 108: f3 | SELECT | onetwo |  | 320 | 0
+chromiumtv+freshchromiumtv 15 key 108: f3 | SELECT | onetwo |  | 360 | 0
+chromiumtv+freshchromiumtv 16 key 108: f3 | SELECT | onetwo |  | 400 | 0
+chromiumtv+freshchromiumtv 17 key 105: f2 | BUTTON | button |  | 400 | 0
+chromiumtv+freshchromiumtv 18 key 103: f2 | BUTTON | button |  | 360 | 0
+chromiumtv+freshchromiumtv 19 key 103: f2 | BUTTON | button |  | 320 | 0
+chromiumtv+freshchromiumtv 20 key 103: f2 | BUTTON | button |  | 280 | 0

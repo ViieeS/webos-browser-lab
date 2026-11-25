@@ -162,6 +162,35 @@ key, both builds.
   a rectangle for every candidate. Making it shorter means skipping parts of the page, for example offscreen locked
   sections. That changes which elements are candidates, so it is a separate decision.
 
+## Patch 0111: skip offscreen locked subtrees in the walk (2026-11-25, not shipped)
+
+`patches/0111-spatnav-skip-offscreen-locked-subtrees.patch`, built as dev app `com.viiees.cr151p` on top of 1.1.0 and
+measured against the installed `com.viiees.chromiumtv` (the same build without it). Both ran in fresh throwaway
+profiles: in the owner's profile an infobar made the viewport 595 against 505 px, and that alone changed which
+element spatial navigation picked.
+
+**What it does.** The candidate walk skips the subtree of an element whose display lock is locked
+(`content-visibility: auto` away from the viewport, or `hidden`) when that element is offscreen. Nothing inside such
+a subtree can win, so the result must not change.
+
+**Result.**
+
+- Same focus. On `pages/spatnav.html` (20 keys) and the local Wikipedia "Television" page (60 keys) both builds
+  focus the same element at the same scroll position after every key (`spatnav_focus_0111_fresh.txt`,
+  `spatnav_focus_0111_fill.txt`).
+- Fewer elements, same time. 20 Down keys on the Wikipedia page, traced: the walk visits 164.5k elements against
+  233.4k (1 080 subtrees skipped), but `WebFrameWidgetImpl::HandleInputEvent` takes 76 ms per key against 80 ms
+  (3 traces against 4, round-to-round spread about ±4 ms).
+- `uilat.py keyscroll` (Down on the same page, EventLatency): 113 against 112 ms. `keyfocus` presses Tab and does not
+  use this walk.
+
+**Why it does not help.** About 80 % of the handler's time is its own, outside every traced child (HitTest, style,
+layout add up to about 20 %). Removing 30 % of the visited elements moved it by 5 % at most, so the per-element visit
+is cheap and the cost is elsewhere in the handler. Finding it needs a sampling profiler on the TV, not a trace.
+
+Verdict: not worth shipping for speed. The patch is kept in `cr151/patches-shelved/`, outside the build. The next `incontainer.sh patch` run took it out of
+the `/work` tree (`patch.sh` resets every path of the previous series).
+
 ## UI font (2026-11-18)
 
 Not a latency item, but the owner saw it in the omnibox. Every family resolved to LG Display-Regular with full hinting.

@@ -1242,6 +1242,82 @@ Submitted rows carry the link; the rest are not submitted.
   `${APP_ID:-...}` built an `org.nativechromium.browser` IPK, which would replace their app.
 - Writing a file with `{ ...; diff; } > file` in this harness can leave a truncated file: write patches from Python.
 
+### PGO for the arm32 build: what is possible (2026-11-25)
+
+- `chrome_pgo_phase = 0` in their args.gn and in our args.delta.gn. With phase 2, `build/config/compiler/pgo/BUILD.gn`
+  picks the profile by OS, not by CPU: `is_linux` gets `chrome/build/linux.pgo.txt`, the x64 desktop Linux profile.
+  The M151 tree names `chrome-linux-7922-…profdata`, 88 MB in `gs://chromium-optimization-profiles/pgo_profiles`. The
+  only arm32 profile is Android's (`android-arm32.pgo.txt`, 64 MB), collected on Android code paths.
+- Clang matches profile counters by function name and control-flow hash, so shared code (Blink, V8's
+  architecture-independent parts, Views) would take the x64 Linux profile. Code that differs on arm32 is skipped as
+  out of date (`-Wno-profile-instr-out-of-date` is already set). Whether that helps on the C1 is not measured. Google
+  reports its gains for profiles collected on the same platform.
+- An own profile (phase 1: an instrumented build run on the TV) needs a clean exit to write `.profraw`. Patch 0110 ends
+  the browser with `_exit()`, which skips that, so a profiling build would have to drop 0110 or flush the profile
+  itself, and run 2–3 times slower on the TV meanwhile (estimate, not measured).
+- Cost either way: downloading the profile (owner's yes) and a full rebuild, since every object's flags change. PGO
+  also inlines hot code, so the binary may grow.
+
+### Spatial navigation: the walk is not where the time goes (2026-11-25)
+
+Patch 0111 skips offscreen locked subtrees (`content-visibility`) in the candidate walk. On the local Wikipedia page
+it cut the visited elements from 233k to 165k per 20 Down keys, with the same focused element after every key. The
+time per key in `WebFrameWidgetImpl::HandleInputEvent` went from about 80 to 76 ms, within the round-to-round spread.
+About 80 % of that time is the handler's own, outside every traced child, so the per-element visit is cheap and the
+cost is elsewhere. The patch is shelved in `cr151/patches-shelved/`. Details: `cr151/UI_LATENCY.md`, raw:
+`cr151/spatnav_walk_0111.txt`, `cr151/spatnav_focus_0111_fresh.txt`, `cr151/spatnav_focus_0111_fill.txt`,
+`cr151/uilat_0111_fresh.txt`.
+
+A/B traps found on the way:
+
+- A profile's infobar changes the viewport (595 against 505 px), and spatial navigation then picks other elements.
+  Compare builds in fresh profiles of the same state.
+- In a fresh `--user-data-dir`, about half of the launches lose the page after the first arrow key: focus stays on
+  BODY, and the only page target in `/json/list` has an empty URL. Nothing in `browser.log`. Retry those launches and
+  check that a trace has walks before you use it.
+- Around 04:30 the TV went to Suspend in the middle of a run although keepawake was running. Wake-on-LAN brings it
+  back. tcprelay, keepawake and lighttpd have to be started again after that.
+
+### Which sites serve a TV version (2026-11-25)
+
+`bench/tvsites.py` opened 20 sites twice in fresh profiles with extensions off: once with the TV Tools user agent
+(`ytua.CANDIDATES["tvtools"]`), once without an override. Raw: `bench/results/tvsites/tvsites_110.txt`.
+
+- **Only YouTube has a TV web interface**: `youtube.com/tv` with the TV user agent loads the leanback interface. The
+  same URL without it redirects to the desktop site. TV Tools already does this.
+- **Spotify gets worse with the TV user agent**: it serves its mobile landing page ("Open App", a Premium offer)
+  instead of the web player. TV Tools sends the TV user agent to every site by default (`uaMode: "tv"`, with
+  `desktopSites` empty and only Google exempt), so the installed browser got this page. Fixed the same day:
+  `package.sh` puts `spotify.com` in the default `desktopSites` and adds it once to a saved list (a saved list
+  replaces the default in `tvLoad()`). In the owner's profile `open.spotify.com` then got the desktop user agent and
+  opened the web player (`build/darkcheck/dark_spotify.png`, not versioned).
+- `youtube.com`, `music.youtube.com` and the other 14 sites serve the same desktop page with either user agent: same layout
+  width and title. The page text starts the same, except Guardian, Plex and Wikipedia, where it differs a little
+  further on (live content or the contents menu, not checked). reddit showed a bot check in the second, desktop pass only; probably the repeat visit,
+  not checked. Words like "smarttv" or "webos" appear in some pages, but they come from scripts
+  and article text, not from a different interface.
+- Not measured: Vimeo (load timed out in both passes) and Netflix (no page target to read).
+
+For the other sites the TV user agent changes nothing, in either direction. TV-style navigation there has to come
+from the browser (spatial navigation, the cursor), not from the sites.
+
+### Dark theme against OLED wear (2026-11-25)
+
+Chromium has no regular setting that darkens web pages. Settings → Appearance → Mode colours only the browser's own
+UI, and page darkening is the `WebContentsForceDark` feature (`chrome://flags/#enable-force-dark`). Both parts are
+start-up switches, so Chromium TV sets them in `run.sh`, which `package.sh` edits. TV Tools' "Dark theme" setting picks
+the switches. `run.sh` reads it from TV Tools' LevelDB the same way as Lite mode, so a change applies at the next start:
+
+- On (default): `--force-dark-mode` (dark UI, `prefers-color-scheme: dark`) plus `WebContentsForceDark`, which
+  darkens pages without a dark design of their own. Blink leaves pages that declare one alone.
+- Only sites' own: `--force-dark-mode` only, for pages that forced darkening spoils.
+- Off: neither switch.
+
+`WebContentsForceDark` must go into the existing `--enable-features` list: a second `--enable-features` switch
+replaces the first. Checked in the owner's profile: dark tab strip and omnibox, the local Wikipedia page dark with
+readable links, `matchMedia("(prefers-color-scheme: dark)")` true. Forced darkening does not change computed styles
+(`body` still reports `rgb(248, 249, 250)`), so check it with a screen capture. Speed was not measured.
+
 ### cr151 UI font (2026-11-18)
 
 - Chromium 151 uses the TV's own `libfontconfig.so.1` (`use_bundled_fontconfig = false` in their args.gn), and run.sh

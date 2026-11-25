@@ -1,0 +1,244 @@
+### uilat.py focus chromiumtv http://127.0.0.1:8099/pages/spatnav.html ...
+chromiumtv start:  | BODY | spatnav check
+
+  g1g2g3 wide
+  |  | 0 | 0
+chromiumtv 1 key 108: g3 | A | g3 wide | #g3 | 0 | 0
+chromiumtv 2 key 108: g6 | A | g6 | #g6 | 0 | 0
+chromiumtv 3 key 108: g11 | A | g11 | #g11 | 0 | 0
+chromiumtv 4 key 106: g12 | A | g12 wide | #g12 | 0 | 0
+chromiumtv 5 key 106: g12 | A | g12 wide | #g12 | 0 | 0
+chromiumtv 6 key 108: f3 | SELECT | onetwo |  | 0 | 0
+chromiumtv 7 key 108: f3 | SELECT | onetwo |  | 40 | 0
+chromiumtv 8 key 108: f3 | SELECT | onetwo |  | 80 | 0
+chromiumtv 9 key 108: f3 | SELECT | onetwo |  | 120 | 0
+chromiumtv 10 key 108: f3 | SELECT | onetwo |  | 160 | 0
+chromiumtv 11 key 108: f3 | SELECT | onetwo |  | 200 | 0
+chromiumtv 12 key 108: f3 | SELECT | onetwo |  | 240 | 0
+chromiumtv 13 key 108: f3 | SELECT | onetwo |  | 280 | 0
+chromiumtv 14 key 108: f3 | SELECT | onetwo |  | 320 | 0
+chromiumtv 15 key 108: f3 | SELECT | onetwo |  | 360 | 0
+chromiumtv 16 key 108: f3 | SELECT | onetwo |  | 400 | 0
+chromiumtv 17 key 105: f2 | BUTTON | button |  | 400 | 0
+chromiumtv 18 key 103: f2 | BUTTON | button |  | 360 | 0
+chromiumtv 19 key 103: f2 | BUTTON | button |  | 320 | 0
+chromiumtv 20 key 103: f2 | BUTTON | button |  | 280 | 0
+### uilat.py focus chromiumtv http://127.0.0.1:8099/pages/spatnav.html ...
+chromiumtv start:  | BODY | spatnav check
+
+  g1g2g3 wide
+  |  | 0 | 0
+chromiumtv 1 key 108: g3 | A | g3 wide | #g3 | 0 | 0
+chromiumtv 2 key 108: g6 | A | g6 | #g6 | 0 | 0
+chromiumtv 3 key 108: g11 | A | g11 | #g11 | 0 | 0
+chromiumtv 4 key 106: g12 | A | g12 wide | #g12 | 0 | 0
+chromiumtv 5 key 106: g12 | A | g12 wide | #g12 | 0 | 0
+chromiumtv 6 key 108: f3 | SELECT | onetwo |  | 0 | 0
+chromiumtv 7 key 108: f3 | SELECT | onetwo |  | 40 | 0
+chromiumtv 8 key 108: f3 | SELECT | onetwo |  | 80 | 0
+chromiumtv 9 key 108: f3 | SELECT | onetwo |  | 120 | 0
+chromiumtv 10 key 108: f3 | SELECT | onetwo |  | 160 | 0
+chromiumtv 11 key 108: f3 | SELECT | onetwo |  | 200 | 0
+chromiumtv 12 key 108: f3 | SELECT | onetwo |  | 240 | 0
+chromiumtv 13 key 108: f3 | SELECT | onetwo |  | 280 | 0
+chromiumtv 14 key 108: f3 | SELECT | onetwo |  | 320 | 0
+chromiumtv 15 key 108: f3 | SELECT | onetwo |  | 360 | 0
+chromiumtv 16 key 108: f3 | SELECT | onetwo |  | 400 | 0
+chromiumtv 17 key 105: f2 | BUTTON | button |  | 400 | 0
+chromiumtv 18 key 103: f2 | BUTTON | button |  | 360 | 0
+chromiumtv 19 key 103: f2 | BUTTON | button |  | 320 | 0
+chromiumtv 20 key 103: f2 | BUTTON | button |  | 280 | 0
+### uilat.py focus cr151p http://127.0.0.1:8099/pages/spatnav.html ...
+cr151p start:  | BODY | spatnav check
+
+  g1g2g3 wide
+  |  | 0 | 0
+cr151p 1 key 108: g3 | A | g3 wide | #g3 | 0 | 0
+cr151p 2 key 108: g6 | A | g6 | #g6 | 0 | 0
+cr151p 3 key 108: g11 | A | g11 | #g11 | 0 | 0
+cr151p 4 key 106: g12 | A | g12 wide | #g12 | 0 | 0
+cr151p 5 key 106: g12 | A | g12 wide | #g12 | 0 | 0
+cr151p 6 key 108: g12 | A | g12 wide | #g12 | 40 | 0
+cr151p 7 key 108: f3 | SELECT | onetwo |  | 55 | 0
+cr151p 8 key 108: f3 | SELECT | onetwo |  | 95 | 0
+cr151p 9 key 108: f3 | SELECT | onetwo |  | 135 | 0
+cr151p 10 key 108: f3 | SELECT | onetwo |  | 175 | 0
+cr151p 11 key 108: f3 | SELECT | onetwo |  | 215 | 0
+cr151p 12 key 108: f3 | SELECT | onetwo |  | 255 | 0
+cr151p 13 key 108: f3 | SELECT | onetwo |  | 295 | 0
+cr151p 14 key 108: f3 | SELECT | onetwo |  | 335 | 0
+cr151p 15 key 108: f3 | SELECT | onetwo |  | 375 | 0
+cr151p 16 key 108: f3 | SELECT | onetwo |  | 415 | 0
+cr151p 17 key 105: f2 | BUTTON | button |  | 415 | 0
+cr151p 18 key 103: f2 | BUTTON | button |  | 375 | 0
+cr151p 19 key 103: f2 | BUTTON | button |  | 335 | 0
+cr151p 20 key 103: f2 | BUTTON | button |  | 295 | 0
+### uilat.py focus cr151p http://127.0.0.1:8099/pages/spatnav.html ...
+cr151p start:  | BODY | spatnav check
+
+  g1g2g3 wide
+  |  | 0 | 0
+cr151p 1 key 108: g3 | A | g3 wide | #g3 | 0 | 0
+cr151p 2 key 108: g6 | A | g6 | #g6 | 0 | 0
+cr151p 3 key 108: g11 | A | g11 | #g11 | 0 | 0
+cr151p 4 key 106: g12 | A | g12 wide | #g12 | 0 | 0
+cr151p 5 key 106: g12 | A | g12 wide | #g12 | 0 | 0
+cr151p 6 key 108: g12 | A | g12 wide | #g12 | 40 | 0
+cr151p 7 key 108: f3 | SELECT | onetwo |  | 55 | 0
+cr151p 8 key 108: f3 | SELECT | onetwo |  | 95 | 0
+cr151p 9 key 108: f3 | SELECT | onetwo |  | 135 | 0
+cr151p 10 key 108: f3 | SELECT | onetwo |  | 175 | 0
+cr151p 11 key 108: f3 | SELECT | onetwo |  | 215 | 0
+cr151p 12 key 108: f3 | SELECT | onetwo |  | 255 | 0
+cr151p 13 key 108: f3 | SELECT | onetwo |  | 295 | 0
+cr151p 14 key 108: f3 | SELECT | onetwo |  | 335 | 0
+cr151p 15 key 108: f3 | SELECT | onetwo |  | 375 | 0
+cr151p 16 key 108: f3 | SELECT | onetwo |  | 415 | 0
+cr151p 17 key 105: f2 | BUTTON | button |  | 415 | 0
+cr151p 18 key 103: f2 | BUTTON | button |  | 375 | 0
+cr151p 19 key 103: f2 | BUTTON | button |  | 335 | 0
+cr151p 20 key 103: f2 | BUTTON | button |  | 295 | 0
+### uilat.py focus chromiumtv http://127.0.0.1:8099/pages/wiki/en.wikipedia.org/wiki/Television.html ...
+chromiumtv start:  | BODY | Jump to content
+
+	
+		
+			
+				 |  | 0 | 
+chromiumtv 1 key 108:  | A |  | https://en.wikipedia.org/wiki/Main_Page | 0 | 
+chromiumtv 2 key 108:  | BUTTON | hide |  | 0 | 
+chromiumtv 3 key 108:  | A | (Top) | Television.html# | 0 | 
+chromiumtv 4 key 108:  | A | 1
+				Etymology | Television.html#Etymology | 0 | 
+chromiumtv 5 key 108:  | A | 2
+				History | Television.html#History | 0 | 
+chromiumtv 6 key 108:  | A | 3
+				Broadcast systems | Television.html#Broadcast_systems | 0 | 
+chromiumtv 7 key 108:  | A | 4
+				Sets | Television.html#Sets | 0 | 
+chromiumtv 8 key 108:  | A | 5
+				Content | Television.html#Content | 0 | 
+chromiumtv 9 key 108:  | A | 6
+				Social aspects | Television.html#Social_aspects | 0 | 
+chromiumtv 10 key 108:  | A | 7
+				Negative impacts | Television.html#Negative_impacts | 0 | 
+chromiumtv 11 key 108:  | A | 8
+				See also | Television.html#See_also | 0 | 
+chromiumtv 12 key 108:  | A | 9
+				References | Television.html#References | 0 | 
+chromiumtv 13 key 106: mwGw | A | radio broadcasting | https://en.wikipedia.org/wiki/Radio_broadcasting | 0 | 
+chromiumtv 14 key 106: mwDw | A |  | https://en.wikipedia.org/wiki/File:Cptvdisplay.jpg | 0 | 
+chromiumtv 15 key 106:  | BUTTON | hide |  | 0 | 
+chromiumtv 16 key 108: mwE_k | A |  | https://en.wikipedia.org/wiki/Wikipedia:Protection_policy#semi | 0 | 
+chromiumtv 17 key 108:  | A | Television (disambiguation) | https://en.wikipedia.org/wiki/Television_(disambiguation) | 0 | 
+chromiumtv 18 key 108: mwDw | A |  | https://en.wikipedia.org/wiki/File:Cptvdisplay.jpg | 0 | 
+chromiumtv 19 key 108: mwEg | A | Flat-screen | https://en.wikipedia.org/wiki/Flat-panel_display | 0 | 
+chromiumtv 20 key 108: mwEg | A | Flat-screen | https://en.wikipedia.org/wiki/Flat-panel_display | 40 | 
+### uilat.py focus chromiumtv http://127.0.0.1:8099/pages/wiki/en.wikipedia.org/wiki/Television.html ...
+chromiumtv start:  | BODY | Jump to content
+
+	
+		
+			
+				 |  | 0 | 
+chromiumtv 1 key 108:  | A |  | https://en.wikipedia.org/wiki/Main_Page | 0 | 
+chromiumtv 2 key 108:  | BUTTON | hide |  | 0 | 
+chromiumtv 3 key 108:  | A | (Top) | Television.html# | 0 | 
+chromiumtv 4 key 108:  | A | 1
+				Etymology | Television.html#Etymology | 0 | 
+chromiumtv 5 key 108:  | A | 2
+				History | Television.html#History | 0 | 
+chromiumtv 6 key 108:  | A | 3
+				Broadcast systems | Television.html#Broadcast_systems | 0 | 
+chromiumtv 7 key 108:  | A | 4
+				Sets | Television.html#Sets | 0 | 
+chromiumtv 8 key 108:  | A | 5
+				Content | Television.html#Content | 0 | 
+chromiumtv 9 key 108:  | A | 6
+				Social aspects | Television.html#Social_aspects | 0 | 
+chromiumtv 10 key 108:  | A | 7
+				Negative impacts | Television.html#Negative_impacts | 0 | 
+chromiumtv 11 key 108:  | A | 8
+				See also | Television.html#See_also | 0 | 
+chromiumtv 12 key 108:  | A | 9
+				References | Television.html#References | 0 | 
+chromiumtv 13 key 106: mwGw | A | radio broadcasting | https://en.wikipedia.org/wiki/Radio_broadcasting | 0 | 
+chromiumtv 14 key 106: mwDw | A |  | https://en.wikipedia.org/wiki/File:Cptvdisplay.jpg | 0 | 
+chromiumtv 15 key 106:  | BUTTON | hide |  | 0 | 
+chromiumtv 16 key 108: mwE_k | A |  | https://en.wikipedia.org/wiki/Wikipedia:Protection_policy#semi | 0 | 
+chromiumtv 17 key 108:  | A | Television (disambiguation) | https://en.wikipedia.org/wiki/Television_(disambiguation) | 0 | 
+chromiumtv 18 key 108: mwDw | A |  | https://en.wikipedia.org/wiki/File:Cptvdisplay.jpg | 0 | 
+chromiumtv 19 key 108: mwEg | A | Flat-screen | https://en.wikipedia.org/wiki/Flat-panel_display | 0 | 
+chromiumtv 20 key 108: mwEg | A | Flat-screen | https://en.wikipedia.org/wiki/Flat-panel_display | 40 | 
+### uilat.py focus cr151p http://127.0.0.1:8099/pages/wiki/en.wikipedia.org/wiki/Television.html ...
+cr151p start:  | BODY | Jump to content
+
+	
+		
+			
+				 |  | 0 | 
+cr151p 1 key 108:  | A |  | https://en.wikipedia.org/wiki/Main_Page | 0 | 
+cr151p 2 key 108:  | BUTTON | hide |  | 0 | 
+cr151p 3 key 108:  | A | (Top) | Television.html# | 0 | 
+cr151p 4 key 108:  | A | 1
+				Etymology | Television.html#Etymology | 0 | 
+cr151p 5 key 108:  | A | 2
+				History | Television.html#History | 0 | 
+cr151p 6 key 108:  | A | 3
+				Broadcast systems | Television.html#Broadcast_systems | 0 | 
+cr151p 7 key 108:  | A | 4
+				Sets | Television.html#Sets | 0 | 
+cr151p 8 key 108:  | A | 5
+				Content | Television.html#Content | 0 | 
+cr151p 9 key 108:  | A | 6
+				Social aspects | Television.html#Social_aspects | 0 | 
+cr151p 10 key 108:  | A | 7
+				Negative impacts | Television.html#Negative_impacts | 0 | 
+cr151p 11 key 108:  | A | 8
+				See also | Television.html#See_also | 0 | 
+cr151p 12 key 108:  | A | 9
+				References | Television.html#References | 0 | 
+cr151p 13 key 106: mwGw | A | radio broadcasting | https://en.wikipedia.org/wiki/Radio_broadcasting | 0 | 
+cr151p 14 key 106: mwDw | A |  | https://en.wikipedia.org/wiki/File:Cptvdisplay.jpg | 9 | 
+cr151p 15 key 106:  | BUTTON | hide |  | 9 | 
+cr151p 16 key 108:  | BUTTON | hide |  | 9 | 
+cr151p 17 key 108: mwE_k | A |  | https://en.wikipedia.org/wiki/Wikipedia:Protection_policy#semi | 9 | 
+cr151p 18 key 108:  | A | Television (disambiguation) | https://en.wikipedia.org/wiki/Television_(disambiguation) | 9 | 
+cr151p 19 key 108: mwDw | A |  | https://en.wikipedia.org/wiki/File:Cptvdisplay.jpg | 9 | 
+cr151p 20 key 108: mwDw | A |  | https://en.wikipedia.org/wiki/File:Cptvdisplay.jpg | 49 | 
+### uilat.py focus cr151p http://127.0.0.1:8099/pages/wiki/en.wikipedia.org/wiki/Television.html ...
+cr151p start:  | BODY | Jump to content
+
+	
+		
+			
+				 |  | 0 | 
+cr151p 1 key 108:  | A |  | https://en.wikipedia.org/wiki/Main_Page | 0 | 
+cr151p 2 key 108:  | BUTTON | hide |  | 0 | 
+cr151p 3 key 108:  | A | (Top) | Television.html# | 0 | 
+cr151p 4 key 108:  | A | 1
+				Etymology | Television.html#Etymology | 0 | 
+cr151p 5 key 108:  | A | 2
+				History | Television.html#History | 0 | 
+cr151p 6 key 108:  | A | 3
+				Broadcast systems | Television.html#Broadcast_systems | 0 | 
+cr151p 7 key 108:  | A | 4
+				Sets | Television.html#Sets | 0 | 
+cr151p 8 key 108:  | A | 5
+				Content | Television.html#Content | 0 | 
+cr151p 9 key 108:  | A | 6
+				Social aspects | Television.html#Social_aspects | 0 | 
+cr151p 10 key 108:  | A | 7
+				Negative impacts | Television.html#Negative_impacts | 0 | 
+cr151p 11 key 108:  | A | 8
+				See also | Television.html#See_also | 0 | 
+cr151p 12 key 108:  | A | 9
+				References | Television.html#References | 0 | 
+cr151p 13 key 106: mwGw | A | radio broadcasting | https://en.wikipedia.org/wiki/Radio_broadcasting | 0 | 
+cr151p 14 key 106: mwDw | A |  | https://en.wikipedia.org/wiki/File:Cptvdisplay.jpg | 9 | 
+cr151p 15 key 106:  | BUTTON | hide |  | 9 | 
+cr151p 16 key 108:  | BUTTON | hide |  | 9 | 
+cr151p 17 key 108: mwE_k | A |  | https://en.wikipedia.org/wiki/Wikipedia:Protection_policy#semi | 9 | 
+cr151p 18 key 108:  | A | Television (disambiguation) | https://en.wikipedia.org/wiki/Television_(disambiguation) | 9 | 
+cr151p 19 key 108: mwDw | A |  | https://en.wikipedia.org/wiki/File:Cptvdisplay.jpg | 9 | 
+cr151p 20 key 108: mwDw | A |  | https://en.wikipedia.org/wiki/File:Cptvdisplay.jpg | 49 | 
