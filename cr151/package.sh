@@ -10,7 +10,7 @@ need_sysroot   # check-abi compares against the sysroot's TV-SONAMES and glibc
 # already set that from their config.env (org.nativechromium.browser).
 APP_ID=${CR151_APP_ID:-com.viiees.chromiumtv}
 APP_TITLE=${CR151_APP_TITLE:-"Chromium"}
-VERSION=1.1.0
+VERSION=1.1.1
 D=/work/dist; B=$D/browser; rm -rf "$D"; mkdir -p "$B"
 cd "$OUT"
 for f in chrome chrome_crashpad_handler *.pak icudtl.dat snapshot_blob.bin v8_context_snapshot.bin locales \

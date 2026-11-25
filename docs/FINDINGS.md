@@ -1318,8 +1318,9 @@ replaces the first. Checked in the owner's profile: dark tab strip and omnibox, 
 readable links, `matchMedia("(prefers-color-scheme: dark)")` true. Forced darkening does not change computed styles
 (`body` still reports `rgb(248, 249, 250)`), so check it with a screen capture.
 
-Speed: no measurable cost (`cr151/darktheme_ab.txt`). Interleaved A/B in the owner's profile, 4 rounds per mode, GPU
-on, 20 keys per run, the flags checked in the browser's `/proc` cmdline before each run:
+Speed: no measurable cost (`cr151/darktheme_ab.txt`). Interleaved A/B in the owner's profile, 4 rounds per mode, 20
+keys per run, the flags checked in the browser's `/proc` cmdline before each run. The GPU was off in this run, not on:
+`data/gpu.state` said "bad (status 256 after 0 s)" since 2026-11-24 14:58 (found 2026-11-25 at the 1.1.1 install):
 
 | Mean key to screen | On | Off |
 |---|---|---|

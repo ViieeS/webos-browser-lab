@@ -11,14 +11,19 @@ MB more browser memory). After the 1.1.0 install: exits with the GPU on end with
 normal start, autoconsent still rejects, omnibox key to screen 99–104 ms, and 1.1.0's V8 lite mode stays off on the C1
 (747 MB free at start). The build history and numbers are in `cr151/RESULTS.md` and [FINDINGS.md](FINDINGS.md).
 
-- **Our patches on 1.1.0:** 0102–0104, 0107 and 0110. 0109 is their 0062 since 1.1.0. The others went upstream: see the upstream table in
+- **Our patches on 1.1.1:** 0102–0104 and 0107. 0109 is their 0062 since 1.1.0, 0110 their 0066 since 1.1.1. The others went upstream: see the upstream table in
   [FINDINGS.md](FINDINGS.md#8-upstream-candidates).
 - **Rebase recipe.** Replace `cr151/upstream/source` with `git archive <sha> source` of WebOS-Chromium, record the
   commit in `cr151/upstream/COMMIT`, then run the `incontainer.sh` steps `patch`, `gen`, `build chrome` and `package`.
   With the same Chromium version the rebuild is incremental. After a rebase, rerun the harness, the video test and
   the omnibox A/B (`bench/uilat.py`). Compare interleaved runs only: the TV's round-to-round spread is about 40 ms.
-- **Rebase onto 1.1.1** (released 2026-11-24): it contains our 0110 as their 0066, so the series shrinks to
-  0102–0104 and 0107. Not started, the rest of 1.1.1 is not read yet.
+- **Rebase onto 1.1.1** (released 2026-11-24, tag `1b4d053`): done, installed 2026-11-25 with the owner's yes. GPU
+  on (the probe passed, the new launcher build id reset `data/gpu.state`), Back and menu > Exit end with status 0
+  (`cr151/gpuexit_111.txt`), autoconsent rejects on IKEA, Cookiebot, BBC and YouTube
+  (`bench/results/consent/shipped_111.txt`), omnibox key to screen 101–108 ms, paint to present 35–36 ms
+  (`cr151/uilat_omnibox_111.txt`). Their 0066 is our 0110 hunk for hunk, so our series is 0102–0104 and 0107. The rest of 1.1.1 is a launcher
+  change for webOS 4 (LG's buffered player through ACB): on webOS 5+ it stays off unless `media.opts` has `smp=direct`,
+  so the C1 runs the same code paths. IPK sha256 `6ad253c1…`, copy in `browser/build/ipk-1.1.1/`.
 - **Open:** a second build with their exact args for a byte-level trust check (needs the owner's go).
 - **PGO.** Checked 2026-11-25 (FINDINGS): no arm32 Linux profile exists. The x64 Linux profile (88 MB download, needs
   the owner's yes) would cover only the code that is the same on arm32, and a full rebuild follows. Our own profile
@@ -57,7 +62,7 @@ Measured with Chromium's own histograms (`cr151/UI_LATENCY.md`, `cr151/INPUT_LAT
   `desktopSites` (`package.sh`).
 - **Dark theme.** On by default since 2026-11-25, switchable in TV Tools (FINDINGS, "Dark theme against OLED wear").
   Measured 2026-11-25: On and Off are the same for arrow scrolling, Tab focus and dropped frames
-  (`cr151/darktheme_ab.txt`).
+  (`cr151/darktheme_ab.txt`), but with the GPU off (`data/gpu.state`). Not rechecked with the GPU on.
 
 ## 3. Smaller gaps
 

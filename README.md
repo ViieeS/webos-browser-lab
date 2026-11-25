@@ -36,7 +36,7 @@ The goal of this repository is that the next person does not start from scratch.
 | [AGENTS.md](AGENTS.md) | Working rules for an engineer or an LLM agent picking this up |
 
 **The browser: Chromium TV** (`com.viiees.chromiumtv`), our own build of WebOS-Chromium 151. `cr151/package.sh`
-builds it on WebOS-Chromium 1.0.0 (main `7265f39`) with our patches 0102–0104, 0107 and 0109, the omnibox trim, our
+builds it on WebOS-Chromium 1.1.1 (`1b4d053`) with our patches 0102–0104 and 0107, the omnibox trim, our
 fonts.conf, uBO Lite in complete mode (installed packed, from a CRX) and DuckDuckGo autoconsent, which rejects cookie banners. Its open items are in
 [docs/FINDINGS.md](docs/FINDINGS.md), "Open items in cr151 before a final browser".
 
