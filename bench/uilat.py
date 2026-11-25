@@ -73,8 +73,6 @@ VARIANTS = {"nosmooth": "--disable-smooth-scrolling",
             # since uBOL ships as a CRX it survives --load-extension: only --disable-extensions-except drops it
             "onlytvt": f"--load-extension={CTV}/data/ext/tvtools --disable-extensions-except={CTV}/data/ext/tvtools",
             "zeroext": "--disable-extensions",
-            # autoconsent whose CMP retries wait for 1 s without wheel, scroll or keys (test copy pushed to the TV)
-            "acidle": f"--load-extension={CTV}/data/ext/tvtools,/media/developer/temp/acidle/autoconsent",
             # trim with HistoryFuzzyProvider (1 << 16) left on: typo correction over history hosts
             "trimfuzzy": TRIM.replace("DisableProviders/201287168", "DisableProviders/201221632")}
 assert VARIANTS["trimfuzzy"] != TRIM
