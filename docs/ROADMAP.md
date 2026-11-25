@@ -24,6 +24,9 @@ normal start, autoconsent still rejects, omnibox key to screen 99–104 ms, and 
   (`cr151/uilat_omnibox_111.txt`). Their 0066 is our 0110 hunk for hunk, so our series is 0102–0104 and 0107. The rest of 1.1.1 is a launcher
   change for webOS 4 (LG's buffered player through ACB): on webOS 5+ it stays off unless `media.opts` has `smp=direct`,
   so the C1 runs the same code paths. IPK sha256 `6ad253c1…`, copy in `browser/build/ipk-1.1.1/`.
+- **GPU crash guard.** Done 2026-11-25: only crash signals count, two in a row turn the GPU off with a toast, TV
+  Tools "GPU" (Auto, On, Off) turns it back on (FINDINGS, "GPU turned off by a start that never touched it"). Open:
+  offer the launcher part upstream (branch `gpu-state-crash-only` in our fork, not pushed, needs the owner's yes).
 - **Open:** a second build with their exact args for a byte-level trust check (needs the owner's go).
 - **PGO.** Checked 2026-11-25 (FINDINGS): no arm32 Linux profile exists. The x64 Linux profile (88 MB download, needs
   the owner's yes) would cover only the code that is the same on arm32, and a full rebuild follows. Our own profile

@@ -1330,6 +1330,40 @@ keys per run, the flags checked in the browser's `/proc` cmdline before each run
 
 The medians are the same in both modes (109 and 70 ms buckets). The Tab means swing on single slow keys in both.
 
+### GPU turned off by a start that never touched it (2026-11-25)
+
+Upstream's launcher (`cnrun.c`) writes "bad" to `data/gpu.state` when an automatic GPU-on start ends on its own
+within 60 s with a crash signal or any non-zero exit. Every later start of that launcher build then runs
+`--disable-gpu`, silently. On 2026-11-24 14:58 Chrome exited with status 1 after 0 s: it refused to start, the GPU
+was never used. The cause is lost (the next start truncates `browser.log`). Everything measured until the 1.1.1
+install ran in software, the dark theme A/B included. A new launcher build resets the file: its first line is the
+build's `__DATE__ __TIME__`, so any rebuild of `cnrun` does that too.
+
+Our launcher change (`cr151/launcher/gpu-state-crash-only.patch`, applied by `package.sh`, to be offered upstream):
+
+- Only SIGSEGV, SIGBUS, SIGILL, SIGABRT, SIGFPE and SIGTRAP count. An error exit does not.
+- The first early crash writes "crash", the second in a row "bad". The webOS toast comes only when "bad" was saved.
+  Any run without an early crash deletes the record, a close by webOS included.
+- A run where the start script chose the mode does not count: `run.sh` leaves `/tmp/<app>/gpu.forced` when a user
+  setting decides the GPU, and the launcher deletes the file at each start.
+- An early end that is not a clean exit copies the last 20 lines of `browser.log` into `media.log` and into
+  `data/early-exit.log`. The flash copy survives an immediate relaunch, which truncates both logs.
+- `media.log` is opened in append mode, so `run.sh` can add lines while the launcher writes.
+- `media.opts` words match whole: upstream's `strstr` read `webgpu=on` as `gpu=on`.
+
+TV Tools got a "GPU" setting (Auto, On, Off; `package.sh`), read by `run.sh` like "Dark theme". On ignores the
+launcher's verdict and deletes `gpu.state`, so Auto tries the GPU again. `media.opts` `gpu=on` / `gpu=off` still win.
+The launcher logs its verdict before `run.sh` reads the setting, so `run.sh` adds `run.sh gpu: on (TV Tools GPU = On,
+overrides the launcher)` or `run.sh gpu: off (TV Tools GPU = Off)` to `media.log` when it overrides. The setting is
+read with `grep` from LevelDB like Lite mode. A record split across a log block boundary would be missed and the
+previous value used for one start: accepted, it is rare and harmless.
+
+Checked on the TV with `bench/gpustate_test.py --yes` (`cr151/gpustate_test.txt`, IPK `b2ba8329…`), every step
+asserted: a "crash" record and a webOS close leave the GPU on and clear it. One SIGSEGV writes "crash" and
+`early-exit.log`, and the GPU stays on. A second writes "bad" and sends the toast, and the next start runs
+`--disable-gpu`. TV Tools On starts with the GPU, logs the override and deletes the record. A crash under On or Off
+is not counted. Back on Auto the GPU is on. `gpuexit.py`: Back and menu > Exit end with status 0.
+
 ### cr151 UI font (2026-11-18)
 
 - Chromium 151 uses the TV's own `libfontconfig.so.1` (`use_bundled_fontconfig = false` in their args.gn), and run.sh

@@ -36,6 +36,9 @@ if [ ! -x "$Z" ]; then
 	mkdir -p /work/zig
 	curl -fsSL https://ziglang.org/download/0.13.0/zig-linux-aarch64-0.13.0.tar.xz | tar -xJ -C /work/zig --strip-components=1
 fi
+# Our launcher change, sent upstream: only a crash signal counts against the GPU, and two in a row turn it off.
+patch -d "$CN" -p2 --forward -s < /cr151/launcher/gpu-state-crash-only.patch || die "launcher patch did not apply"
+grep -q 'second crash' "$CN/package/launcher/cnrun.c" || die "launcher: gpu.state patch missing"
 (cd "$CN/package/launcher" && ZIG=$Z OUT=$D/cnrun sh build.sh) 2>&1 | tail -2
 
 # Our fontconfig setup (fonts.conf explains why): shipped as browser/fonts.conf, run.sh points FONTCONFIG_FILE at it.
@@ -195,6 +198,36 @@ edit(run, "\tJS_LITE=\n", (
     "\tdone\n"
     "\tDARK_UI=; DARK_PAGES=\n"
     "\tcase \"$DARK_SET\" in on) DARK_UI=--force-dark-mode DARK_PAGES=,WebContentsForceDark ;; sites) DARK_UI=--force-dark-mode ;; esac\n"
+    "\tJS_LITE=\n"))
+edit(settings, "  pauseHidden: false ",
+     '  gpu: "auto",         // "auto" | "on" | "off": read by run.sh when the browser starts\n  pauseHidden: false ')
+edit(ui, '  {\n    id: "uaMode",', (
+    '  {\n'
+    '    id: "gpu", title: "GPU", section: "browsing",\n'
+    '    help: "Auto: the browser draws with the GPU unless it crashed twice in a row with it. On: always, and " +\n'
+    '      "Auto tries the GPU again afterwards. Off: draws in software, slower. Changes the next time the browser opens.",\n'
+    '    options: [["auto", "Auto"], ["on", "On"], ["off", "Off"]]\n'
+    '  },\n'
+    '  {\n    id: "uaMode",'))
+edit(run, "\tJS_LITE=\n", (
+    "\t# GPU (TV Tools' \"GPU\", default Auto = the launcher's check). On also deletes the launcher's crash record, so\n"
+    "\t# Auto tries the GPU again later. media.opts gpu=on / gpu=off still win (tests). Added by package.sh.\n"
+    "\tGPU_SET=auto\n"
+    "\tfor f in $(cd \"$LX\" 2>/dev/null && ls -t -- *.log *.ldb 2>/dev/null); do\n"
+    "\t\tv=$(grep -a -o -E '\"gpu\":\"(auto|on|off)\"' \"$LX/$f\" 2>/dev/null | tail -1)\n"
+    "\t\t[ -n \"$v\" ] || continue\n"
+    "\t\tcase \"$v\" in *'\"on\"') GPU_SET=on ;; *'\"off\"') GPU_SET=off ;; esac\n"
+    "\t\tbreak\n"
+    "\tdone\n"
+    "\t# whole words only: media.opts \"webgpu=on\" is not \"gpu=on\"\n"
+    "\tif ! grep -q -E '(^|[[:space:]])gpu=(on|off)([[:space:]]|$)' \"$T/media.opts\" 2>/dev/null; then\n"
+    "\t\tcase \"$GPU_SET\" in on) GPU_OFF=; rm -f \"$D/data/gpu.state\" \"$T/gpu.state\" ;; off) GPU_OFF=--disable-gpu ;; esac\n"
+    "\t\t# a mode the user chose: the launcher's crash count must not judge this run (gpu.forced)\n"
+    "\t\t[ \"$GPU_SET\" != auto ] && : > \"$T/gpu.forced\"\n"
+    "\t\t# the launcher logged its own verdict before this ran\n"
+    "\t\t[ \"$GPU_SET\" = on ] && [ \"$CN_GPU\" = off ] && echo \"run.sh gpu: on (TV Tools GPU = On, overrides the launcher)\" >> \"$T/media.log\"\n"
+    "\t\t[ \"$GPU_SET\" = off ] && [ \"$CN_GPU\" != off ] && echo \"run.sh gpu: off (TV Tools GPU = Off)\" >> \"$T/media.log\"\n"
+    "\tfi\n"
     "\tJS_LITE=\n"))
 edit(run, "--enable-features=NetworkServiceInProcess2$OMNI_ON ",
      "--enable-features=NetworkServiceInProcess2$DARK_PAGES$OMNI_ON ")

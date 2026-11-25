@@ -1,0 +1,42 @@
+# 2026-11-25, IPK b2ba8329, bench/gpustate_test.py --yes (then gpuexit.py 1 back,menu)
+launcher build id: Nov 25 2026 14:58:52
+## 1. clean state, normal start, close by webOS: GPU on
+  start: 16950.086 gpu: on (EGL 1.4 driver, GPU probe passed)
+  ok   GPU on
+  ok   no record
+## 2. a recorded crash, then a run closed by webOS: GPU on, record cleared
+  start: 17018.632 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+  ok   GPU on
+  ok   record cleared
+## 3. one crash: GPU stays on, early-exit.log written
+  start: 17086.134 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+  ok   record 'crash' (crash (signal 11 after 18 s))
+  ok   early-exit.log written
+  start: 17130.010 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+  ok   GPU on at the next start
+## 4. second crash: GPU off, toast
+  ok   record 'bad' (bad (signal 11 after 18 s, second crash))
+  ok   toast sent
+  start: 17173.833 gpu: off (EGL 1.4 driver; Chrome crashed twice with the GPU on at earlier starts (gpu.state))
+  ok   GPU off at the next start
+## 5. TV Tools On: GPU on, record deleted, a crash does not count
+  ok   TV Tools GPU = on
+  start: 17241.833 gpu: off (EGL 1.4 driver; Chrome crashed twice with the GPU on at earlier starts (gpu.state)) | run.sh gpu: on (TV Tools GPU = On, overrides the launcher)
+  ok   GPU on
+  ok   record deleted
+  ok   override logged
+  ok   forced run not counted
+## 6. TV Tools Off: GPU off, a crash does not count
+  start: 17285.949 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+  ok   TV Tools GPU = off
+  start: 17353.605 gpu: on (EGL 1.4 driver, GPU probe passed (this boot)) | run.sh gpu: off (TV Tools GPU = Off)
+  ok   GPU off
+  ok   forced run not counted
+## 7. back on Auto: GPU on
+  start: 17394.766 gpu: on (EGL 1.4 driver, GPU probe passed (this boot)) | run.sh gpu: off (TV Tools GPU = Off)
+  ok   TV Tools GPU = auto
+  start: 17462.648 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+  ok   GPU on
+done
+GPUEXIT way=back gpu_compositing=enabled dwell=12 -> 0 | gpu: on (media.opts gpu=on)
+GPUEXIT way=menu gpu_compositing=enabled dwell=12 -> 0 | gpu: on (media.opts gpu=on)
