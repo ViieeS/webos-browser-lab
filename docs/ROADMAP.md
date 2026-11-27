@@ -42,6 +42,11 @@ normal start, autoconsent still rejects, omnibox key to screen 99–104 ms, and 
   the owner's yes) would cover only the code that is the same on arm32, and a full rebuild follows. Our own profile
   needs a clean exit, which 0110 removes. Not started.
 
+- **TV Tools settings hold one start.** Found 2026-11-27: `run.sh` cannot read "Dark theme", "GPU" and upstream's
+  "Lite mode" once Chrome moves them into a snappy-compressed LevelDB table, and falls back to the default (FINDINGS,
+  "TV Tools settings lost after one start"). Fixed 2026-11-27 by patch 0112 (no compression in extension value stores) and the read order in
+  `run.sh`, checked over five starts. Upstream has the same bug for Lite mode: PR candidate.
+
 ## 2. Input latency
 
 Measured with Chromium's own histograms (`cr151/UI_LATENCY.md`, `cr151/INPUT_LATENCY.md`).
@@ -75,7 +80,8 @@ Measured with Chromium's own histograms (`cr151/UI_LATENCY.md`, `cr151/INPUT_LAT
   `desktopSites` (`package.sh`).
 - **Dark theme.** On by default since 2026-11-25, switchable in TV Tools (FINDINGS, "Dark theme against OLED wear").
   Measured 2026-11-25: On and Off are the same for arrow scrolling, Tab focus and dropped frames
-  (`cr151/darktheme_ab.txt`), but with the GPU off (`data/gpu.state`). Not rechecked with the GPU on.
+  (`cr151/darktheme_ab.txt`), but with the GPU off (`data/gpu.state`). Rechecked 2026-11-27 with the GPU on: still no cost,
+  Down 119 ms on and off (`cr151/darktheme_ab_gpu.txt`).
 
 ## 3. Smaller gaps
 
@@ -92,10 +98,11 @@ Measured with Chromium's own histograms (`cr151/UI_LATENCY.md`, `cr151/INPUT_LAT
   that shows one.
 - **Upstream PRs:** WebOS-Chromium #40 (launcher: only a crash signal counts against the GPU) is waiting. Merged:
   #27 (0109 as their 0062) into their 1.1.0, #30 (0110 as their 0066) into 1.1.1 (2026-11-24), #22 (fonts.conf) into 1.1.5. See [FINDINGS.md](FINDINGS.md#8-upstream-candidates).
-- **Upstream the WebKit fixes** listed in [FINDINGS.md](FINDINGS.md#8-upstream-candidates):
-  - the ARMv7 RegExp JIT fixes (0010-0012);
-  - SystemHeap alignment (0013);
-  - the ARMv7 CSS JIT (0015).
+- **WebKit fixes** ([FINDINGS.md](FINDINGS.md#8-upstream-candidates), checked against WebKit main 2026-11-27): 0010,
+  0012 and 0015 cannot go upstream (2.54 removed the 32-bit JIT they fix), 0011 is fixed there already. 0014 (sticky
+  relayout on every scroll) still applies: bug and commit message drafted in
+  [upstream_webkit_0014.md](upstream_webkit_0014.md), filing needs the owner's bugs.webkit.org account. 0013 at most
+  as a bug report.
 - **DRM is not solvable.** Widevine is not available as a Chrome CDM on the TV. PlayReady is API-compatible but untested.
 - **Tab memory ceiling.** Done 2026-11-19: `package.sh` sets TV Tools' tab limit to 8, so the oldest tab closes above
   8 ([TRIM_CANDIDATES.md](../cr151/TRIM_CANDIDATES.md#results-2026-11-19)).

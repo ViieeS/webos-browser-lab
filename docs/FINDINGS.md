@@ -1204,12 +1204,12 @@ Submitted rows carry the link; the rest are not submitted.
 |---|---|---|---|
 | WPE 0008 jsc-wasmorigin-needs-webassembly | [WebKit](https://bugs.webkit.org) | Build fix for JIT on, WASM off | not submitted |
 | WPE 0009 dfg-fold-math-keep-vfp-pcs | [WebKit](https://bugs.webkit.org) | GCC silently drops the pcs attribute through templates | not submitted |
-| WPE 0010 yarr-jit-armv7-keep-r4 | [WebKit](https://bugs.webkit.org) | Real ARMv7 bug. 2.54 no longer builds the 32-bit JIT | not submitted |
-| WPE 0011 regexp-compiler-thread-no-relock | [WebKit](https://bugs.webkit.org) | Deadlock in the concurrent RegExp fallback | not submitted |
-| WPE 0012 yarr-jit-armv7-fifth-arg | [WebKit](https://bugs.webkit.org) | Real ARMv7 bug, same caveat as 0010 | not submitted |
-| WPE 0013 system-heap-align-16 | [WebKit](https://bugs.webkit.org) | SystemHeap alignment on 32-bit ARM | not submitted |
-| WPE 0014 sticky-no-relayout-on-scroll | [WebKit](https://bugs.webkit.org) | Platform-independent scroll performance fix | not submitted |
-| WPE 0015 cssjit-armv7 | [WebKit](https://bugs.webkit.org) | New ARMv7 backend for the selector compiler | not submitted |
+| WPE 0010 yarr-jit-armv7-keep-r4 | [WebKit](https://bugs.webkit.org) | Real ARMv7 bug. 2.54 no longer builds the 32-bit JIT | not submittable: WebKit main has no 32-bit JIT since 2.54, the code is gone (checked 2026-11-27) |
+| WPE 0011 regexp-compiler-thread-no-relock | [WebKit](https://bugs.webkit.org) | Deadlock in the concurrent RegExp fallback | not needed: WebKit main fixed it its own way, only the VM thread compiles bytecode on a JIT failure (`RegExpInlines.h`, checked 2026-11-27) |
+| WPE 0012 yarr-jit-armv7-fifth-arg | [WebKit](https://bugs.webkit.org) | Real ARMv7 bug, same caveat as 0010 | not submittable: same as 0010 |
+| WPE 0013 system-heap-align-16 | [WebKit](https://bugs.webkit.org) | SystemHeap alignment on 32-bit ARM | not submitted. WebKit main still uses plain `::malloc` there (checked 2026-11-27). A workaround, better filed as a bug report |
+| WPE 0014 sticky-no-relayout-on-scroll | [WebKit](https://bugs.webkit.org) | Platform-independent scroll performance fix | not submitted. The same code is in WebKit main (checked 2026-11-27). Needs a bugs.webkit.org account. Draft: [upstream_webkit_0014.md](upstream_webkit_0014.md) |
+| WPE 0015 cssjit-armv7 | [WebKit](https://bugs.webkit.org) | New ARMv7 backend for the selector compiler | not submittable: the CSS JIT on ARMv7 needs the 32-bit JIT that 2.54 removed |
 | cr120 0003 softfp-target-triple | [webosose/chromium120](https://github.com/webosose/chromium120) | softfp outside the OE toolchain | not submitted |
 | cr120 0005 clang18-warnings | [webosose/chromium120](https://github.com/webosose/chromium120) | Build with released clang 18 | not submitted |
 | cr120 0006 app-runtime-locales-dep | [webosose/chromium120](https://github.com/webosose/chromium120) | Missing gn dep with `use_cbe=false` | not submitted |
@@ -1329,6 +1329,35 @@ keys per run, the flags checked in the browser's `/proc` cmdline before each run
 | Dropped frames, all sequences | 10–12 % | 10–11 % |
 
 The medians are the same in both modes (109 and 70 ms buckets). The Tab means swing on single slow keys in both.
+
+Rechecked with the GPU on (2026-11-27, Chromium TV 1.1.6, `cr151/darktheme_ab_gpu.txt`, `bench/darkab.py`): still no
+cost. The launcher logged "gpu: on" for all 16 runs. 4 "off" runs started with the dark switches anyway ("TV Tools
+settings lost after one start") and are left out:
+
+| Mean key to screen, GPU on | On | Off |
+|---|---|---|
+| Down on the local Wikipedia page | 115–124 ms (avg 119), 4 runs | 116–122 ms (avg 119), 3 runs |
+| Tab focus moves | 67–91 ms (avg 75), 4 runs | 87 ms, 1 run |
+
+A first GPU-on run the same day measured nothing: lighttpd was not running on the TV, so the local page never loaded
+(2 key latencies per run instead of 20).
+
+### TV Tools settings lost after one start (2026-11-27)
+
+`run.sh` reads TV Tools' start-up settings (our "Dark theme" and "GPU", upstream's "Lite mode") with
+`grep -a -o -E '"darkTheme":"(on|sites|off)"'` over the extension's LevelDB files, newest first. A saved value is
+plain text only while it is in the `.log`. Chrome later moves it into a `.ldb` table, which is snappy-compressed: the
+`"` before the key becomes a back-reference, the exact pattern no longer matches in any file, and `run.sh` silently
+takes the default (dark On, GPU Auto, Lite Auto). Reproduced: "off" saved, the first start light, the next four dark
+while the only stored value was `darkTheme":"off` inside a `.ldb`. Saving right before a start is not enough either:
+4 of 16 A/B starts still read the default. So a TV Tools change of these settings held for about one start.
+
+Fixed by patch 0112 (`components/value_store/lazy_leveldb.cc`: extension value stores write tables with
+`kNoCompression`) and a read-order change in `run.sh`. A `.log` keeps writes in order, so its newest value is the last
+match. A table sorts the versions of one key newest first, so there it is the first. Checked on the TV: "off" saved,
+five starts, all five light, the value read from an uncompressed `.ldb` from the second start on. Tables written
+before the fix stay compressed, so a setting holds from its first save after the update. Upstream's Lite mode read
+profits from the patch too (it keeps `tail -1`).
 
 ### GPU turned off by a start that never touched it (2026-11-25)
 

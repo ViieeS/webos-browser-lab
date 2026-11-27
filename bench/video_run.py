@@ -5,7 +5,7 @@ web process threads during playback, whose names tell a hardware decoder from a 
 usage: video_run.py [tag, default wpe]   (tag cr120: chromium120 content_shell via browser/cr120/run_tv.sh,
        tag cr120app: the same content_shell under dev app com.viiees.cr120, whose launcher plays video through NDL,
        tag cr151: WebOS-Chromium release app org.nativechromium.browser, also NDL through its launcher;
-       tags cr151own, cr151p, cr151b: our builds com.viiees.cr151, .cr151p, .cr151b)
+       tags cr151own, cr151p, cr151b, chromiumtv: our builds com.viiees.cr151, .cr151p, .cr151b, .chromiumtv)
 """
 import os
 import re
@@ -21,7 +21,7 @@ TAG = sys.argv[1] if len(sys.argv) > 1 else "wpe"
 CR120APP = TAG == "cr120app"
 CR120 = TAG == "cr120" or CR120APP
 CR151_APP = {"cr151": "org.nativechromium.browser", "cr151own": "com.viiees.cr151", "cr151p": "com.viiees.cr151p",
-             "cr151b": "com.viiees.cr151b"}.get(TAG)
+             "cr151b": "com.viiees.cr151b", "chromiumtv": "com.viiees.chromiumtv"}.get(TAG)
 CR151 = CR151_APP is not None
 T = ("/media/developer/temp/cr120/threads_cr120.sh" if CR120 else
      "sh /media/developer/temp/threads_cr151.sh" if CR151 else "/media/developer/temp/threads.sh")

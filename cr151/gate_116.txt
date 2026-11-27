@@ -1,0 +1,15 @@
+base speedometer #45370-0: score=0.786 wall_s=107 rss_browser_kb=229648 rss_ext_kb=75236 rss_total_kb=476052
+base speedometer #45370-0 mem: MemAvailable: 498040 kB SwapTotal: 614396 kB SwapFree: 44184 kB
+base load-wiki #45370-0: load_ms=3628 rss_browser_kb=189548 rss_ext_kb=142440 rss_total_kb=493144
+base load-wiki #45370-0 mem: MemAvailable: 472836 kB SwapTotal: 614396 kB SwapFree: 118768 kB
+base heavy #45370-0: s=227 pages=6 ok=6 busy=0 MemAvailable: 217000 kB SwapTotal: 614396 kB SwapFree: 60 kB rss_browser_kb=229160 rss_ext_kb=53372 rss_total_kb=708604
+base speedometer #45370-1: score=0.793 wall_s=107 rss_browser_kb=252840 rss_ext_kb=85488 rss_total_kb=521048
+base speedometer #45370-1 mem: MemAvailable: 497452 kB SwapTotal: 614396 kB SwapFree: 38412 kB
+base load-wiki #45370-1: load_ms=3891 rss_browser_kb=188928 rss_ext_kb=139488 rss_total_kb=483864
+base load-wiki #45370-1 mem: MemAvailable: 541368 kB SwapTotal: 614396 kB SwapFree: 58704 kB
+base heavy #45370-1: s=222 pages=6 ok=6 busy=0 MemAvailable: 391200 kB SwapTotal: 614396 kB SwapFree: 48372 kB rss_browser_kb=238536 rss_ext_kb=39648 rss_total_kb=748332
+base speedometer #45370-2: score=0.797 wall_s=106 rss_browser_kb=251708 rss_ext_kb=85440 rss_total_kb=535244
+base speedometer #45370-2 mem: MemAvailable: 581652 kB SwapTotal: 614396 kB SwapFree: 57928 kB
+base load-wiki #45370-2: load_ms=4144 rss_browser_kb=185752 rss_ext_kb=141816 rss_total_kb=474792
+base load-wiki #45370-2 mem: MemAvailable: 639744 kB SwapTotal: 614396 kB SwapFree: 77128 kB
+base heavy #45370-2: s=223 pages=6 ok=6 busy=0 MemAvailable: 280256 kB SwapTotal: 614396 kB SwapFree: 1620 kB rss_browser_kb=226120 rss_ext_kb=59808 rss_total_kb=760004

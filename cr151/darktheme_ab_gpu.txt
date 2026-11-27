@@ -1,0 +1,42 @@
+### saved darkTheme before the run: on
+### round 1 dark=on
+dark=on keyscroll #1 saved=on flags: WebContentsForceDark force-dark-mode | 62318.121 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+dark=on keyscroll #1: EventLatency.KeyPressed.TotalLatency n=20 mean=121073.2 p50>=109350; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+dark=on keyfocus #1 saved=on flags: WebContentsForceDark force-dark-mode | 62452.676 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+dark=on keyfocus #1: EventLatency.KeyPressed.TotalLatency n=18 mean=90874.6 p50>=60731; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+### round 1 dark=off
+dark=off keyscroll #1 saved=off flags:  | 62587.695 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+dark=off keyscroll #1: EventLatency.KeyPressed.TotalLatency n=20 mean=121534.9 p50>=109350; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+dark=off keyfocus #1 saved=off flags: WebContentsForceDark force-dark-mode MISMATCH | 62723.001 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+dark=off keyfocus #1: EventLatency.KeyPressed.TotalLatency n=18 mean=69272.0 p50>=52427; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+### round 2 dark=off
+dark=off keyscroll #2 saved=off flags: WebContentsForceDark force-dark-mode MISMATCH | 62857.694 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+dark=off keyscroll #2: EventLatency.KeyPressed.TotalLatency n=19 mean=116626.5 p50>=109350; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+dark=off keyfocus #2 saved=off flags: WebContentsForceDark force-dark-mode MISMATCH | 62992.557 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+dark=off keyfocus #2: EventLatency.KeyPressed.TotalLatency n=20 mean=270019.5 p50>=60731; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+### round 2 dark=on
+dark=on keyscroll #2 saved=on flags: WebContentsForceDark force-dark-mode | 63127.124 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+dark=on keyscroll #2: EventLatency.KeyPressed.TotalLatency n=20 mean=124078.4 p50>=126669; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+dark=on keyfocus #2 saved=on flags: WebContentsForceDark force-dark-mode | 63261.424 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+dark=on keyfocus #2: EventLatency.KeyPressed.TotalLatency n=18 mean=73970.1 p50>=60731; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+### round 3 dark=on
+dark=on keyscroll #3 saved=on flags: WebContentsForceDark force-dark-mode | 63397.007 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+dark=on keyscroll #3: EventLatency.KeyPressed.TotalLatency n=20 mean=116193.2 p50>=109350; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+dark=on keyfocus #3 saved=on flags: WebContentsForceDark force-dark-mode | 63531.610 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+dark=on keyfocus #3: EventLatency.KeyPressed.TotalLatency n=18 mean=68788.9 p50>=52427; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+### round 3 dark=off
+dark=off keyscroll #3 saved=off flags:  | 63667.161 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+dark=off keyscroll #3: EventLatency.KeyPressed.TotalLatency n=20 mean=115621.1 p50>=109350; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+dark=off keyfocus #3 saved=off flags:  | 63801.613 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+dark=off keyfocus #3: EventLatency.KeyPressed.TotalLatency n=18 mean=87053.7 p50>=45259; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+### round 4 dark=off
+dark=off keyscroll #4 saved=off flags:  | 63936.071 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+dark=off keyscroll #4: EventLatency.KeyPressed.TotalLatency n=20 mean=118605.4 p50>=109350; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+dark=off keyfocus #4 saved=off flags: WebContentsForceDark force-dark-mode MISMATCH | 64070.838 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+dark=off keyfocus #4: EventLatency.KeyPressed.TotalLatency n=19 mean=220217.0 p50>=60731; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+### round 4 dark=on
+dark=on keyscroll #4 saved=on flags: WebContentsForceDark force-dark-mode | 64206.328 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+dark=on keyscroll #4: EventLatency.KeyPressed.TotalLatency n=20 mean=114748.4 p50>=109350; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+dark=on keyfocus #4 saved=on flags: WebContentsForceDark force-dark-mode | 64341.186 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+dark=on keyfocus #4: EventLatency.KeyPressed.TotalLatency n=18 mean=66749.1 p50>=60731; Startup.LoadTime.RecordedProcessCreation n=1 mean=1.0 p50>=1
+### restored darkTheme=on
