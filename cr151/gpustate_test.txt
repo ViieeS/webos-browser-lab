@@ -40,3 +40,73 @@ launcher build id: Nov 25 2026 14:58:52
 done
 GPUEXIT way=back gpu_compositing=enabled dwell=12 -> 0 | gpu: on (media.opts gpu=on)
 GPUEXIT way=menu gpu_compositing=enabled dwell=12 -> 0 | gpu: on (media.opts gpu=on)
+
+# 2026-11-25, upstream PR branch alone (launcher 07c4618, IPK 26370a84), steps 1-4 + webgpu=on + gpuexit
+launcher build id: Nov 25 2026 15:27:27
+## 1. clean state, normal start, close by webOS: GPU on
+  start: 18638.699 gpu: on (EGL 1.4 driver, GPU probe passed)
+  ok   GPU on
+  ok   no record
+## 2. a recorded crash, then a run closed by webOS: GPU on, record cleared
+  start: 18707.446 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+  ok   GPU on
+  ok   record cleared
+## 3. one crash: GPU stays on, early-exit.log written
+  start: 18774.696 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+  ok   record 'crash' (crash (signal 11 after 19 s))
+  ok   early-exit.log written
+  start: 18818.461 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+  ok   GPU on at the next start
+## 4. second crash: GPU off, toast
+  ok   record 'bad' (bad (signal 11 after 19 s, second crash))
+  ok   toast sent
+  start: 18862.666 gpu: off (EGL 1.4 driver; Chrome crashed twice with the GPU on at earlier starts (gpu.state))
+  ok   GPU off at the next start
+## 5. media.opts webgpu=on is not gpu=on: GPU stays off
+  start: 18929.883 gpu: off (EGL 1.4 driver; Chrome crashed twice with the GPU on at earlier starts (gpu.state))
+  ok   GPU off
+  ok   launcher did not read gpu=on
+done
+GPUEXIT way=back gpu_compositing=enabled dwell=12 -> 0 | gpu: on (media.opts gpu=on)
+GPUEXIT way=menu gpu_compositing=enabled dwell=12 -> 0 | gpu: on (media.opts gpu=on)
+
+# 2026-11-27, full build after the duplicate freopen was removed (launcher 1c6f3b62, IPK 8607d066), all 7 steps
+launcher build id: Nov 25 2026 15:40:42
+## 1. clean state, normal start, close by webOS: GPU on
+  start: 52671.001 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+  ok   GPU on
+  ok   no record
+## 2. a recorded crash, then a run closed by webOS: GPU on, record cleared
+  start: 52738.991 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+  ok   GPU on
+  ok   record cleared
+## 3. one crash: GPU stays on, early-exit.log written
+  start: 52805.665 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+  ok   record 'crash' (crash (signal 11 after 20 s))
+  ok   early-exit.log written
+  start: 52850.117 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+  ok   GPU on at the next start
+## 4. second crash: GPU off, toast
+  ok   record 'bad' (bad (signal 11 after 18 s, second crash))
+  ok   toast sent
+  start: 52893.613 gpu: off (EGL 1.4 driver; Chrome crashed twice with the GPU on at earlier starts (gpu.state))
+  ok   GPU off at the next start
+## 5. TV Tools On: GPU on, record deleted, a crash does not count
+  ok   TV Tools GPU = on
+  start: 52961.011 gpu: off (EGL 1.4 driver; Chrome crashed twice with the GPU on at earlier starts (gpu.state)) | run.sh gpu: on (TV Tools GPU = On, overrides the launcher)
+  ok   GPU on
+  ok   record deleted
+  ok   override logged
+  ok   forced run not counted
+## 6. TV Tools Off: GPU off, a crash does not count
+  start: 53004.451 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+  ok   TV Tools GPU = off
+  start: 53071.848 gpu: on (EGL 1.4 driver, GPU probe passed (this boot)) | run.sh gpu: off (TV Tools GPU = Off)
+  ok   GPU off
+  ok   forced run not counted
+## 7. back on Auto: GPU on
+  start: 53112.580 gpu: on (EGL 1.4 driver, GPU probe passed (this boot)) | run.sh gpu: off (TV Tools GPU = Off)
+  ok   TV Tools GPU = auto
+  start: 53179.985 gpu: on (EGL 1.4 driver, GPU probe passed (this boot))
+  ok   GPU on
+done

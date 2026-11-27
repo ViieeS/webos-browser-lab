@@ -1,5 +1,5 @@
 diff --git a/source/package/launcher/cnrun.c b/source/package/launcher/cnrun.c
-index 6d98bf3..3be7194 100644
+index 6d98bf3..1bd2653 100644
 --- a/source/package/launcher/cnrun.c
 +++ b/source/package/launcher/cnrun.c
 @@ -1154,10 +1154,13 @@ static int gpu_probe(int limit_ms) {
@@ -52,16 +52,15 @@ index 6d98bf3..3be7194 100644
  static int write_verdict(const char *path, const char *v) {
    FILE *f = fopen(path, "w");
    if (!f) return 0;
-@@ -1333,6 +1363,8 @@ int main(int argc, char **argv) {
+@@ -1333,6 +1363,7 @@ int main(int argc, char **argv) {
    char tdir[600], sock[700], logp[700], script[700];
    snprintf(tdir, sizeof tdir, "/tmp/%s", app_id); mkdir(tdir, 0700);
    snprintf(logp, sizeof logp, "%s/media.log", tdir); lg = fopen(logp, "w");
 +  if (lg) lg = freopen(logp, "a", lg);  // append mode: run.sh adds lines of its own while the launcher writes
-+  if (lg) lg = freopen(logp, "a", lg);  // append mode: run.sh adds lines of its own while the launcher writes
    snprintf(sock, sizeof sock, "%s/media.sock", tdir);
    snprintf(script, sizeof script, "%s/run.sh", bin);
    if (tv_too_old(tdir, bin)) return 1;
-@@ -1398,8 +1430,9 @@ int main(int argc, char **argv) {
+@@ -1398,8 +1429,9 @@ int main(int argc, char **argv) {
      { char d[640]; snprintf(d, sizeof d, "%s/data", ad);
        if (!access(d, W_OK)) snprintf(gpu_state, sizeof gpu_state, "%s/gpu.state", d);
        else snprintf(gpu_state, sizeof gpu_state, "%s/gpu.state", tdir); }
@@ -73,7 +72,7 @@ index 6d98bf3..3be7194 100644
      else {
        int r = egl_platform_display_check();
        on = r == 0;
-@@ -1409,7 +1442,7 @@ int main(int argc, char **argv) {
+@@ -1409,7 +1441,7 @@ int main(int argc, char **argv) {
          // what that path needs (gpuprobe), and not after the GPU crashed Chrome at an earlier start.
          int pr;
          if (read_verdict(gpu_state, v, sizeof v) && !strncmp(v, "bad", 3)) {
@@ -82,7 +81,7 @@ index 6d98bf3..3be7194 100644
          } else if (strstr(opts, "nogpuprobe")) {
            on = 0; why = "EGL 1.4 driver, GPU probe turned off (nogpuprobe)";
          } else {
-@@ -1504,18 +1537,47 @@ int main(int argc, char **argv) {
+@@ -1504,18 +1536,47 @@ int main(int argc, char **argv) {
    if (ssg > 0) { kill(ssg, SIGTERM); waitpid(ssg, NULL, 0); }
    if (ls >= 0) unlink(sock);
    L("chrome exited, status %d", status);
