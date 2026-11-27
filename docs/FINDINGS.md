@@ -698,7 +698,7 @@ the font Blink actually used for each sample via `CSS.getPlatformFontsForNode`.
 - **Web fonts are never substituted.** Google Fonts (Roboto, Inter, Open Sans, PT Serif, JetBrains Mono, Latin and
   Cyrillic) draw from the downloaded files in every weight and style. Blink loads @font-face itself, fontconfig is not
   asked.
-- **Bug, fixed in `cr151/fonts.conf`:** a page asking for Arial, Helvetica, Verdana or Courier New alone got the
+- **Bug, fixed in `fonts.conf` (ours, upstream's since their 1.1.5):** a page asking for Arial, Helvetica, Verdana or Courier New alone got the
   default serif (Tinos), Courier New included. `fc-match` said Droid Sans, but Chrome accepts a fontconfig
   substitute only when it is the first family after config substitution, or metric-compatible (Tinos for Times,
   Arimo for Arial). The aliases used `<accept>`, which leaves the requested name first.
@@ -1374,7 +1374,9 @@ is not counted. Back on Auto the GPU is on. `gpuexit.py`: Back and menu > Exit e
   `31-webos-aliases.conf` changes the UI font.
 - Fix: `browser/cr151/fonts.conf` (generic and web-font aliases to Droid Sans, Tinos, Droid Sans Mono; the
   `append_last` Droid Sans rule; grayscale antialiasing, `hintslight`, no embedded bitmaps; LG's rules last).
-  `package.sh` ships it as `browser/fonts.conf` and adds `export FONTCONFIG_FILE=$D/browser/fonts.conf` to run.sh.
+  `package.sh` shipped it as `browser/fonts.conf` and added `export FONTCONFIG_FILE=$D/browser/fonts.conf` to run.sh.
+  Upstream merged it (WebOS-Chromium #22, in their 1.1.5) as `source/package/fonts.conf` at the app root, so since
+  our 1.1.6 build (2026-11-27) the file and the run.sh line are theirs and `browser/cr151/fonts.conf` is gone.
   Screenshots: `cr151/cap_font_omnibox_{before,after}.png`, `cr151/cap_font_page_{before,after}.png`.
 - `fc-match` exists on the TV (`/usr/bin/fc-match`), handy for checking a fonts.conf before a browser run.
 

@@ -10,7 +10,7 @@ need_sysroot   # check-abi compares against the sysroot's TV-SONAMES and glibc
 # already set that from their config.env (org.nativechromium.browser).
 APP_ID=${CR151_APP_ID:-com.viiees.chromiumtv}
 APP_TITLE=${CR151_APP_TITLE:-"Chromium"}
-VERSION=1.1.1
+VERSION=1.1.6
 D=/work/dist; B=$D/browser; rm -rf "$D"; mkdir -p "$B"
 cd "$OUT"
 for f in chrome chrome_crashpad_handler *.pak icudtl.dat snapshot_blob.bin v8_context_snapshot.bin locales \
@@ -41,11 +41,6 @@ patch -d "$CN" -p2 --forward -s < /cr151/launcher/gpu-state-crash-only.patch || 
 grep -q 'second crash' "$CN/package/launcher/cnrun.c" || die "launcher: gpu.state patch missing"
 (cd "$CN/package/launcher" && ZIG=$Z OUT=$D/cnrun sh build.sh) 2>&1 | tail -2
 
-# Our fontconfig setup (fonts.conf explains why): shipped as browser/fonts.conf, run.sh points FONTCONFIG_FILE at it.
-cp /cr151/fonts.conf "$B/fonts.conf"
-grep -q FONTCONFIG_FILE "$CN/package/run.sh" ||
-	sed -i 's|^export LANG=|export FONTCONFIG_FILE=$D/browser/fonts.conf\nexport LANG=|' "$CN/package/run.sh"
-grep -q '^export FONTCONFIG_FILE=' "$CN/package/run.sh" || die "run.sh: FONTCONFIG_FILE line not added"
 
 # Omnibox trimmed for a TV (UI_LATENCY.md: key to screen 160 -> 94 ms). Upstream has it as an opt-in, media.opts
 # "omnibox=lite"; Chromium TV turns it on by default, and "omnibox=full" in media.opts gives Chrome's own omnibox back.
@@ -176,8 +171,8 @@ def edit(path, anchor, new):
     assert s.count(anchor) == 1, f"{path}: anchor changed: {anchor!r}"
     open(path, "w").write(s.replace(anchor, new))
 settings, ui, run = sys.argv[1:4]
-edit(settings, "  pauseHidden: false ",
-     '  darkTheme: "on",     // "on" | "sites" | "off": read by run.sh when the browser starts\n  pauseHidden: false ')
+edit(settings, "  pauseHidden: false,",
+     '  darkTheme: "on",     // "on" | "sites" | "off": read by run.sh when the browser starts\n  pauseHidden: false,')
 edit(ui, '  {\n    id: "uaMode",', (
     '  {\n'
     '    id: "darkTheme", title: "Dark theme", section: "browsing",\n'
@@ -199,8 +194,8 @@ edit(run, "\tJS_LITE=\n", (
     "\tDARK_UI=; DARK_PAGES=\n"
     "\tcase \"$DARK_SET\" in on) DARK_UI=--force-dark-mode DARK_PAGES=,WebContentsForceDark ;; sites) DARK_UI=--force-dark-mode ;; esac\n"
     "\tJS_LITE=\n"))
-edit(settings, "  pauseHidden: false ",
-     '  gpu: "auto",         // "auto" | "on" | "off": read by run.sh when the browser starts\n  pauseHidden: false ')
+edit(settings, "  pauseHidden: false,",
+     '  gpu: "auto",         // "auto" | "on" | "off": read by run.sh when the browser starts\n  pauseHidden: false,')
 edit(ui, '  {\n    id: "uaMode",', (
     '  {\n'
     '    id: "gpu", title: "GPU", section: "browsing",\n'

@@ -1,6 +1,6 @@
 # Roadmap
 
-Open work in priority order. The status of each item is current as of 2026-11-23.
+Open work in priority order. The status of each item is current as of 2026-11-27.
 
 ## 1. Chromium TV: our WebOS-Chromium 151 build
 
@@ -11,7 +11,7 @@ MB more browser memory). After the 1.1.0 install: exits with the GPU on end with
 normal start, autoconsent still rejects, omnibox key to screen 99–104 ms, and 1.1.0's V8 lite mode stays off on the C1
 (747 MB free at start). The build history and numbers are in `cr151/RESULTS.md` and [FINDINGS.md](FINDINGS.md).
 
-- **Our patches on 1.1.1:** 0102–0104 and 0107. 0109 is their 0062 since 1.1.0, 0110 their 0066 since 1.1.1. The others went upstream: see the upstream table in
+- **Our patches on 1.1.6:** 0102–0104 and 0107. 0109 is their 0062 since 1.1.0, 0110 their 0066 since 1.1.1, and our fonts.conf is theirs since 1.1.5. The others went upstream: see the upstream table in
   [FINDINGS.md](FINDINGS.md#8-upstream-candidates).
 - **Rebase recipe.** Replace `cr151/upstream/source` with `git archive <sha> source` of WebOS-Chromium, record the
   commit in `cr151/upstream/COMMIT`, then run the `incontainer.sh` steps `patch`, `gen`, `build chrome` and `package`.
@@ -24,9 +24,19 @@ normal start, autoconsent still rejects, omnibox key to screen 99–104 ms, and 
   (`cr151/uilat_omnibox_111.txt`). Their 0066 is our 0110 hunk for hunk, so our series is 0102–0104 and 0107. The rest of 1.1.1 is a launcher
   change for webOS 4 (LG's buffered player through ACB): on webOS 5+ it stays off unless `media.opts` has `smp=direct`,
   so the C1 runs the same code paths. IPK sha256 `6ad253c1…`, copy in `browser/build/ipk-1.1.1/`.
+- **Rebase onto 1.1.6** (tag `0bc6bd2`): done, installed 2026-11-27 with the owner's yes. New from upstream: 0069
+  (full screen no longer drops back by itself), 0070 (with no memory pressure but under 200 MB available, one moderate
+  pressure signal every 3 minutes at most trims caches, not during video), TV Tools 2.5.0 ("Unload background tabs"
+  Auto: after 30 minutes, and the least recently used one below 100 MB available; settings saved as "Never" move to
+  Auto once), and our fonts.conf (#22). Our patches applied unchanged. `package.sh` lost its fonts.conf block, and its
+  `pauseHidden` anchor follows their new comma. GPU on, Back and menu > Exit end with status 0
+  (`cr151/gpuexit_116.txt`), autoconsent rejects on IKEA, Cookiebot, BBC and YouTube
+  (`bench/results/consent/shipped_116.txt`), omnibox key to screen 82–84 ms, paint to present 25–26 ms
+  (`cr151/uilat_omnibox_116.txt`, not interleaved with 1.1.1, so not proof of a speed-up). IPK sha256 `ad9785be…`, copy in
+  `browser/build/ipk-1.1.6/`.
 - **GPU crash guard.** Done 2026-11-25: only crash signals count, two in a row turn the GPU off with a toast, TV
-  Tools "GPU" (Auto, On, Off) turns it back on (FINDINGS, "GPU turned off by a start that never touched it"). Open:
-  offer the launcher part upstream (branch `gpu-state-crash-only` in our fork, not pushed, needs the owner's yes).
+  Tools "GPU" (Auto, On, Off) turns it back on (FINDINGS, "GPU turned off by a start that never touched it"). The
+  launcher part is upstream PR WebOS-Chromium #40 (opened 2026-11-27); `gpu.forced` and the append-mode media.log stay ours.
 - **Open:** a second build with their exact args for a byte-level trust check (needs the owner's go).
 - **PGO.** Checked 2026-11-25 (FINDINGS): no arm32 Linux profile exists. The x64 Linux profile (88 MB download, needs
   the owner's yes) would cover only the code that is the same on arm32, and a full rebuild follows. Our own profile
@@ -80,8 +90,8 @@ Measured with Chromium's own histograms (`cr151/UI_LATENCY.md`, `cr151/INPUT_LAT
   autoconsent rule hides Didomi's consent-or-pay banner and unlocks scrolling, checked on the TV from a temp folder
   ([FINDINGS.md](FINDINGS.md)). Installed 2026-11-25 (`bench/results/consent/shipped_110_cop.txt`). A Sourcepoint consent-or-pay rule waits for a site
   that shows one.
-- **Upstream PRs waiting:** WebOS-Chromium #22 (fonts.conf, waits for the owner's tests on webOS 4, 5 and 10) #27
-  (0109 as their 0062) and #30 (0110 as their 0066). #27 merged into their 1.1.0, #30 into their 1.1.1 (2026-11-24). See [FINDINGS.md](FINDINGS.md#8-upstream-candidates).
+- **Upstream PRs:** WebOS-Chromium #40 (launcher: only a crash signal counts against the GPU) is waiting. Merged:
+  #27 (0109 as their 0062) into their 1.1.0, #30 (0110 as their 0066) into 1.1.1 (2026-11-24), #22 (fonts.conf) into 1.1.5. See [FINDINGS.md](FINDINGS.md#8-upstream-candidates).
 - **Upstream the WebKit fixes** listed in [FINDINGS.md](FINDINGS.md#8-upstream-candidates):
   - the ARMv7 RegExp JIT fixes (0010-0012);
   - SystemHeap alignment (0013);
