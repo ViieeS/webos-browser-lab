@@ -1,0 +1,19 @@
+Extension storage: LevelDB tables without compression, so run.sh can read TV Tools' settings.
+
+run.sh reads TV Tools' start-up settings (Dark theme, GPU, Lite mode) by grepping the extension's chrome.storage
+LevelDB. A saved value is plain text only while it is in the .log. The next start flushes it into a snappy-compressed
+.ldb table, where the exact pattern no longer matches, and run.sh silently fell back to the default: a change held
+for one start. Without compression the tables keep the JSON as written. This applies to every extension's value
+store; they hold settings and lists of a few hundred KB, so the extra disk use is small.
+
+diff -ru a/src/components/value_store/lazy_leveldb.cc b/src/components/value_store/lazy_leveldb.cc
+--- a/src/components/value_store/lazy_leveldb.cc	2026-11-27 10:00:00
++++ b/src/components/value_store/lazy_leveldb.cc	2026-11-27 10:00:00
+@@ -64,6 +64,7 @@
+     : db_path_(path) {
+   open_options_.create_if_missing = true;
+   open_options_.paranoid_checks = true;
++  open_options_.compression = leveldb::kNoCompression;
+
+   read_options_.verify_checksums = true;
+

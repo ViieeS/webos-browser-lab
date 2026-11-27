@@ -184,9 +184,11 @@ edit(ui, '  {\n    id: "uaMode",', (
     '  {\n    id: "uaMode",'))
 edit(run, "\tJS_LITE=\n", (
     "\t# Dark theme (TV Tools' \"Dark theme\", default On), read the same way as Lite mode. Added by package.sh.\n"
+    "\t# Readable in .ldb tables only with patch 0112 (no compression). A .log keeps writes in order, so its newest\n"
+    "\t# value is the last match. A table sorts the versions of one key newest first.\n"
     "\tDARK_SET=on\n"
     "\tfor f in $(cd \"$LX\" 2>/dev/null && ls -t -- *.log *.ldb 2>/dev/null); do\n"
-    "\t\tv=$(grep -a -o -E '\"darkTheme\":\"(on|sites|off)\"' \"$LX/$f\" 2>/dev/null | tail -1)\n"
+    "\t\tv=$(grep -a -o -E '\"darkTheme\":\"(on|sites|off)\"' \"$LX/$f\" 2>/dev/null | { case \"$f\" in *.ldb) head -n 1 ;; *) tail -n 1 ;; esac; })\n"
     "\t\t[ -n \"$v\" ] || continue\n"
     "\t\tcase \"$v\" in *'\"sites\"') DARK_SET=sites ;; *'\"off\"') DARK_SET=off ;; esac\n"
     "\t\tbreak\n"
@@ -209,7 +211,7 @@ edit(run, "\tJS_LITE=\n", (
     "\t# Auto tries the GPU again later. media.opts gpu=on / gpu=off still win (tests). Added by package.sh.\n"
     "\tGPU_SET=auto\n"
     "\tfor f in $(cd \"$LX\" 2>/dev/null && ls -t -- *.log *.ldb 2>/dev/null); do\n"
-    "\t\tv=$(grep -a -o -E '\"gpu\":\"(auto|on|off)\"' \"$LX/$f\" 2>/dev/null | tail -1)\n"
+    "\t\tv=$(grep -a -o -E '\"gpu\":\"(auto|on|off)\"' \"$LX/$f\" 2>/dev/null | { case \"$f\" in *.ldb) head -n 1 ;; *) tail -n 1 ;; esac; })\n"
     "\t\t[ -n \"$v\" ] || continue\n"
     "\t\tcase \"$v\" in *'\"on\"') GPU_SET=on ;; *'\"off\"') GPU_SET=off ;; esac\n"
     "\t\tbreak\n"
