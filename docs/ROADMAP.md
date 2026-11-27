@@ -36,7 +36,7 @@ normal start, autoconsent still rejects, omnibox key to screen 99–104 ms, and 
   `browser/build/ipk-1.1.6/`.
 - **GPU crash guard.** Done 2026-11-25: only crash signals count, two in a row turn the GPU off with a toast, TV
   Tools "GPU" (Auto, On, Off) turns it back on (FINDINGS, "GPU turned off by a start that never touched it"). The
-  launcher part is upstream PR WebOS-Chromium #40 (opened 2026-11-27); `gpu.forced` and the append-mode media.log stay ours.
+  launcher part is upstream PR WebOS-Chromium #40 (merged 2026-11-27, after 1.1.6; drop our copy on the next rebase); `gpu.forced` and the append-mode media.log stay ours.
 - **Open:** a second build with their exact args for a byte-level trust check (needs the owner's go).
 - **PGO.** Checked 2026-11-25 (FINDINGS): no arm32 Linux profile exists. The x64 Linux profile (88 MB download, needs
   the owner's yes) would cover only the code that is the same on arm32, and a full rebuild follows. Our own profile
@@ -45,7 +45,7 @@ normal start, autoconsent still rejects, omnibox key to screen 99–104 ms, and 
 - **TV Tools settings hold one start.** Found 2026-11-27: `run.sh` cannot read "Dark theme", "GPU" and upstream's
   "Lite mode" once Chrome moves them into a snappy-compressed LevelDB table, and falls back to the default (FINDINGS,
   "TV Tools settings lost after one start"). Fixed 2026-11-27 by patch 0112 (no compression in extension value stores) and the read order in
-  `run.sh`, checked over five starts. Upstream has the same bug for Lite mode: PR candidate.
+  `run.sh`, checked over five starts. Upstream has the same bug for Lite mode: PR WebOS-Chromium #41.
 
 ## 2. Input latency
 
@@ -96,7 +96,8 @@ Measured with Chromium's own histograms (`cr151/UI_LATENCY.md`, `cr151/INPUT_LAT
   autoconsent rule hides Didomi's consent-or-pay banner and unlocks scrolling, checked on the TV from a temp folder
   ([FINDINGS.md](FINDINGS.md)). Installed 2026-11-25 (`bench/results/consent/shipped_110_cop.txt`). A Sourcepoint consent-or-pay rule waits for a site
   that shows one.
-- **Upstream PRs:** WebOS-Chromium #40 (launcher: only a crash signal counts against the GPU) is waiting. Merged:
+- **Upstream PRs:** WebOS-Chromium #41 (0112 as their 0071, TV Tools settings survive more than one start) is
+  waiting. Merged: #40 (launcher: only a crash signal counts against the GPU) on 2026-11-27, after their 1.1.6 tag,
   #27 (0109 as their 0062) into their 1.1.0, #30 (0110 as their 0066) into 1.1.1 (2026-11-24), #22 (fonts.conf) into 1.1.5. See [FINDINGS.md](FINDINGS.md#8-upstream-candidates).
 - **WebKit fixes** ([FINDINGS.md](FINDINGS.md#8-upstream-candidates), checked against WebKit main 2026-11-27): 0010,
   0012 and 0015 cannot go upstream (2.54 removed the 32-bit JIT they fix), 0011 is fixed there already. 0014 (sticky
