@@ -1,4 +1,9 @@
-# bugs.webkit.org: new bug
+# bugs.webkit.org: existing bug 165460
+
+No new bug needed: https://bugs.webkit.org/show_bug.cgi?id=165460 ("Visual viewports trigger layout on scrolling,
+and should not need to", Layout and Rendering, filed 2016-12-06 by Simon Fraser, NEW, unassigned, no comments) says
+setBaseLayoutViewportOrigin() calls setViewportConstrainedObjectsNeedLayout() although it should not be necessary.
+The text below can go into that bug as a comment with the measurements.
 
 Product: WebKit. Component: Layout and Rendering. Version: WebKit Nightly Build.
 
@@ -18,7 +23,7 @@ layout for the scroll itself.
 # GitHub PR into WebKit/WebKit (commit message)
 
 Do not relayout sticky boxes on every layout viewport move
-https://bugs.webkit.org/show_bug.cgi?id=NNNNNN
+https://bugs.webkit.org/show_bug.cgi?id=165460
 
 Reviewed by NOBODY (OOPS!).
 
@@ -32,3 +37,9 @@ from 18 to 57 fps on a Wikipedia article with JavaScript off.
 
 * Source/WebCore/page/LocalFrameView.cpp:
 (WebCore::LocalFrameView::setBaseLayoutViewportOrigin):
+
+# Status (2026-11-27)
+
+Submitted as https://github.com/WebKit/WebKit/pull/82406 (commit 0722f698f4 on main 8457cc5090). The text above is
+the first draft. The PR version differs: on main it recomputes layer positions from the new origin instead of only
+scheduling a compositing update, because the scroll path updates layer positions before the origin moves.

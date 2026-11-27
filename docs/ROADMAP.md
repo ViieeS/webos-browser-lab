@@ -101,8 +101,7 @@ Measured with Chromium's own histograms (`cr151/UI_LATENCY.md`, `cr151/INPUT_LAT
   #27 (0109 as their 0062) into their 1.1.0, #30 (0110 as their 0066) into 1.1.1 (2026-11-24), #22 (fonts.conf) into 1.1.5. See [FINDINGS.md](FINDINGS.md#8-upstream-candidates).
 - **WebKit fixes** ([FINDINGS.md](FINDINGS.md#8-upstream-candidates), checked against WebKit main 2026-11-27): 0010,
   0012 and 0015 cannot go upstream (2.54 removed the 32-bit JIT they fix), 0011 is fixed there already. 0014 (sticky
-  relayout on every scroll) still applies: bug and commit message drafted in
-  [upstream_webkit_0014.md](upstream_webkit_0014.md), filing needs the owner's bugs.webkit.org account. 0013 at most
+  relayout on every scroll): PR WebKit/WebKit#82406 on bug 165460, waiting for review (FINDINGS section 8). 0013 at most
   as a bug report.
 - **DRM is not solvable.** Widevine is not available as a Chrome CDM on the TV. PlayReady is API-compatible but untested.
 - **Tab memory ceiling.** Done 2026-11-19: `package.sh` sets TV Tools' tab limit to 8, so the oldest tab closes above
