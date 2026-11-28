@@ -4,8 +4,13 @@
 # Speed instead of size: full ThinLTO with cross-module optimisation, -O2 instead of -Os.
 optimize_for_size = false
 thin_lto_enable_optimizations = true
-# No PGO in the first build (their value): an arm32 profile is a separate experiment.
-chrome_pgo_phase = 0
+# Instrumented PGO from Google's Android arm32 profile pinned on this tag (chrome/build/android-arm32.pgo.txt):
+# no arm32 Linux profile exists, and Android arm32 shares the 32-bit V8 and most of Blink and Skia. Functions whose
+# code differs on Linux get no profile, which clang skips silently. Downloaded into the build volume
+# (docs/SOURCES.md). Speedometer +11 % against ChromeOS's ARM AFDO profile (cr151/pgo_ab.txt), which itself measured
+# within noise (cr151/afdo_ab.txt).
+chrome_pgo_phase = 2
+pgo_data_path = "/work/pgo/android32.profdata"
 
 # The C1's Cortex-A55 runs this 32-bit code in AArch32. ARMv8.2-A has SDIV/UDIV in ARM and Thumb
 # (plain armv7-a does not, so every division was a libgcc call). arm_tune and arm_fpu are not GN args

@@ -760,7 +760,7 @@ The tab limit and DRM are left out: the owner set the first aside, and the secon
 | E-AC3 unsupported | No | Few web players need it. Stereo AAC and Opus work |
 | `--no-sandbox` | No, but record it | Real security cost for a daily browser. The sandbox on this kernel and jail is a project, not a fix |
 | TV Tools runs a MAIN-world content script on every page | No | Known structural risk. It also sets the TV user agent that YouTube relies on |
-| PGO (`chrome_pgo_phase = 2`) not tried | No | Speed only, a long build experiment. No arm32 profile is known |
+| PGO with an own profile not tried | No | Speed only. Google's Android arm32 profile ships (Speedometer +11 %), AFDO from ChromeOS measured within noise (section 8, "PGO for the arm32 build") |
 | crossbench and the typing-latency web test not tried | No | Tooling only. Chromium's own histograms already measure UI latency |
 | Higher NDL CPU than cr120 (50–100 against 24–56 jiffies per 8 s) | No | No user-visible effect: 0 dropped up to 4K |
 
@@ -1257,6 +1257,23 @@ Submitted rows carry the link; the rest are not submitted.
   itself, and run 2–3 times slower on the TV meanwhile (estimate, not measured).
 - Cost either way: downloading the profile (owner's yes) and a full rebuild, since every object's flags change. PGO
   also inlines hot code, so the binary may grow.
+- **AFDO, measured 2026-11-27: within noise.** ChromeOS publishes a sampled ARM profile for every branch
+  (`chromeos/profiles/arm.afdo.newest.txt`, `clang_sample_profile_path`, needs `chrome_pgo_phase = 0`). The one for
+  151.0.7922.106 was taken from 64-bit Chrome (V8's compressed-pointer slots are in it), and its hottest functions are
+  Skia matrix and Canvas2D paint code, so V8 on our 32-bit build matches it only in part. Interleaved by reinstall (B A
+  B A, GPU on): Speedometer 0.794 against 0.786 (+1.1 %), Wikipedia load 3617 against 3755 ms (−3.7 %), omnibox key to
+  screen 103 against 104 ms. The ranges overlap in every case, nothing got slower. Raw: `cr151/afdo_ab.txt`. Installed
+  with the owner's yes, as it also carries 0112.
+- **The Android arm32 profile is pinned on our tag.** `chrome/build/android-arm32.pgo.txt` on 151.0.7922.106 names
+  `chrome-android32-main-1782755966-…profdata`, the branch point, so Google builds its Android Chrome 151 with it.
+  It is the same architecture and the same 32-bit V8 as ours. The bucket stores it gzip-encoded (63.5 MB) and serves it
+  unpacked (227 MB, 843 193 functions): the `x-goog-hash` md5 matches the stored gzip bytes, not the served file.
+- **Android arm32 PGO, measured 2026-11-28: Speedometer +11 %.** Interleaved by reinstall against the AFDO build (P F
+  P F, GPU on): Speedometer 0.878 against 0.789, and the ranges do not overlap (0.870–0.885 against 0.785–0.793).
+  Wikipedia load 3690 against 3881 ms (−4.9 %, ranges overlap), omnibox key to screen 104 against 103 ms, memory the
+  same. The installed app is 237 MB against 258 MB with AFDO. Raw: `cr151/pgo_ab.txt`. Installed with the owner's
+  yes. An Android profile from the same tag carries over because the hot code (V8, Blink, Skia) is shared, and clang
+  skips the functions whose code differs on Linux.
 
 ### Spatial navigation: the walk is not where the time goes (2026-11-25)
 

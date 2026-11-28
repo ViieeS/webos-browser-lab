@@ -39,6 +39,8 @@ Builds ran on an arm64 Mac in Docker (colima, 12 CPUs, 24 GB RAM). Each engine h
 | [webosbrew/webos-bridge-64to32](https://github.com/webosbrew/webos-bridge-64to32) | v0.0.8 + deten's 12 patches from [issue #1](https://github.com/webosbrew/webos-bridge-64to32/issues/1) | 64-bit EGL/GLES bridge for the frozen 64-bit path |
 | [microsoft/mimalloc](https://github.com/microsoft/mimalloc) | v2.1.7 | Allocator preloaded into WPE's processes |
 | [webosbrew/SDL-webOS](https://github.com/webosbrew/SDL-webOS) | 2.30.12 | Window and input for the WPE host |
+| ChromeOS AFDO profile | `chromeos-chrome-arm-none-151-7922.56-1785723319-benchmark-151.0.7922.106-r1-redacted.afdo.xz` (6.4 MB, unpacked sha256 `d4e79e6c…bd3c97`), from `gs://chromeos-prebuilt/afdo-job/vetted/release/` | Sample profile for the AFDO build, 2026-11-27 (`cr151/afdo_ab.txt`) |
+| Chromium Android arm32 PGO profile | `chrome-android32-main-1782755966-1961c5f9f820dc682ff75615a631f085003a8cca-67bd0dd250a1781c6e6ad77636a8709ded9a621c.profdata` (sha256 `911f00cd…087bd7`, 227 MB unpacked), from `gs://chromium-optimization-profiles/pgo_profiles/`, as pinned in `chrome/build/android-arm32.pgo.txt` | `pgo_data_path` in `cr151/args.delta.gn` since 2026-11-27 |
 | Linux `tools/perf` | 4.4.302 (kernel.org tarball) | Static `perf` for the TV |
 | Debian `libjavascriptcoregtk-bin` | 2.54.0 arm64 (trixie) | Reference 64-bit jsc for the 32-vs-64-bit JS comparison |
 | Debian buster arm sysroot | debootstrap from archive.debian.org | Sysroot for cr120 (`cr120/sysroot.sh`) |

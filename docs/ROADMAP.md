@@ -37,10 +37,15 @@ normal start, autoconsent still rejects, omnibox key to screen 99–104 ms, and 
 - **GPU crash guard.** Done 2026-11-25: only crash signals count, two in a row turn the GPU off with a toast, TV
   Tools "GPU" (Auto, On, Off) turns it back on (FINDINGS, "GPU turned off by a start that never touched it"). The
   launcher part is upstream PR WebOS-Chromium #40 (merged 2026-11-27, after 1.1.6; drop our copy on the next rebase); `gpu.forced` and the append-mode media.log stay ours.
-- **Open:** a second build with their exact args for a byte-level trust check (needs the owner's go).
-- **PGO.** Checked 2026-11-25 (FINDINGS): no arm32 Linux profile exists. The x64 Linux profile (88 MB download, needs
-  the owner's yes) would cover only the code that is the same on arm32, and a full rebuild follows. Our own profile
-  needs a clean exit, which 0110 removes. Not started.
+- **Deferred:** a second build with their exact args for a byte-level trust check. The owner's call (2026-11-27):
+  after upstream has merged all our open PRs (#41 open), on the release that contains them.
+- **PGO.** No arm32 Linux profile exists (FINDINGS, "PGO for the arm32 build"). ChromeOS's ARM AFDO profile measured
+  within noise on 2026-11-27 (Speedometer +1.1 %, Wikipedia load −3.7 %, omnibox the same, `cr151/afdo_ab.txt`) and
+  was installed with the owner's yes. Google's Android arm32 PGO profile pinned on our tag won on 2026-11-28 against
+  AFDO: Speedometer 0.878 against 0.789 (+11 %, no overlap), Wikipedia load −4.9 %, omnibox and memory the same
+  (`cr151/pgo_ab.txt`). Installed with the owner's yes, IPK sha256 `f36539b1…`, copy in `browser/build/ipk-1.1.6-pgo/`.
+  Next, if wanted: an own profile from an instrumented build on the TV, on our scenarios (needs a profile flush before
+  0110's `_exit()`).
 
 - **TV Tools settings hold one start.** Found 2026-11-27: `run.sh` cannot read "Dark theme", "GPU" and upstream's
   "Lite mode" once Chrome moves them into a snappy-compressed LevelDB table, and falls back to the default (FINDINGS,
